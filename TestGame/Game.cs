@@ -3,8 +3,8 @@ using SkiaSharp;
 
 namespace TestGame;
 
-// public class Game : RectBouncer
-public class Game : FreeFall
+public class Game : RectBouncer
+// public class Game : FreeFall
 {
     // ReSharper disable once InconsistentNaming
     private static readonly Game? _instance = null;

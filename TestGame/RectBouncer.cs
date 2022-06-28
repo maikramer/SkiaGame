@@ -1,3 +1,4 @@
+using System.Numerics;
 using SkiaGame;
 using SkiaSharp;
 
@@ -6,24 +7,26 @@ namespace TestGame;
 public class RectBouncer : Engine
 {
     private const float RectSize = 50;
+
+    private GameObject _gameObject = new()
+    {
+        Primitive = Primitive.Rect,
+        RectSize = new SKSize(50, 50)
+    };
+
     private const float Speed = 100;
     private SKPoint _lastPosition;
     private bool _growX = true;
     private bool _growY = true;
 
+
+    protected override void OnStart()
+    {
+        AddToDrawQueue(_gameObject);
+    }
+
     protected override void OnUpdate(PaintEventArgs e, float timeStep)
     {
-        var canvas = e.Surface.Canvas;
-        canvas.Clear(SKColors.White);
-        var paint = new SKPaint
-        {
-            Color = SKColors.Black,
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            TextAlign = SKTextAlign.Center,
-            TextSize = 24
-        };
-
         float nextX;
         if (_growX)
         {
@@ -65,22 +68,12 @@ public class RectBouncer : Engine
         }
 
 
-        var coord = new SKPoint(nextX, nextY);
+        _gameObject.Position = new Vector2(nextX, nextY);
         _lastPosition.X = nextX;
         _lastPosition.Y = nextY;
-        var rect = new SKRect
-        {
-            Location = coord,
-            Size = new SKSize(RectSize, RectSize)
-        };
-        canvas.DrawRect(rect, paint);
     }
 
     protected override void OnPhysicsUpdate(float timeStep)
-    {
-    }
-
-    protected override void OnStart()
     {
     }
 }

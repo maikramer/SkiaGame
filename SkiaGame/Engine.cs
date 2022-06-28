@@ -1,16 +1,19 @@
 using System.Numerics;
 using SkiaGame.Physics;
+using SkiaSharp;
 
 namespace SkiaGame;
 
 public abstract class Engine
 {
     public int FrameRate { get; set; } = 60;
-    public int PhysicsTimeStep { get; set; } = 50;
+    public int PhysicsTimeStep { get; set; } = 30;
+    public SKColor CLearColor { get; set; } = SKColors.White;
     public float Gravity { get; set; } = 9.81f;
     private DateTime _lastTime = DateTime.Now;
     private DateTime _physicsLastTime = DateTime.Now;
-    private readonly List<Body> _bodies = new();
+    private readonly List<RigidBody> _bodies = new();
+    private readonly List<GameObject> _drawQueue = new();
 
     protected Engine()
     {
@@ -18,11 +21,19 @@ public abstract class Engine
         Task.Run(OnStart);
     }
 
-    public void AddBody(Body body)
+    public void AddPhysics(GameObject gameObject)
     {
         lock (_bodies)
         {
-            _bodies.Add(body);
+            _bodies.Add(gameObject.RigidBody);
+        }
+    }
+
+    public void AddToDrawQueue(GameObject gameObject)
+    {
+        lock (_drawQueue)
+        {
+            _drawQueue.Add(gameObject);
         }
     }
 
@@ -52,8 +63,17 @@ public abstract class Engine
 
     public void OnPaintSurface(PaintEventArgs e)
     {
+        e.Surface.Canvas.Clear(CLearColor);
         var timeStep = (float)((DateTime.Now - _lastTime).TotalMilliseconds) / 1000.0f;
         OnUpdate(e, timeStep);
+        lock (_drawQueue)
+        {
+            foreach (var gameObject in _drawQueue)
+            {
+                gameObject.Draw(e.Surface.Canvas);
+            }
+        }
+
         _lastTime = DateTime.Now;
     }
 
