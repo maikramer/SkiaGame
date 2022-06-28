@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maui="clr-namespace:SkiaGame.Maui;assembly=SkiaGame.Maui"
+             xmlns:testGame="clr-namespace:TestGame;assembly=TestGame"
+             x:Class="TestGame.Maui.MainPage">
+    <maui:SkiaGameView Engine="{Binding Engine, Source={x:Static testGame:Game.Instance}}">
+
+    </maui:SkiaGameView>
+
+</ContentPage>

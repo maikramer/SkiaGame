@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(TargetFrameworks);net6.0-ios;net6.0-maccatalyst</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <SingleProject>true</SingleProject>
+        <UseMaui>true</UseMaui>
+        <Nullable>enable</Nullable>
+        <SupportedOSPlatformVersion Condition="'$(TargetFramework)' == 'net6.0-ios'">14.2</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="'$(TargetFramework)' == 'net6.0-maccatalyst'">14.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="'$(TargetFramework)' == 'net6.0-android'">26.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
+        <TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</TargetPlatformMinVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="6.0.403" />
+        <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="2.88.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
+    </ItemGroup>
+
+</Project>
