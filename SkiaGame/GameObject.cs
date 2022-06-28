@@ -6,16 +6,27 @@ namespace SkiaGame;
 
 public class GameObject
 {
-    public RigidBody RigidBody { get; set; } = new RigidBody();
+    public RigidBody RigidBody { get; set; } = new();
     public Primitive Primitive { get; set; } = Primitive.Rect;
-    public float CircleRadius { get; set; } = 0;
-    public SKSize RectSize { get; set; } = new(1, 1);
+
+    public SKSize Size
+    {
+        get => RigidBody.Bounds.Size;
+        set => RigidBody.SetSize(value);
+    }
+
     public SKPoint RoundRectCornerRadius { get; set; } = new(1, 1);
 
     public Vector2 Position
     {
         get => RigidBody.Position;
-        set => RigidBody.Position = value;
+        set => RigidBody.SetPosition(value);
+    }
+
+    public bool ReactToCollision
+    {
+        get => RigidBody.ReactToCollision;
+        set => RigidBody.ReactToCollision = value;
     }
 
     public SKPaint Paint = new()
@@ -32,13 +43,15 @@ public class GameObject
         switch (Primitive)
         {
             case Primitive.Circle:
-                canvas.DrawCircle(RigidBody.Position.X, RigidBody.Position.Y, CircleRadius, Paint);
+                canvas.DrawCircle(RigidBody.Position.X, RigidBody.Position.Y, Size.Width/2, Paint);
                 break;
             case Primitive.Rect:
-                canvas.DrawRect(RigidBody.Position.X, RigidBody.Position.Y, RectSize.Width, RectSize.Height, Paint);
+                canvas.DrawRect(RigidBody.Position.X - Size.Width / 2, RigidBody.Position.Y - Size.Height / 2,
+                    Size.Width, Size.Height, Paint);
                 break;
             case Primitive.RoundRect:
-                canvas.DrawRoundRect(RigidBody.Position.X, RigidBody.Position.Y, RectSize.Width, RectSize.Height,
+                canvas.DrawRoundRect(RigidBody.Position.X - Size.Width / 2, RigidBody.Position.Y - Size.Height / 2,
+                    Size.Width, Size.Height,
                     RoundRectCornerRadius.X, RoundRectCornerRadius.Y, Paint);
                 break;
             case Primitive.Path:

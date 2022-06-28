@@ -11,7 +11,7 @@ public class RectBouncer : Engine
     private GameObject _gameObject = new()
     {
         Primitive = Primitive.Rect,
-        RectSize = new SKSize(50, 50)
+        Size = new SKSize(50, 50)
     };
 
     private const float Speed = 100;
