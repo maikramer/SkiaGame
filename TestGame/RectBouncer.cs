@@ -8,7 +8,7 @@ public class RectBouncer : Engine
 {
     private const float RectSize = 50;
 
-    private GameObject _gameObject = new()
+    private readonly GameObject _gameObject = new()
     {
         Primitive = Primitive.Rect,
         Size = new SKSize(50, 50)
@@ -71,9 +71,5 @@ public class RectBouncer : Engine
         _gameObject.Position = new Vector2(nextX, nextY);
         _lastPosition.X = nextX;
         _lastPosition.Y = nextY;
-    }
-
-    protected override void OnPhysicsUpdate(float timeStep)
-    {
     }
 }

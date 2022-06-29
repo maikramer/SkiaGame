@@ -16,9 +16,8 @@ namespace Gtk
             var win = new MainWindow(engine);
             app.AddWindow(win);
             win.Show();
-            engine.InternalSetScreenSize(new SKSize(win.Window.Width, win.Window.Height));
+            engine.InternalSetScreenSize(new SKSize(win.Child.AllocatedWidth, win.Child.AllocatedHeight));
             engine.InternalExecuteOnStart();
-
             Application.Run();
         }
     }

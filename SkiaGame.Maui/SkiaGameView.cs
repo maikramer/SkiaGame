@@ -1,14 +1,21 @@
+using System.Timers;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
+using Timer = System.Timers.Timer;
 
 namespace SkiaGame.Maui;
 
 public class SkiaGameView : SKCanvasView
 {
+    private bool _initialized;
+    private Timer _timer = new();
+
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly BindableProperty EngineProperty =
         BindableProperty.Create(nameof(Engine), typeof(Engine), typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
+
+    private SKSize _allocatedSize;
 
     public Engine? Engine
     {
@@ -26,19 +33,43 @@ public class SkiaGameView : SKCanvasView
         Engine = engine;
     }
 
-    public void Init()
+    public void EngineReinit()
     {
         if (Engine == null) return;
-        var timer = new System.Timers.Timer(1000.0f / Engine.FrameRate);
-        timer.AutoReset = true;
-        timer.Elapsed += (_, _) => { InvalidateSurface(); };
-        timer.Start();
-        Engine.InternalSetScreenSize(new SKSize(CanvasSize.Width, CanvasSize.Height));
+        _timer.Interval = 1000.0f / Engine.FrameRate;
+        if (!_initialized)
+        {
+            _timer.AutoReset = true;
+            _timer.Elapsed += FrameRateTimer;
+            _timer.Start();
+            _initialized = true;
+        }
+        else
+        {
+            Engine.InternalSetScreenSize(_allocatedSize);
+            Engine.InternalExecuteOnStart();
+        }
+    }
+
+    private void FrameRateTimer(object? sender, ElapsedEventArgs e)
+    {
+        InvalidateSurface();
+    }
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+        if (Engine == null) return;
+        if (Application.Current == null) return;
+        var density = Application.Current.Windows[0].DisplayDensity;
+        _allocatedSize = new SKSize((float)Math.Round(density * width), (float)Math.Round(density * height));
+        Engine.InternalSetScreenSize(_allocatedSize);
         Engine.InternalExecuteOnStart();
     }
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
+        _allocatedSize = new SKSize(e.Info.Width, e.Info.Height);
         base.OnPaintSurface(e);
         var eventArgs = new PaintEventArgs(e.Info, e.Surface);
         Engine?.OnPaintSurface(eventArgs);
@@ -48,7 +79,7 @@ public class SkiaGameView : SKCanvasView
     {
         if (d is not SkiaGameView view) return;
 
-        view.Init();
+        view.EngineReinit();
         view.InvalidateSurface();
     }
 }

@@ -16,6 +16,12 @@ public class GameObject
         set => RigidBody.SetSize(value);
     }
 
+    public SKColor Color
+    {
+        get => Paint.Color;
+        set => Paint.Color = value;
+    }
+
     public float Diameter
     {
         get => Size.Width;
