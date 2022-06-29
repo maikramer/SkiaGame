@@ -2,4 +2,4 @@
 
 using TestGame;
 
-Gtk.Implementation.Run(Game.Instance);
+Gtk.Implementation.Run(Game.GameInstance);

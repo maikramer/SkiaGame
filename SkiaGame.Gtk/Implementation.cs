@@ -1,4 +1,5 @@
 ﻿using SkiaGame;
+using SkiaSharp;
 
 namespace Gtk
 {
@@ -14,8 +15,10 @@ namespace Gtk
 
             var win = new MainWindow(engine);
             app.AddWindow(win);
-
             win.Show();
+            engine.InternalSetScreenSize(new SKSize(win.Window.Width, win.Window.Height));
+            engine.InternalExecuteOnStart();
+
             Application.Run();
         }
     }

@@ -6,58 +6,128 @@ namespace SkiaGame;
 
 public abstract class Engine
 {
+    private static Engine? _instance;
+
+    /// <summary>
+    /// Retorna uma instancia da Engine
+    /// </summary>
+    public Engine? Instance => _instance;
+
+    /// <summary>
+    /// Obtem o Tamanho da tela
+    /// </summary>
+    public SKSize ScreenSize { get; protected set; }
+
     /// <summary>
     /// Taxa de Quadros por segundo
     /// </summary>
     public int FrameRate { get; set; } = 60;
+
     /// <summary>
     /// Espaço de tempo em que a fisica ocorre, quanto menor o tempo, mais precisa, e mais custosa.
     /// </summary>
     public int PhysicsTimeStep { get; set; } = 30;
+
     /// <summary>
     /// Essa é a cor em que a tela é limpa antes de desenhar os objetos
     /// </summary>
     public SKColor CLearColor { get; set; } = SKColors.White;
+
     /// <summary>
     /// Aceleração da Gravidade
     /// </summary>
     public float Gravity { get; set; } = 9.81f;
+
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
+
     //Ultima vez em que o tempo foi medido para a fisica
     private DateTime _physicsLastTime = DateTime.Now;
+
     //Lista de corpos para a fisica
     private readonly List<RigidBody> _bodies = new();
+
     //Lista de corpos para desenho
     private readonly List<GameObject> _drawQueue = new();
 
     protected Engine()
     {
         Task.Run(PhysicsEngine);
-        Task.Run(OnStart);
+        _instance = this;
     }
+
+    private void InitObjToEngine(GameObject gameObject)
+    {
+        if (gameObject._engine != null) return;
+        gameObject._engine = _instance;
+    }
+
+    /// <summary>
+    /// Adiciona objeto na Engine Grafica e Fisica veja <see cref="AddPhysics"/> e <see cref="AddToDrawQueue"/>
+    /// para adicionar separadamente>/>
+    /// </summary>
+    /// <param name="gameObject"></param>
+    public void AddToEngine(GameObject gameObject)
+    {
+        AddPhysics(gameObject);
+        AddToDrawQueue(gameObject);
+    }
+
     /// <summary>
     /// Adiciona um Objeto à fisica, somente após adiciona-lo a física age no mesmo.
     /// </summary>
     /// <param name="gameObject">Objeto a ser adicionado</param>
     public void AddPhysics(GameObject gameObject)
     {
+        InitObjToEngine(gameObject);
         lock (_bodies)
         {
+            if (_bodies.Contains(gameObject.RigidBody))
+            {
+                Console.WriteLine("Tentando ReAdicionar objeto a fisica!!");
+                return;
+            }
+
             _bodies.Add(gameObject.RigidBody);
         }
     }
+
     /// <summary>
     /// Adiciona um Objeto para ser Desenhado
     /// </summary>
     /// <param name="gameObject"></param>
     public void AddToDrawQueue(GameObject gameObject)
     {
+        InitObjToEngine(gameObject);
         lock (_drawQueue)
         {
+            if (_drawQueue.Contains(gameObject))
+            {
+                Console.WriteLine("Tentando ReAdicionar objeto a Lista de Desenho!!");
+                return;
+            }
+
             _drawQueue.Add(gameObject);
         }
     }
+
+    /// <summary>
+    /// Para uso interno da plataforma, não deveria ser usado por enquanto pois não tem efeito em redimensionamento
+    /// </summary>
+    /// <param name="size"></param>
+    public void InternalSetScreenSize(SKSize size)
+    {
+        ScreenSize = size;
+    }
+
+    /// <summary>
+    /// Para uso interno da plataforma
+    /// </summary>
+    public void InternalExecuteOnStart()
+    {
+        OnStart();
+    }
+
     //Tarefa da Engine Fisica
     private async Task PhysicsEngine()
     {
@@ -68,9 +138,10 @@ public abstract class Engine
             {
                 foreach (var body in _bodies)
                 {
-                    if (!body.ReactToCollision) continue;
+                    if (!body.ReactToCollision && !body.HasGravity) continue;
                     var collided = false;
-                    if (_bodies.Where(other => other != body).Any(other => body.Bounds.IntersectsWith(other.Bounds)))
+                    if (body.ReactToCollision &&
+                        _bodies.Where(other => other != body).Any(other => body.Bounds.IntersectsWith(other.Bounds)))
                     {
                         collided = true;
                         body.Speed = -body.Elasticity * body.Speed;
@@ -92,12 +163,14 @@ public abstract class Engine
 
         // ReSharper disable once FunctionNeverReturns
     }
+
     /// <summary>
     /// Este é o evento onde os objetos são desenhados na tela.
     /// </summary>
     /// <param name="e"></param>
     public void OnPaintSurface(PaintEventArgs e)
     {
+        ScreenSize = new SKSize(e.Info.Width, e.Info.Height);
         e.Surface.Canvas.Clear(CLearColor);
         var timeStep = (float)((DateTime.Now - _lastTime).TotalMilliseconds) / 1000.0f;
         OnUpdate(e, timeStep);
@@ -113,18 +186,22 @@ public abstract class Engine
     }
 
     /// <summary>
+    /// Esta função é chamada sempre que o jogo é iniciado.
+    /// </summary>
+    protected abstract void OnStart();
+
+    /// <summary>
     /// Esta função é chamada a cada Frame de Desenho
     /// </summary>
     /// <param name="e">Parametros de evento</param>
     /// <param name="timeStep">Tempo entre o quadro anterior e este</param>
     protected abstract void OnUpdate(PaintEventArgs e, float timeStep);
+
     /// <summary>
     /// Esta função é chamada a cada chamada da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected abstract void OnPhysicsUpdate(float timeStep);
-    /// <summary>
-    /// Esta função é chamada sempre que o jogo é iniciado.
-    /// </summary>
-    protected abstract void OnStart();
+    protected virtual void OnPhysicsUpdate(float timeStep)
+    {
+    }
 }

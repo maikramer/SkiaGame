@@ -6,6 +6,7 @@ namespace SkiaGame;
 
 public class GameObject
 {
+    internal Engine? _engine;
     public RigidBody RigidBody { get; set; } = new();
     public Primitive Primitive { get; set; } = Primitive.Rect;
 
@@ -13,6 +14,12 @@ public class GameObject
     {
         get => RigidBody.Bounds.Size;
         set => RigidBody.SetSize(value);
+    }
+
+    public float Diameter
+    {
+        get => Size.Width;
+        set => Size = new SKSize(value, value);
     }
 
     public SKPoint RoundRectCornerRadius { get; set; } = new(1, 1);
@@ -29,6 +36,12 @@ public class GameObject
         set => RigidBody.ReactToCollision = value;
     }
 
+    public bool HasGravity
+    {
+        get => RigidBody.HasGravity;
+        set => RigidBody.HasGravity = value;
+    }
+
     public SKPaint Paint = new()
     {
         Color = SKColors.Black,
@@ -43,14 +56,14 @@ public class GameObject
         switch (Primitive)
         {
             case Primitive.Circle:
-                canvas.DrawCircle(RigidBody.Position.X, RigidBody.Position.Y, Size.Width/2, Paint);
+                canvas.DrawCircle(RigidBody.Bounds.MidX, RigidBody.Bounds.MidY, Size.Width / 2, Paint);
                 break;
             case Primitive.Rect:
-                canvas.DrawRect(RigidBody.Position.X - Size.Width / 2, RigidBody.Position.Y - Size.Height / 2,
+                canvas.DrawRect(RigidBody.Position.X, RigidBody.Position.Y,
                     Size.Width, Size.Height, Paint);
                 break;
             case Primitive.RoundRect:
-                canvas.DrawRoundRect(RigidBody.Position.X - Size.Width / 2, RigidBody.Position.Y - Size.Height / 2,
+                canvas.DrawRoundRect(RigidBody.Position.X, RigidBody.Position.Y,
                     Size.Width, Size.Height,
                     RoundRectCornerRadius.X, RoundRectCornerRadius.Y, Paint);
                 break;

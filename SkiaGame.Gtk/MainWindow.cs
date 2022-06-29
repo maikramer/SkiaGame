@@ -20,7 +20,7 @@ namespace Gtk
             builder.Autoconnect(this);
             DeleteEvent += OnWindowDeleteEvent;
             var skiaView = new SKDrawingArea();
-            var timer = new Timer(1000 / engine.FrameRate);
+            var timer = new Timer(1000.0f / engine.FrameRate);
             timer.AutoReset = true;
             timer.Elapsed += (_, _) => { skiaView.QueueDraw(); };
             timer.Start();

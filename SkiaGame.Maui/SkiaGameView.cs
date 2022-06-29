@@ -1,3 +1,4 @@
+using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
 
@@ -28,10 +29,12 @@ public class SkiaGameView : SKCanvasView
     public void Init()
     {
         if (Engine == null) return;
-        var timer = new System.Timers.Timer(1000 / Engine.FrameRate);
+        var timer = new System.Timers.Timer(1000.0f / Engine.FrameRate);
         timer.AutoReset = true;
         timer.Elapsed += (_, _) => { InvalidateSurface(); };
         timer.Start();
+        Engine.InternalSetScreenSize(new SKSize(CanvasSize.Width, CanvasSize.Height));
+        Engine.InternalExecuteOnStart();
     }
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
