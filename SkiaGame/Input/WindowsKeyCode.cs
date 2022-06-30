@@ -1,8 +1,9 @@
 // ReSharper disable InconsistentNaming
+
 namespace SkiaGame.Input;
 
 /// <summary>
-/// Somente para Referencia
+///     Somente para Referencia
 /// </summary>
 public enum WindowsKeyCode
 {
@@ -977,5 +978,5 @@ public enum WindowsKeyCode
     //
     // Summary:
     //     The ALT modifier key.
-    Alt = 262144,
+    Alt = 262144
 }

@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Gtk;
 using TestGame;
 
-Gtk.Implementation.Run(Game.GameInstance);
+Implementation.Run(Game.GameInstance);

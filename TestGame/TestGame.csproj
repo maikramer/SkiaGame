@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.88.0" />
+        <PackageReference Include="SkiaSharp" Version="2.88.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
@@ -21,9 +21,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="SkiaSharp.Views.Desktop.Common">
-        <HintPath>..\..\..\.nuget\packages\skiasharp.views.desktop.common\2.88.0\lib\netcoreapp3.1\SkiaSharp.Views.Desktop.Common.dll</HintPath>
-      </Reference>
+        <Reference Include="SkiaSharp.Views.Desktop.Common">
+            <HintPath>..\..\..\.nuget\packages\skiasharp.views.desktop.common\2.88.0\lib\netcoreapp3.1\SkiaSharp.Views.Desktop.Common.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

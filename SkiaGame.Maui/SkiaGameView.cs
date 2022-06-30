@@ -9,20 +9,14 @@ namespace SkiaGame.Maui;
 
 public class SkiaGameView : SKCanvasView
 {
-    private bool _initialized;
-    private Timer _timer = new();
-
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly BindableProperty EngineProperty =
-        BindableProperty.Create(nameof(Engine), typeof(Engine), typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
+        BindableProperty.Create(nameof(Engine), typeof(Engine),
+            typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
 
     private SKSize _allocatedSize;
-
-    public Engine? Engine
-    {
-        get => (Engine)GetValue(EngineProperty);
-        set => SetValue(EngineProperty, value);
-    }
+    private bool _initialized;
+    private readonly Timer _timer = new();
 
     public SkiaGameView()
     {
@@ -32,6 +26,12 @@ public class SkiaGameView : SKCanvasView
     public SkiaGameView(Engine engine)
     {
         Engine = engine;
+    }
+
+    public Engine? Engine
+    {
+        get => (Engine)GetValue(EngineProperty);
+        set => SetValue(EngineProperty, value);
     }
 
     public void EngineReinit()
@@ -63,7 +63,8 @@ public class SkiaGameView : SKCanvasView
         if (Engine == null) return;
         if (Application.Current == null) return;
         var density = Application.Current.Windows[0].DisplayDensity;
-        _allocatedSize = new SKSize((float)Math.Round(density * width), (float)Math.Round(density * height));
+        _allocatedSize = new SKSize((float)Math.Round(density * width),
+            (float)Math.Round(density * height));
         Engine.InternalSetScreenSize(_allocatedSize);
         Engine.InternalExecuteOnStart();
     }
@@ -76,7 +77,8 @@ public class SkiaGameView : SKCanvasView
         Engine?.OnPaintSurface(eventArgs);
     }
 
-    private static void OnEngineChanged(BindableObject d, object oldValue, object value)
+    private static void OnEngineChanged(BindableObject d, object oldValue,
+        object value)
     {
         if (d is not SkiaGameView view) return;
 

@@ -9,16 +9,17 @@ public class RectBouncer : Engine
 {
     private const float RectSize = 50;
 
+    private const float Speed = 100;
+
     private readonly GameObject _gameObject = new()
     {
         Primitive = Primitive.Rect,
         Size = new SKSize(50, 50)
     };
 
-    private const float Speed = 100;
-    private SKPoint _lastPosition;
     private bool _growX = true;
     private bool _growY = true;
+    private SKPoint _lastPosition;
 
 
     protected override void OnStart()
@@ -31,7 +32,7 @@ public class RectBouncer : Engine
         float nextX;
         if (_growX)
         {
-            nextX = (_lastPosition.X + Speed * timeStep);
+            nextX = _lastPosition.X + Speed * timeStep;
             if (nextX > e.Info.Width - RectSize)
             {
                 _growX = false;

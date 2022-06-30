@@ -7,6 +7,16 @@ namespace SkiaGame;
 public class GameObject
 {
     internal Engine? Engine;
+
+    public SKPaint Paint = new()
+    {
+        Color = SKColors.Black,
+        IsAntialias = true,
+        Style = SKPaintStyle.Fill,
+        TextAlign = SKTextAlign.Center,
+        TextSize = 24
+    };
+
     public RigidBody RigidBody { get; set; } = new();
     public Primitive Primitive { get; set; } = Primitive.Rect;
 
@@ -48,21 +58,13 @@ public class GameObject
         set => RigidBody.HasGravity = value;
     }
 
-    public SKPaint Paint = new()
-    {
-        Color = SKColors.Black,
-        IsAntialias = true,
-        Style = SKPaintStyle.Fill,
-        TextAlign = SKTextAlign.Center,
-        TextSize = 24
-    };
-
     public void Draw(SKCanvas canvas)
     {
         switch (Primitive)
         {
             case Primitive.Circle:
-                canvas.DrawCircle(RigidBody.Bounds.MidX, RigidBody.Bounds.MidY, Size.Width / 2, Paint);
+                canvas.DrawCircle(RigidBody.Bounds.MidX, RigidBody.Bounds.MidY,
+                    Size.Width / 2, Paint);
                 break;
             case Primitive.Rect:
                 canvas.DrawRect(RigidBody.Position.X, RigidBody.Position.Y,

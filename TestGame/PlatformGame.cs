@@ -1,7 +1,7 @@
 using System.Numerics;
-using SkiaSharp;
 using SkiaGame;
 using SkiaGame.Events;
+using SkiaSharp;
 
 namespace TestGame;
 
@@ -9,6 +9,13 @@ public class PlatformGame : Engine
 {
     private const float GroundHeight = 30;
     private const float CharDiameter = 40;
+
+    private readonly GameObject _char = new()
+    {
+        Primitive = Primitive.Circle,
+        Diameter = CharDiameter,
+        Color = SKColors.Crimson
+    };
 
     private readonly GameObject _ground = new()
     {
@@ -18,16 +25,10 @@ public class PlatformGame : Engine
         Color = SKColors.Peru
     };
 
-    private readonly GameObject _char = new()
-    {
-        Primitive = Primitive.Circle,
-        Diameter = CharDiameter,
-        Color = SKColors.Crimson
-    };
-
     protected override void OnStart()
     {
-        _char.Position = new Vector2(10, ScreenSize.Height - CharDiameter - GroundHeight - 5);
+        _char.Position = new Vector2(10,
+            ScreenSize.Height - CharDiameter - GroundHeight - 5);
         AddToEngine(_ground);
         AddToEngine(_char);
     }

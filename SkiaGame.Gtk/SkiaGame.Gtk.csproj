@@ -9,21 +9,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="**\*.glade" />
-        <EmbeddedResource Include="**\*.glade" LogicalName="%(Filename)%(Extension)" />
+        <None Remove="**\*.glade"/>
+        <EmbeddedResource Include="**\*.glade" LogicalName="%(Filename)%(Extension)"/>
     </ItemGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="GtkSharp" Version="3.24.24.38" />
-        <PackageReference Include="SkiaSharp" Version="2.88.0" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0" />
-        <PackageReference Include="SkiaSharp.Views.Gtk3" Version="2.88.0" />
+        <PackageReference Include="GtkSharp" Version="3.24.24.38"/>
+        <PackageReference Include="SkiaSharp" Version="2.88.0"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0"/>
+        <PackageReference Include="SkiaSharp.Views.Gtk3" Version="2.88.0"/>
     </ItemGroup>
 
 
     <ItemGroup>
-      <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -24,7 +24,7 @@ public enum KeyCode
     KP_4 = 6,
     Key5 = 7,
     Key_5 = 7,
-    KP_5 =7,
+    KP_5 = 7,
     Key6 = 8,
     Key_6 = 8,
     KP_6 = 8,

@@ -4,26 +4,25 @@ namespace SkiaGame.Physics;
 
 internal class PhysicsEngine
 {
-    public int PhysicsTimeStep { get; set; } = 30;
-    public float Gravity { get; set; } = 9.81f;
+    //Lista de corpos para a fisica
+    private readonly List<RigidBody> _bodies = new();
+
+    //Ultima vez em que o tempo foi medido para a fisica
+    private DateTime _physicsLastTime = DateTime.Now;
+    //Tarefa da Engine Fisica
+
+    public Action<float> OnPhysicsUpdate = _ => { };
 
     internal PhysicsEngine()
     {
         Task.Run(PhysicsTask);
     }
 
-    //Ultima vez em que o tempo foi medido para a fisica
-    private DateTime _physicsLastTime = DateTime.Now;
-
-    //Lista de corpos para a fisica
-    private readonly List<RigidBody> _bodies = new();
-    //Tarefa da Engine Fisica
-
-    public Action<float> OnPhysicsUpdate = _ => { };
+    public int PhysicsTimeStep { get; set; } = 30;
+    public float Gravity { get; set; } = 9.81f;
 
     public void AddBody(RigidBody rigidBody)
     {
-        
         lock (_bodies)
         {
             if (_bodies.Contains(rigidBody))
@@ -40,7 +39,9 @@ internal class PhysicsEngine
     {
         for (;;)
         {
-            var timeStep = (float)((DateTime.Now - _physicsLastTime).TotalMilliseconds) / 1000.0f;
+            var timeStep =
+                (float)(DateTime.Now - _physicsLastTime).TotalMilliseconds /
+                1000.0f;
             lock (_bodies)
             {
                 foreach (var body in _bodies)
@@ -48,7 +49,8 @@ internal class PhysicsEngine
                     if (!body.ReactToCollision && !body.HasGravity) continue;
                     var collided = false;
                     if (body.ReactToCollision &&
-                        _bodies.Where(other => other != body).Any(other => body.Bounds.IntersectsWith(other.Bounds)))
+                        _bodies.Where(other => other != body).Any(other =>
+                            body.Bounds.IntersectsWith(other.Bounds)))
                     {
                         collided = true;
                         body.Speed = -body.Elasticity * body.Speed;

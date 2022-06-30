@@ -1,5 +1,4 @@
 using SkiaGame;
-using SkiaSharp;
 
 namespace TestGame;
 

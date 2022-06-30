@@ -1,8 +1,9 @@
 // ReSharper disable InconsistentNaming
 
 namespace SkiaGame.Input;
+
 /// <summary>
-/// Somente para Referencia por enquanto
+///     Somente para Referencia por enquanto
 /// </summary>
 public enum LinuxSupportedKeys
 {
@@ -76,5 +77,5 @@ public enum LinuxSupportedKeys
     MetaL = 65511, // 0x0000FFE7
     MetaR = 65512, // 0x0000FFE8
     AltL = 65513, // 0x0000FFE9
-    AltR = 65514, // 0x0000FFEA
+    AltR = 65514 // 0x0000FFEA
 }

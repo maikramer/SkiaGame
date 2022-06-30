@@ -5,7 +5,7 @@ namespace SkiaGame;
 public static class GameObjectEx
 {
     /// <summary>
-    /// Centraliza o Objeto no centro da tela
+    ///     Centraliza o Objeto no centro da tela
     /// </summary>
     /// <param name="gameObject"></param>
     public static void CenterXy(this GameObject gameObject)
@@ -13,7 +13,8 @@ public static class GameObjectEx
         var engine = gameObject.Engine;
         if (engine == null)
         {
-            Console.WriteLine("Primeiro você deve adicionar o objeto a engine antes de usar CenterXy");
+            Console.WriteLine(
+                "Primeiro você deve adicionar o objeto a engine antes de usar CenterXy");
             return;
         }
 
@@ -21,11 +22,12 @@ public static class GameObjectEx
         var centerScreenY = engine.ScreenSize.Height / 2.0f;
         var halfObjX = gameObject.Size.Width / 2;
         var halfObjY = gameObject.Size.Height / 2;
-        gameObject.Position = new Vector2(centerScreenX - halfObjX, centerScreenY - halfObjY);
+        gameObject.Position = new Vector2(centerScreenX - halfObjX,
+            centerScreenY - halfObjY);
     }
 
     /// <summary>
-    /// Centraliza o objeto no centro da tela no eixo X somente
+    ///     Centraliza o objeto no centro da tela no eixo X somente
     /// </summary>
     /// <param name="gameObject"></param>
     public static void CenterX(this GameObject gameObject)
@@ -33,7 +35,8 @@ public static class GameObjectEx
         var engine = gameObject.Engine;
         if (engine == null)
         {
-            Console.WriteLine("Primeiro você deve adicionar o objeto a engine antes de usar CenterX");
+            Console.WriteLine(
+                "Primeiro você deve adicionar o objeto a engine antes de usar CenterX");
             return;
         }
 
@@ -46,7 +49,7 @@ public static class GameObjectEx
     }
 
     /// <summary>
-    /// Centraliza o Objeto no centro da tela no eixo Y somente
+    ///     Centraliza o Objeto no centro da tela no eixo Y somente
     /// </summary>
     /// <param name="gameObject"></param>
     public static void CenterY(this GameObject gameObject)
@@ -54,7 +57,8 @@ public static class GameObjectEx
         var engine = gameObject.Engine;
         if (engine == null)
         {
-            Console.WriteLine("Primeiro você deve adicionar o objeto a engine antes de usar CenterY");
+            Console.WriteLine(
+                "Primeiro você deve adicionar o objeto a engine antes de usar CenterY");
             return;
         }
 
@@ -67,7 +71,7 @@ public static class GameObjectEx
     }
 
     /// <summary>
-    /// Seta a posição em X do Objeto
+    ///     Seta a posição em X do Objeto
     /// </summary>
     /// <param name="gameObject"></param>
     /// <param name="x"></param>
@@ -80,7 +84,7 @@ public static class GameObjectEx
     }
 
     /// <summary>
-    /// Seta a posição em Y do Objeto
+    ///     Seta a posição em Y do Objeto
     /// </summary>
     /// <param name="gameObject"></param>
     /// <param name="y"></param>
