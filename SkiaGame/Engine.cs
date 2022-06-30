@@ -1,22 +1,27 @@
 using System.Numerics;
+using SkiaGame.Events;
+using SkiaGame.Input;
 using SkiaGame.Physics;
 using SkiaSharp;
+
+// ReSharper disable MemberCanBeProtected.Global
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace SkiaGame;
 
 public abstract class Engine
 {
-    private static Engine? _instance;
+    private readonly PhysicsEngine _physicsEngine;
+    public TouchKeys TouchKeys { get; }
+    public bool DrawTouchKeys { get; set; } = true;
 
-    /// <summary>
-    /// Retorna uma instancia da Engine
-    /// </summary>
-    public Engine? Instance => _instance;
+    public Mouse Mouse { get; } = new();
 
     /// <summary>
     /// Obtem o Tamanho da tela
     /// </summary>
-    public SKSize ScreenSize { get; protected set; }
+    public SKSize ScreenSize { get; private set; }
 
     /// <summary>
     /// Taxa de Quadros por segundo
@@ -24,9 +29,13 @@ public abstract class Engine
     public int FrameRate { get; set; } = 60;
 
     /// <summary>
-    /// Espaço de tempo em que a fisica ocorre, quanto menor o tempo, mais precisa, e mais custosa.
+    /// Espaço de tempo em que a fisica ocorre, quanto menor o tempo, mais precisa, e mais custosa. Default:30ms
     /// </summary>
-    public int PhysicsTimeStep { get; set; } = 30;
+    public int PhysicsTimeStep
+    {
+        get => _physicsEngine.PhysicsTimeStep;
+        set => _physicsEngine.PhysicsTimeStep = value;
+    }
 
     /// <summary>
     /// Essa é a cor em que a tela é limpa antes de desenhar os objetos
@@ -34,32 +43,39 @@ public abstract class Engine
     public SKColor CLearColor { get; set; } = SKColors.White;
 
     /// <summary>
-    /// Aceleração da Gravidade
+    /// Aceleração da Gravidade : Default 9.81m/s²
     /// </summary>
-    public float Gravity { get; set; } = 9.81f;
+    public float Gravity
+    {
+        get => _physicsEngine.Gravity;
+        set => _physicsEngine.Gravity = value;
+    }
+
+    /// <summary>
+    /// Evento que Ocorre quando uma tecla virtual é pressionada ou solta
+    /// </summary>
+    public event EventHandler<TouchKeyEventArgs> OnTouchKeyChanged = (_, _) => { };
+
 
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
-
-    //Ultima vez em que o tempo foi medido para a fisica
-    private DateTime _physicsLastTime = DateTime.Now;
-
-    //Lista de corpos para a fisica
-    private readonly List<RigidBody> _bodies = new();
 
     //Lista de corpos para desenho
     private readonly List<GameObject> _drawQueue = new();
 
     protected Engine()
     {
-        Task.Run(PhysicsEngine);
-        _instance = this;
+        _physicsEngine = new PhysicsEngine
+        {
+            OnPhysicsUpdate = OnPhysicsUpdate
+        };
+        TouchKeys = new TouchKeys();
     }
 
     private void InitObjToEngine(GameObject gameObject)
     {
-        if (gameObject._engine != null) return;
-        gameObject._engine = _instance;
+        if (gameObject.Engine != null) return;
+        gameObject.Engine = this;
     }
 
     /// <summary>
@@ -80,16 +96,7 @@ public abstract class Engine
     public void AddPhysics(GameObject gameObject)
     {
         InitObjToEngine(gameObject);
-        lock (_bodies)
-        {
-            if (_bodies.Contains(gameObject.RigidBody))
-            {
-                Console.WriteLine("Tentando ReAdicionar objeto a fisica!!");
-                return;
-            }
-
-            _bodies.Add(gameObject.RigidBody);
-        }
+        _physicsEngine.AddBody(gameObject.RigidBody);
     }
 
     /// <summary>
@@ -128,41 +135,39 @@ public abstract class Engine
         OnStart();
     }
 
-    //Tarefa da Engine Fisica
-    private async Task PhysicsEngine()
+    public void InternalSetMouseState(MouseInfo info)
     {
-        for (;;)
+        Mouse.MouseState[info.Button] = info;
+    }
+
+    public void InternalTouchPress(SkTouchEventArgs args)
+    {
+        var key = TouchKeys.VerifyTouchCollision(args.Position);
+        if (key != TouchKey.None)
         {
-            var timeStep = (float)((DateTime.Now - _physicsLastTime).TotalMilliseconds) / 1000.0f;
-            lock (_bodies)
-            {
-                foreach (var body in _bodies)
-                {
-                    if (!body.ReactToCollision && !body.HasGravity) continue;
-                    var collided = false;
-                    if (body.ReactToCollision &&
-                        _bodies.Where(other => other != body).Any(other => body.Bounds.IntersectsWith(other.Bounds)))
-                    {
-                        collided = true;
-                        body.Speed = -body.Elasticity * body.Speed;
-                        body.Update(timeStep);
-                    }
-
-                    if (collided) break;
-                    body.Speed += Gravity * new Vector2(0, 1) * timeStep;
-                    body.Update(timeStep);
-                }
-            }
-
-
-            OnPhysicsUpdate(timeStep);
-
-            _physicsLastTime = DateTime.Now;
-            await Task.Delay(PhysicsTimeStep);
+            Console.WriteLine($"Tecla {key} pressionada");
+            OnTouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, TouchKeyEventType.Press));
         }
 
-        // ReSharper disable once FunctionNeverReturns
+        Console.WriteLine($"Touch em {args.Position.X},{args.Position.Y}");
     }
+
+    public void InternalTouchRelease(SkTouchEventArgs args)
+    {
+        var key = TouchKeys.VerifyTouchCollision(args.Position);
+        if (key != TouchKey.None)
+        {
+            Console.WriteLine($"Tecla {key} soltada");
+            OnTouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, TouchKeyEventType.Release));
+        }
+        Console.WriteLine($"Touch Release em {args.Position.X},{args.Position.Y}");
+    }
+
+    public void InternalKeyPress(SkKeyPressEventArgs args)
+    {
+        Console.WriteLine($"Tecla {args.KeyCode} pressionada");
+    }
+
 
     /// <summary>
     /// Este é o evento onde os objetos são desenhados na tela.
@@ -172,8 +177,13 @@ public abstract class Engine
     {
         ScreenSize = new SKSize(e.Info.Width, e.Info.Height);
         e.Surface.Canvas.Clear(CLearColor);
-        var timeStep = (float)((DateTime.Now - _lastTime).TotalMilliseconds) / 1000.0f;
+        var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds / 1000.0f;
         OnUpdate(e, timeStep);
+        if (DrawTouchKeys)
+        {
+            TouchKeys.DrawFromCenter(e.Surface.Canvas, new Vector2(120, e.Info.Height - 120));
+        }
+
         lock (_drawQueue)
         {
             foreach (var gameObject in _drawQueue)
@@ -184,6 +194,7 @@ public abstract class Engine
 
         _lastTime = DateTime.Now;
     }
+
 
     /// <summary>
     /// Esta função é chamada sempre que o jogo é iniciado.

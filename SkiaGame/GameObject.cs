@@ -6,7 +6,7 @@ namespace SkiaGame;
 
 public class GameObject
 {
-    internal Engine? _engine;
+    internal Engine? Engine;
     public RigidBody RigidBody { get; set; } = new();
     public Primitive Primitive { get; set; } = Primitive.Rect;
 

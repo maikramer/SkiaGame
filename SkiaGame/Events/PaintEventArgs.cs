@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace SkiaGame;
+namespace SkiaGame.Events;
 
 public class PaintEventArgs : EventArgs
 {

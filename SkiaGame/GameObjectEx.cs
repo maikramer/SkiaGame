@@ -10,7 +10,7 @@ public static class GameObjectEx
     /// <param name="gameObject"></param>
     public static void CenterXy(this GameObject gameObject)
     {
-        var engine = gameObject._engine;
+        var engine = gameObject.Engine;
         if (engine == null)
         {
             Console.WriteLine("Primeiro você deve adicionar o objeto a engine antes de usar CenterXy");
@@ -30,7 +30,7 @@ public static class GameObjectEx
     /// <param name="gameObject"></param>
     public static void CenterX(this GameObject gameObject)
     {
-        var engine = gameObject._engine;
+        var engine = gameObject.Engine;
         if (engine == null)
         {
             Console.WriteLine("Primeiro você deve adicionar o objeto a engine antes de usar CenterX");
@@ -51,7 +51,7 @@ public static class GameObjectEx
     /// <param name="gameObject"></param>
     public static void CenterY(this GameObject gameObject)
     {
-        var engine = gameObject._engine;
+        var engine = gameObject.Engine;
         if (engine == null)
         {
             Console.WriteLine("Primeiro você deve adicionar o objeto a engine antes de usar CenterY");
