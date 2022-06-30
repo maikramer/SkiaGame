@@ -74,4 +74,9 @@ public class RectBouncer : Engine
         _lastPosition.X = nextX;
         _lastPosition.Y = nextY;
     }
+
+    protected override void OnPhysicsUpdate(float timeStep)
+    {
+        
+    }
 }

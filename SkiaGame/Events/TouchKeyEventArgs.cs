@@ -1,6 +1,6 @@
 namespace SkiaGame.Events;
 
-public enum EventTouchKey
+public enum TouchKeyEventCode
 {
     None,
     Left,
@@ -18,9 +18,9 @@ public enum TouchKeyEventType
 public class TouchKeyEventArgs : EventArgs
 {
     public TouchKeyEventType EventType;
-    public EventTouchKey Key;
+    public TouchKeyEventCode Key;
 
-    public TouchKeyEventArgs(EventTouchKey key, TouchKeyEventType eventType)
+    public TouchKeyEventArgs(TouchKeyEventCode key, TouchKeyEventType eventType)
     {
         Key = key;
         EventType = eventType;

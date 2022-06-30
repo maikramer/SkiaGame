@@ -22,11 +22,9 @@ public abstract class Engine
 
     protected Engine()
     {
-        _physicsEngine = new PhysicsEngine
-        {
-            OnPhysicsUpdate = OnPhysicsUpdate
-        };
         TouchKeys = new TouchKeys();
+        _physicsEngine = new PhysicsEngine();
+        _physicsEngine.OnPhysicsUpdate += OnPhysicsUpdate;
     }
 
     public TouchKeys TouchKeys { get; }
@@ -70,9 +68,7 @@ public abstract class Engine
     /// <summary>
     ///     Evento que Ocorre quando uma tecla virtual é pressionada ou solta
     /// </summary>
-    public event EventHandler<TouchKeyEventArgs> OnTouchKeyChanged = (_, _) =>
-    {
-    };
+    public event EventHandler<TouchKeyEventArgs> TouchKeyChanged = (_, _) => { };
 
     private void InitObjToEngine(GameObject gameObject)
     {
@@ -122,6 +118,18 @@ public abstract class Engine
     }
 
     /// <summary>
+    /// Adiciona uma força para agir no objeto. Deve ser chamado de dentro de <see cref="OnPhysicsUpdate"/>
+    /// </summary>
+    /// <param name="direction">Direção da força</param>
+    /// <param name="strength">Intensidade</param>
+    /// <param name="gameObject">Objeto em que a força irá agir</param>
+    /// <param name="timestep">TimeStep, somente repasse</param>
+    public void AddForce(Vector2 direction, float strength, GameObject gameObject, float timestep)
+    {
+        _physicsEngine.AddForce(direction, strength, gameObject, timestep);
+    }
+
+    /// <summary>
     ///     Para uso interno da plataforma, não deveria ser usado por enquanto pois não tem efeito em redimensionamento
     /// </summary>
     /// <param name="size"></param>
@@ -145,11 +153,11 @@ public abstract class Engine
 
     public void InternalTouchPress(SkTouchEventArgs args)
     {
-        EventTouchKey key = TouchKeys.VerifyTouchCollision(args.Position);
-        if (key != EventTouchKey.None)
+        var key = TouchKeys.VerifyTouchCollision(args.Position, true);
+        if (key != TouchKeyEventCode.None)
         {
             Console.WriteLine($"Tecla {key} pressionada");
-            OnTouchKeyChanged.Invoke(this,
+            TouchKeyChanged.Invoke(this,
                 new TouchKeyEventArgs(key, TouchKeyEventType.Press));
         }
 
@@ -158,11 +166,11 @@ public abstract class Engine
 
     public void InternalTouchRelease(SkTouchEventArgs args)
     {
-        var key = TouchKeys.VerifyTouchCollision(args.Position);
-        if (key != EventTouchKey.None)
+        var key = TouchKeys.VerifyTouchCollision(args.Position, false);
+        if (key != TouchKeyEventCode.None)
         {
             Console.WriteLine($"Tecla {key} soltada");
-            OnTouchKeyChanged.Invoke(this,
+            TouchKeyChanged.Invoke(this,
                 new TouchKeyEventArgs(key, TouchKeyEventType.Release));
         }
 
@@ -221,7 +229,5 @@ public abstract class Engine
     ///     Esta função é chamada a cada chamada da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected virtual void OnPhysicsUpdate(float timeStep)
-    {
-    }
+    protected abstract void OnPhysicsUpdate(float timeStep);
 }

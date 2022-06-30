@@ -26,6 +26,11 @@ public class RigidBody
     public Vector2 Speed { get; set; }
 
     /// <summary>
+    /// Massa do Corpo
+    /// </summary>
+    public float Mass { get; set; } = 10;
+
+    /// <summary>
     ///     Centro do Objeto
     /// </summary>
     public Vector2 Center => new(Bounds.MidX, Bounds.MidY);

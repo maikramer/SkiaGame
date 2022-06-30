@@ -11,7 +11,7 @@ internal class PhysicsEngine
     private DateTime _physicsLastTime = DateTime.Now;
     //Tarefa da Engine Fisica
 
-    public Action<float> OnPhysicsUpdate = _ => { };
+    public event Action<float> OnPhysicsUpdate = _ => { };
 
     internal PhysicsEngine()
     {
@@ -35,6 +35,14 @@ internal class PhysicsEngine
         }
     }
 
+    public void AddForce(Vector2 direction, float strength, GameObject gameObject, float timeStep)
+    {
+        var rigidBody = gameObject.RigidBody;
+        var acc = strength / rigidBody.Mass;
+        rigidBody.Speed += direction * acc * timeStep;
+        rigidBody.Update(timeStep);
+    }
+
     private async Task PhysicsTask()
     {
         for (;;)
@@ -48,23 +56,38 @@ internal class PhysicsEngine
                 {
                     if (!body.ReactToCollision && !body.HasGravity) continue;
                     var collided = false;
+                    var hasCollisions = false;
+                    RigidBody? otherRigidBody = null;
+                    foreach (var other in _bodies)
+                    {
+                        if (other == body) continue;
+                        if (!body.Bounds.IntersectsWith(other.Bounds)) continue;
+                        hasCollisions = true;
+                        otherRigidBody = other;
+                        break;
+                    }
+
                     if (body.ReactToCollision &&
-                        _bodies.Where(other => other != body).Any(other =>
-                            body.Bounds.IntersectsWith(other.Bounds)))
+                        hasCollisions)
                     {
                         collided = true;
-                        body.Speed = -body.Elasticity * body.Speed;
+                        if (otherRigidBody != null)
+                        {
+                            body.Speed = -Math.Sign((otherRigidBody.Center - body.Center).Y) *
+                                         body.Elasticity * body.Speed;
+                        }
+
                         body.Update(timeStep);
                     }
 
                     if (collided) break;
-                    body.Speed += Gravity * new Vector2(0, 1) * timeStep;
+                    body.Speed += Gravity * Vector2.UnitY * timeStep;
                     body.Update(timeStep);
                 }
             }
 
 
-            OnPhysicsUpdate(timeStep);
+            OnPhysicsUpdate.Invoke(timeStep);
 
             _physicsLastTime = DateTime.Now;
             await Task.Delay(PhysicsTimeStep);

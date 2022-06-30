@@ -7,6 +7,12 @@ public class TouchKey
     private readonly SKPath _noModArrow;
     private SKRect _bounds;
 
+    public TouchKey(SKPath arrow)
+    {
+        _noModArrow = arrow;
+        Arrow = arrow;
+    }
+
     public SKRect Bounds
     {
         get => _bounds;
@@ -15,12 +21,6 @@ public class TouchKey
             _bounds = value;
             UpdatePosition();
         }
-    }
-
-    public TouchKey(SKPath arrow)
-    {
-        _noModArrow = arrow;
-        Arrow = arrow;
     }
 
     public SKPath Arrow { get; set; }

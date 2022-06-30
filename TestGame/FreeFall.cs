@@ -40,4 +40,9 @@ public class FreeFall : Engine
             _ball.Position = new Vector2(e.Info.Width / 2.0f, 0);
         }
     }
+
+    protected override void OnPhysicsUpdate(float timeStep)
+    {
+        
+    }
 }

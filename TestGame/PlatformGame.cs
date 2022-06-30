@@ -38,5 +38,21 @@ public class PlatformGame : Engine
         //Seta posição em Runtime, de acordo com que a pessoa altera o tamanho da tela
         _ground.Position = new Vector2(0, e.Info.Height - GroundHeight);
         _ground.Size = new SKSize(e.Info.Width, GroundHeight);
+        if (TouchKeys.Right.IsPressed)
+        {
+            _char.Position += Vector2.UnitX * 3;
+        }
+        else if (TouchKeys.Left.IsPressed)
+        {
+            _char.Position -= Vector2.UnitX * 3;
+        }
+    }
+
+    protected override void OnPhysicsUpdate(float timeStep)
+    {
+        if (TouchKeys.Up.IsPressed)
+        {
+            AddForce(-Vector2.UnitY, 1000, _char, timeStep);
+        }
     }
 }

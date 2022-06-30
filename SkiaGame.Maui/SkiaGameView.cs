@@ -14,9 +14,10 @@ public class SkiaGameView : SKCanvasView
         BindableProperty.Create(nameof(Engine), typeof(Engine),
             typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
 
+    private readonly Timer _timer = new();
+
     private SKSize _allocatedSize;
     private bool _initialized;
-    private readonly Timer _timer = new();
 
     public SkiaGameView()
     {
