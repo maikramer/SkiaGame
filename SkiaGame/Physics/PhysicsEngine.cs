@@ -30,9 +30,30 @@ public class PhysicsEngine
     //Ultima vez em que o tempo foi medido para a fisica
     private DateTime _physicsLastTime = DateTime.Now;
 
+    private float _lastTimeScale;
+
     internal PhysicsEngine()
     {
         Task.Run(PhysicsTask);
+    }
+
+    public float TimeScale { get; set; } = 1.0f;
+
+    public bool IsPaused
+    {
+        set
+        {
+            if (value)
+            {
+                _lastTimeScale = TimeScale;
+                TimeScale = 0;
+            }
+            else
+            {
+                TimeScale = _lastTimeScale;
+            }
+        }
+        get => TimeScale == 0;
     }
 
     /// <summary>
@@ -128,11 +149,16 @@ public class PhysicsEngine
     {
         for (;;)
         {
-            var timeStep =
-                (float)(DateTime.Now - _physicsLastTime).TotalMilliseconds /
-                1000.0f;
-            BeforePhysicsUpdate.Invoke(timeStep);
-            PhysicsTick(timeStep);
+            if (!IsPaused)
+            {
+                var deltaTime =
+                    (float)(DateTime.Now - _physicsLastTime).TotalMilliseconds /
+                    1000.0f;
+                deltaTime *= TimeScale;
+                BeforePhysicsUpdate.Invoke(deltaTime);
+                PhysicsTick(deltaTime);
+            }
+
             _physicsLastTime = DateTime.Now;
             await Task.Delay(PhysicsTimeStep);
         }
@@ -182,10 +208,10 @@ public class PhysicsEngine
         }
     }
 
-    public void PhysicsTick(float elapsedTime)
+    public void PhysicsTick(float deltaTime)
     {
         BroadPhaseGeneratePairs();
-        UpdatePhysics(elapsedTime);
+        UpdatePhysics(deltaTime);
         ProcessRemovalQueue();
     }
 
@@ -294,7 +320,7 @@ public class PhysicsEngine
         }
     }
 
-    private void UpdatePhysics(float dt)
+    private void UpdatePhysics(float deltaTime)
     {
         foreach (var pair in _listCollisionPairs)
         {
@@ -366,8 +392,8 @@ public class PhysicsEngine
                 if (body == null) continue;
                 lock (body)
                 {
-                    ApplyConstants(body, dt);
-                    body.Move(dt);
+                    ApplyConstants(body, deltaTime);
+                    body.Move(deltaTime);
                     DetectOutOfBounds(body);
                 }
             }

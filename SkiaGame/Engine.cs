@@ -19,6 +19,7 @@ public abstract class Engine
 
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
+    private DateTime _startTime;
 
     protected Engine()
     {
@@ -29,6 +30,8 @@ public abstract class Engine
 
     public TouchKeys TouchKeys { get; }
     public bool DrawTouchKeys { get; set; } = true;
+
+    public TimeSpan TimeSinceStart => DateTime.Now - _startTime;
 
     public Mouse Mouse { get; } = new();
 
@@ -135,6 +138,7 @@ public abstract class Engine
     public void InternalExecuteOnStart()
     {
         OnStart();
+        _startTime = DateTime.Now;
     }
 
     public void InternalSetMouseState(MouseInfo info)

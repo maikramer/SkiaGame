@@ -10,6 +10,8 @@ public class PhysicsTester : Engine
 {
     private const float GroundHeight = 30;
     private const float CharDiameter = 20;
+    private bool _notStarted = true;
+    private readonly TimeSpan _startTime = TimeSpan.FromSeconds(6);
 
     private readonly GameObject _char = new()
     {
@@ -55,6 +57,7 @@ public class PhysicsTester : Engine
 
     protected override void OnStart()
     {
+        PhysicsEngine.IsPaused = true;
         CreateAndPopulateBalls();
         _char.RigidBody.ShapeType = RigidBody.Type.Circle;
         _char.Position = new Vector2(100,
@@ -71,6 +74,12 @@ public class PhysicsTester : Engine
 
     protected override void OnUpdate(PaintEventArgs e, float timeStep)
     {
+        if (_notStarted && TimeSinceStart > _startTime)
+        {
+            _notStarted = false;
+            PhysicsEngine.IsPaused = false;
+        }
+
         //Seta posição em Runtime, de acordo com que a pessoa altera o tamanho da tela
         _ground.Position = new Vector2(0, e.Info.Height - GroundHeight);
         _ground.Size = new SKSize(e.Info.Width, GroundHeight);

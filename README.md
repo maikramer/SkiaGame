@@ -8,7 +8,8 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 
 - [x] Fazer Rodar em GTK (Linux)
 - [x] Fazer Rodar em Maui(Testado no Android por Enquanto)
-- [ ] Testar nas outras plataformas Maui
+- [x] Implementar física 2D básica
+- [x] Controles Touch (Somente GTK no momento)
 - [ ] Elaborar mais funções
 
 ## 1.1. 💻 Pré-requisitos
