@@ -16,9 +16,35 @@ public class GameObject
     };
 
     internal Engine? Engine;
+    private Primitive _primitive = Primitive.Rect;
 
     public RigidBody RigidBody { get; set; } = new();
-    public Primitive Primitive { get; set; } = Primitive.Rect;
+
+    public Primitive Primitive
+    {
+        get => _primitive;
+        set
+        {
+            switch (value)
+            {
+                case Primitive.Circle:
+                    RigidBody.ShapeType = RigidBody.Type.Circle;
+                    break;
+                case Primitive.Rect:
+                    RigidBody.ShapeType = RigidBody.Type.Box;
+                    break;
+                case Primitive.RoundRect:
+                    RigidBody.ShapeType = RigidBody.Type.Box;
+                    break;
+                case Primitive.Path:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+
+            _primitive = value;
+        }
+    }
 
     public SKSize Size
     {

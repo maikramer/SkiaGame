@@ -1,7 +1,6 @@
 using System.Numerics;
 using SkiaGame;
 using SkiaGame.Events;
-using SkiaGame.Physics;
 using SkiaSharp;
 
 namespace TestGame;
@@ -11,7 +10,11 @@ public class PhysicsTester : Engine
     private const float GroundHeight = 30;
     private const float CharDiameter = 20;
     private bool _notStarted = true;
-    private readonly TimeSpan _startTime = TimeSpan.FromSeconds(6);
+
+    /// <summary>
+    /// Começa depois de 3 Segundos
+    /// </summary>
+    private readonly TimeSpan _startTime = TimeSpan.FromSeconds(3);
 
     private readonly GameObject _char = new()
     {
@@ -31,22 +34,32 @@ public class PhysicsTester : Engine
     private void CreateAndPopulateBalls()
     {
         var rand = new Random(DateTime.Now.Millisecond);
-        for (var i = 0; i < 16; i++)
+        for (var i = 1; i < 14; i++)
         {
-            for (var j = 0; j < 12; j++)
+            for (var j = 1; j < 14; j++)
             {
+                float calcX = 0;
+                while (calcX <= 0 || calcX >= ScreenSize.Width - CharDiameter)
+                {
+                    calcX = rand.NextSingle() * ScreenSize.Width - CharDiameter / 2;
+                }
+
+                float calcY = 0;
+                while (calcY <= 0 || calcY >= ScreenSize.Height - CharDiameter)
+                {
+                    calcY = rand.NextSingle() * ScreenSize.Height - CharDiameter / 2;
+                }
+
                 var ball = new GameObject
                 {
                     Primitive = Primitive.Circle,
                     Diameter = CharDiameter,
                     Color = SKColors.Crimson,
                     Locked = false,
-                    Position = new Vector2(i * 40 + rand.Next(50),
-                        ScreenSize.Height - CharDiameter - GroundHeight - j * 50 + rand.Next(50)),
+                    Position = new Vector2(calcX, calcY),
                     RigidBody =
                     {
-                        ShapeType = RigidBody.Type.Circle,
-                        Velocity = new Vector2(rand.Next(300), rand.Next(300))
+                        Velocity = new Vector2(rand.Next(400), rand.Next(400))
                     }
                 };
 
@@ -59,7 +72,6 @@ public class PhysicsTester : Engine
     {
         PhysicsEngine.IsPaused = true;
         CreateAndPopulateBalls();
-        _char.RigidBody.ShapeType = RigidBody.Type.Circle;
         _char.Position = new Vector2(100,
             ScreenSize.Height - CharDiameter - GroundHeight - 30);
         AddToEngine(_char);

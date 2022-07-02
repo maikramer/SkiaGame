@@ -28,11 +28,25 @@ public abstract class Engine
         PhysicsEngine.BeforePhysicsUpdate += BeforePhysicsUpdate;
     }
 
+    /// <summary>
+    /// Teclado TouchScreen
+    /// </summary>
     public TouchKeys TouchKeys { get; }
+
+    /// <summary>
+    /// Desenha ou não o teclado Touch na tela
+    /// </summary>
     public bool DrawTouchKeys { get; set; } = true;
+
+    /// <summary>
+    /// Tempo desde que o programa foi iniciado
+    /// </summary>
 
     public TimeSpan TimeSinceStart => DateTime.Now - _startTime;
 
+    /// <summary>
+    /// Propriedades de Mouse
+    /// </summary>
     public Mouse Mouse { get; } = new();
 
     /// <summary>
@@ -233,4 +247,5 @@ public abstract class Engine
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
     protected abstract void BeforePhysicsUpdate(float timeStep);
+    
 }
