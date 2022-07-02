@@ -22,7 +22,7 @@ public class GameObject
 
     public SKSize Size
     {
-        get => RigidBody.Bounds.Size;
+        get => RigidBody.Size;
         set => RigidBody.SetSize(value);
     }
 
@@ -46,10 +46,10 @@ public class GameObject
         set => RigidBody.SetPosition(value);
     }
 
-    public bool ReactToCollision
+    public bool Locked
     {
-        get => RigidBody.ReactToCollision;
-        set => RigidBody.ReactToCollision = value;
+        get => RigidBody.Locked;
+        set => RigidBody.Locked = value;
     }
 
     public bool HasGravity
@@ -63,7 +63,7 @@ public class GameObject
         switch (Primitive)
         {
             case Primitive.Circle:
-                canvas.DrawCircle(RigidBody.Bounds.MidX, RigidBody.Bounds.MidY,
+                canvas.DrawCircle(RigidBody.Center.X, RigidBody.Center.Y,
                     Size.Width / 2, Paint);
                 break;
             case Primitive.Rect:

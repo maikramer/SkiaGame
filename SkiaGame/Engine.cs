@@ -14,8 +14,8 @@ public abstract class Engine
 {
     //Lista de corpos para desenho
     private readonly List<GameObject> _drawQueue = new();
-    private readonly PhysicsEngine _physicsEngine;
 
+    public readonly PhysicsEngine PhysicsEngine;
 
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
@@ -23,8 +23,8 @@ public abstract class Engine
     protected Engine()
     {
         TouchKeys = new TouchKeys();
-        _physicsEngine = new PhysicsEngine();
-        _physicsEngine.OnPhysicsUpdate += OnPhysicsUpdate;
+        PhysicsEngine = new PhysicsEngine();
+        PhysicsEngine.OnPhysicsUpdate += OnPhysicsUpdate;
     }
 
     public TouchKeys TouchKeys { get; }
@@ -47,8 +47,8 @@ public abstract class Engine
     /// </summary>
     public int PhysicsTimeStep
     {
-        get => _physicsEngine.PhysicsTimeStep;
-        set => _physicsEngine.PhysicsTimeStep = value;
+        get => PhysicsEngine.PhysicsTimeStep;
+        set => PhysicsEngine.PhysicsTimeStep = value;
     }
 
     /// <summary>
@@ -59,10 +59,10 @@ public abstract class Engine
     /// <summary>
     ///     Aceleração da Gravidade : Default 9.81m/s²
     /// </summary>
-    public float Gravity
+    public Vector2 Gravity
     {
-        get => _physicsEngine.Gravity;
-        set => _physicsEngine.Gravity = value;
+        get => PhysicsEngine.Gravity;
+        set => PhysicsEngine.Gravity = value;
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public abstract class Engine
     public void AddPhysics(GameObject gameObject)
     {
         InitObjToEngine(gameObject);
-        _physicsEngine.AddBody(gameObject.RigidBody);
+        PhysicsEngine.AddBody(gameObject.RigidBody);
     }
 
     /// <summary>
@@ -126,7 +126,6 @@ public abstract class Engine
     /// <param name="timestep">TimeStep, somente repasse</param>
     public void AddForce(Vector2 direction, float strength, GameObject gameObject, float timestep)
     {
-        _physicsEngine.AddForce(direction, strength, gameObject, timestep);
     }
 
     /// <summary>

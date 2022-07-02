@@ -1,59 +1,191 @@
+using System.Drawing;
 using System.Numerics;
+using SkiaGame.Physics.Classes;
+using SkiaGame.Physics.Structs;
 using SkiaSharp;
 
 namespace SkiaGame.Physics;
 
+public enum TouchingFace
+{
+    None,
+    Left,
+    Right,
+    Up,
+    Down
+}
+
 public class RigidBody
 {
+    public enum Type
+    {
+        Box,
+        Circle
+    }
+
     /// <summary>
-    ///     Flag que diz a fisica se o corpo reage ou não à gravidade
+    ///     Flag que diz a fisica se o corpo gera gravidade
+    /// </summary>
+    public bool GeneratesGravity { get; set; } = false;
+
+    /// <summary>
+    ///     Flag que diz a fisica se o corpo sofre gravidade
     /// </summary>
     public bool HasGravity { get; set; } = true;
 
     /// <summary>
     ///     Flag que diz à fisica se o corpo Reage a uma colisão
     /// </summary>
-    public bool ReactToCollision { get; set; } = true;
+    public bool Locked { get; set; }
 
     /// <summary>
-    ///     Módulo de elasticidade do objeto, basicamente o quanto a energia é conservada ao colidir.
+    ///     Coeficiente de Restituição do objeto, basicamente o quanto a energia é conservada ao colidir.
     /// </summary>
-    public float Elasticity { get; set; } = 0.8f;
+    public float Restitution { get; set; } = 0.95f;
 
     /// <summary>
-    ///     Velocidade atual do objeto
+    /// Massa do Corpo, se não for setada, ela sera proporcional ao tamanho do objeto
     /// </summary>
-    public Vector2 Speed { get; set; }
+    public float Mass
+    {
+        get => _forcedMass != 0 ? _forcedMass : Aabb.Area;
+        set => _forcedMass = value;
+    }
 
     /// <summary>
-    /// Massa do Corpo
+    /// Tamanho do Corpo
     /// </summary>
-    public float Mass { get; set; } = 10;
+    public SKSize Size
+    {
+        set => SetSize(value);
+        get => new(Width, Height);
+    }
+
+    /// <summary>
+    /// Largura do corpo
+    /// </summary>
+    public float Width => Aabb.Max.X - Aabb.Min.X;
+
+    /// <summary>
+    /// Altura do corpo
+    /// </summary>
+    public float Height => Aabb.Max.Y - Aabb.Min.Y;
 
     /// <summary>
     ///     Centro do Objeto
     /// </summary>
-    public Vector2 Center => new(Bounds.MidX, Bounds.MidY);
+    public Vector2 Center => new(Aabb.Min.X + Width / 2, Aabb.Min.Y + Height / 2);
 
     /// <summary>
     ///     Posição do Objeto
     /// </summary>
-    public Vector2 Position => new(Bounds.Location.X, Bounds.Location.Y);
+    public Vector2 Position
+    {
+        set => SetPosition(value);
+        get => new(Aabb.Min.X, Aabb.Min.Y);
+    }
 
     /// <summary>
-    ///     Perimetro do Objeto, utilizado na fisica e no desenho.
+    /// Perimetro utilizado no calculo de colisoes
     /// </summary>
-    public SKRect Bounds { get; set; }
+    public AABB Aabb { get; set; }
 
     /// <summary>
-    ///     Seta a Posição. A posição é dada no canto superior esquerdo.
+    /// Velocidade do corpo
+    /// </summary>
+    public Vector2 Velocity { get; set; }
+
+    /// <summary>
+    /// Coeficiente de atrito do objeto
+    /// </summary>
+    public float Friction { get; set; } = 0.9f;
+
+    /// <summary>
+    /// Inverso da massa do corpo
+    /// </summary>
+    public float MassInverse => 1 / Mass;
+
+    /// <summary>
+    /// Formato de objeto utilizado nas colisões
+    /// </summary>
+    public Type ShapeType { get; set; } = Type.Box;
+
+    private float _forcedMass;
+
+
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public Manifold LastCollision { get; internal set; } = new();
+
+    public bool Contains(PointF p)
+    {
+        if (Aabb.Max.X > p.X && p.X > Aabb.Min.X)
+        {
+            if (Aabb.Max.Y > p.Y && p.Y > Aabb.Min.Y)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void Move(float dt)
+    {
+        if (Mass >= 1000000)
+        {
+            return;
+        }
+
+        RoundSpeedToZero();
+
+        var p1 = Aabb.Min + Velocity * dt;
+        var p2 = Aabb.Max + Velocity * dt;
+        Aabb = new AABB
+        {
+            Min = p1,
+            Max = p2
+        };
+    }
+
+    private void RoundSpeedToZero()
+    {
+        var velocity = Velocity;
+        if (Math.Abs(velocity.X) + Math.Abs(velocity.Y) < .01F)
+        {
+            velocity.X = 0;
+            velocity.Y = 0;
+        }
+
+        Velocity = velocity;
+    }
+
+    public void Move(Vector2 dVector)
+    {
+        if (Locked)
+        {
+            return;
+        }
+
+        var aabb = Aabb;
+        aabb.Min += dVector;
+        aabb.Max += dVector;
+        Aabb = aabb;
+    }
+
+    /// <summary>
+    ///     Seta a Posição. A posição é dada no canto superior esquerdo. Isso não é recomendado pois quebra a física
     /// </summary>
     /// <param name="position">Posição usando um <see cref="Vector2" /></param>
     public void SetPosition(Vector2 position)
     {
-        var temp = Bounds;
-        temp.Location = new SKPoint(position.X, position.Y);
-        Bounds = temp;
+        var aabb = Aabb;
+        var width = Width;
+        var height = Height;
+        aabb.Min.X = position.X;
+        aabb.Min.Y = position.Y;
+        aabb.Max.X = position.X + width;
+        aabb.Max.Y = position.Y + height;
+        Aabb = aabb;
     }
 
     /// <summary>
@@ -62,17 +194,9 @@ public class RigidBody
     /// <param name="size">Tamanho utilizando <see cref="SKSize" /></param>
     public void SetSize(SKSize size)
     {
-        var temp = Bounds;
-        temp.Size = size;
-        Bounds = temp;
-    }
-
-    /// <summary>
-    ///     Atualiza a posição do Objeto
-    /// </summary>
-    /// <param name="timeStep"></param>
-    public void Update(float timeStep)
-    {
-        SetPosition(Position + Speed * timeStep);
+        var aabb = Aabb;
+        aabb.Max.X = aabb.Min.X + size.Width;
+        aabb.Max.Y = aabb.Min.Y + size.Height;
+        Aabb = aabb;
     }
 }

@@ -20,8 +20,7 @@ public class FreeFall : Engine
         Position = new Vector2(0, 500),
         Primitive = Primitive.Rect,
         Size = new SKSize(100, 10),
-        ReactToCollision = false,
-        HasGravity = false
+        Locked = true,
     };
 
 
