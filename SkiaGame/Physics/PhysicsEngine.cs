@@ -1,10 +1,10 @@
-using System.Numerics;
 using System.Drawing;
+using System.Numerics;
 using SkiaGame.Physics.Classes;
 using SkiaGame.Physics.Helpers;
+using SkiaSharp;
 
 // ReSharper disable MemberCanBePrivate.Global
-
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
 
@@ -14,54 +14,101 @@ public class PhysicsEngine
 {
     private const int OutOfBoundsValue = 5000;
 
+    public static readonly Queue<RigidBody?> RemovalQueue = new();
+
+    private readonly BoundingBox _boundingBox = new();
+
+    //Lista de pares de possíveis colisões
+    private readonly List<CollisionPair> _listCollisionPairs = new();
+
+    //Lista de objetos que atuam na gravidade
+    private readonly List<RigidBody?> _listGravityObjects = new();
+
+    //Lista de objetos dentro da fisica
+    private readonly List<RigidBody?> _listStaticObjects = new();
+
+    //Ultima vez em que o tempo foi medido para a fisica
+    private DateTime _physicsLastTime = DateTime.Now;
+
+    internal PhysicsEngine()
+    {
+        Task.Run(PhysicsTask);
+    }
+
     /// <summary>
-    /// Escala em que a gravidade ocorre
+    ///     Espessura da parede de contenção
+    /// </summary>
+    public float WallThickness { get; set; } = 50;
+
+    /// <summary>
+    ///     Escala em que a gravidade ocorre
     /// </summary>
     public float GravityScale { get; set; } = 1f;
 
     /// <summary>
-    /// Escala em que a gravidade entre objetos ocorre
+    ///     Escala em que a gravidade entre objetos ocorre
     /// </summary>
     public float BodiesGravityScale { get; set; } = 0.001f;
 
     /// <summary>
-    /// Diz se a gravidade entre objetos está habilitada
+    ///     Diz se a gravidade entre objetos está habilitada
     /// </summary>
 
     public bool BodiesGravityEnabled { get; set; } = false;
 
     /// <summary>
-    /// Tempo entre frames de física dado em ms
+    ///     Tempo entre frames de física dado em ms
     /// </summary>
-    public int PhysicsTimeStep { get; set; } = 30;
+    public int PhysicsTimeStep { get; set; } = 15;
 
     /// <summary>
-    /// Aceleração da gravidade dada em pixels/s²
+    ///     Aceleração da gravidade dada em pixels/s²
     /// </summary>
-    public Vector2 Gravity { get; set; } = Vector2.UnitY * 120f;
-    //Acumulador utilizado na fisica
-    private double _accumulator;
+    public Vector2 Gravity { get; set; } = Vector2.UnitY * 150f;
+
+
     //Tempo entre frames dado em segundos
     private float SecondsTimeStep => PhysicsTimeStep / 1000f;
+
     //Acumulador máximo
     private float MaxAccumulator => SecondsTimeStep * 2;
 
-    //Ultima vez em que o tempo foi medido para a fisica
-    private DateTime _physicsLastTime = DateTime.Now;
-    //Lista de pares de possíveis colisões
-    private readonly List<CollisionPair> _listCollisionPairs = new();
-    //Lista de objetos que atuam na gravidade
-    private readonly List<RigidBody?> _listGravityObjects = new();
-    //Lista de objetos dentro da fisica
-    private readonly List<RigidBody?> _listStaticObjects = new();
     /// <summary>
-    /// Evento que acontece a cada frame de fisica
+    ///     Evento que acontece a cada frame de fisica
     /// </summary>
-    public event Action<float> OnPhysicsUpdate = _ => { };
+    public event Action<float> BeforePhysicsUpdate = _ => { };
 
-    internal PhysicsEngine()
+    /// <summary>
+    ///     Atualiza o tamanho da caixa de contenção
+    /// </summary>
+    /// <param name="size"></param>
+    public void UpdateBoundingBox(SKSize size)
     {
-        Task.Run(PhysicsTask);
+        lock (_listStaticObjects)
+        {
+            _listStaticObjects.Remove(_boundingBox.Up);
+            _listStaticObjects.Remove(_boundingBox.Down);
+            _listStaticObjects.Remove(_boundingBox.Left);
+            _listStaticObjects.Remove(_boundingBox.Right);
+        }
+
+        CreateBoundingBox(size);
+    }
+
+    /// <summary>
+    ///     Cria uma caixa de contenção
+    /// </summary>
+    /// <param name="size"></param>
+    public void CreateBoundingBox(SKSize size)
+    {
+        _boundingBox.Create(WallThickness, size);
+        lock (_listStaticObjects)
+        {
+            _listStaticObjects.Add(_boundingBox.Up);
+            _listStaticObjects.Add(_boundingBox.Down);
+            _listStaticObjects.Add(_boundingBox.Left);
+            _listStaticObjects.Add(_boundingBox.Right);
+        }
     }
 
     public void AddBody(RigidBody rigidBody)
@@ -84,8 +131,8 @@ public class PhysicsEngine
             var timeStep =
                 (float)(DateTime.Now - _physicsLastTime).TotalMilliseconds /
                 1000.0f;
-            Tick(timeStep);
-            OnPhysicsUpdate.Invoke(timeStep);
+            BeforePhysicsUpdate.Invoke(timeStep);
+            PhysicsTick(timeStep);
             _physicsLastTime = DateTime.Now;
             await Task.Delay(PhysicsTimeStep);
         }
@@ -94,29 +141,36 @@ public class PhysicsEngine
 
     private IEnumerable<RigidBody?> GetMovableObjects()
     {
-        for (var i = _listStaticObjects.Count - 1; i >= 0; i--)
+        lock (_listStaticObjects)
         {
-            var obj = _listStaticObjects[i];
-            if (obj == null) continue;
-            if (!obj.Locked && obj.Mass < 1000000)
+            for (var i = _listStaticObjects.Count - 1; i >= 0; i--)
             {
-                yield return obj;
+                var obj = _listStaticObjects[i];
+                if (obj == null) continue;
+                if (!obj.Locked && obj.Mass < 1000000)
+                {
+                    yield return obj;
+                }
             }
         }
     }
 
-    public static readonly Queue<RigidBody?> RemovalQueue = new();
-
     public void FreezeStaticObjects()
     {
-        foreach (var rigidBody in _listStaticObjects)
+        lock (_listStaticObjects)
         {
-            if (rigidBody == null) continue;
-            rigidBody.Velocity = new Vector2
+            foreach (var rigidBody in _listStaticObjects)
             {
-                X = 0,
-                Y = 0
-            };
+                if (rigidBody == null) continue;
+                lock (rigidBody)
+                {
+                    rigidBody.Velocity = new Vector2
+                    {
+                        X = 0,
+                        Y = 0
+                    };
+                }
+            }
         }
     }
 
@@ -128,21 +182,11 @@ public class PhysicsEngine
         }
     }
 
-    public void Tick(double elapsedTime)
+    public void PhysicsTick(float elapsedTime)
     {
-        _accumulator += elapsedTime;
-
-        //Avoid accumulator spiral of death by clamping
-        if (_accumulator > MaxAccumulator)
-            _accumulator = MaxAccumulator;
-
-        while (_accumulator > SecondsTimeStep)
-        {
-            BroadPhaseGeneratePairs();
-            UpdatePhysics(SecondsTimeStep);
-            ProcessRemovalQueue();
-            _accumulator -= SecondsTimeStep;
-        }
+        BroadPhaseGeneratePairs();
+        UpdatePhysics(elapsedTime);
+        ProcessRemovalQueue();
     }
 
 
@@ -222,7 +266,10 @@ public class PhysicsEngine
 
     private RigidBody? RaytraceAtPoint(PointF p)
     {
-        return _listStaticObjects.FirstOrDefault(body => body != null && body.Contains(p));
+        lock (_listStaticObjects)
+        {
+            return _listStaticObjects.FirstOrDefault(body => body != null && body.Contains(p));
+        }
     }
 
     private Vector2 GetGravityVector(RigidBody? obj)
@@ -235,8 +282,15 @@ public class PhysicsEngine
         if (RemovalQueue.Count > 0)
         {
             var obj = RemovalQueue.Dequeue();
-            _listStaticObjects.Remove(obj);
-            _listGravityObjects.Remove(obj);
+            lock (_listStaticObjects)
+            {
+                _listStaticObjects.Remove(obj);
+            }
+
+            lock (_listGravityObjects)
+            {
+                _listGravityObjects.Remove(obj);
+            }
         }
     }
 
@@ -305,12 +359,18 @@ public class PhysicsEngine
             }
         }
 
-        foreach (var body in _listStaticObjects)
+        lock (_listStaticObjects)
         {
-            if (body == null) continue;
-            ApplyConstants(body, dt);
-            body.Move(dt);
-            DetectOutOfBounds(body);
+            foreach (var body in _listStaticObjects)
+            {
+                if (body == null) continue;
+                lock (body)
+                {
+                    ApplyConstants(body, dt);
+                    body.Move(dt);
+                    DetectOutOfBounds(body);
+                }
+            }
         }
     }
 
@@ -327,25 +387,28 @@ public class PhysicsEngine
     {
         _listCollisionPairs.Clear();
 
-        for (var i = 0; i < _listStaticObjects.Count; i++)
+        lock (_listStaticObjects)
         {
-            for (var j = i; j < _listStaticObjects.Count; j++)
+            for (var i = 0; i < _listStaticObjects.Count; i++)
             {
-                if (j == i)
+                for (var j = i; j < _listStaticObjects.Count; j++)
                 {
-                    continue;
-                }
+                    if (j == i)
+                    {
+                        continue;
+                    }
 
-                var a = _listStaticObjects[i];
-                var b = _listStaticObjects[j];
-                if (a == null || b == null) continue;
+                    var a = _listStaticObjects[i];
+                    var b = _listStaticObjects[j];
+                    if (a == null || b == null) continue;
 
-                var aBb = a.Aabb;
-                var aabb = b.Aabb;
+                    var aBb = a.Aabb;
+                    var aabb = b.Aabb;
 
-                if (Collision.AabbVsAabb(aBb, aabb))
-                {
-                    _listCollisionPairs.Add(new CollisionPair(a, b));
+                    if (Collision.AabbVsAabb(aBb, aabb))
+                    {
+                        _listCollisionPairs.Add(new CollisionPair(a, b));
+                    }
                 }
             }
         }

@@ -6,13 +6,14 @@ namespace SkiaGame.Input;
 
 public class TouchKeys
 {
+    private readonly List<Key> _keys = new();
+
     private readonly SKPoint[] _setaPoints =
     {
         new(0, 0), new(-0.25f, 0.25f), new(0, 0.5f), new(0, 0.375f), new(0.25f, 0.375f),
         new(0.25f, 0.125f), new(0, 0.125f), new(0, 0)
     };
 
-    private readonly List<Key> _keys = new();
     public Key Down;
 
     public Key Left;

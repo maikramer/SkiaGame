@@ -1,12 +1,11 @@
 ﻿using System.Numerics;
 
-namespace SkiaGame.Physics.Classes
+namespace SkiaGame.Physics.Classes;
+
+public class Manifold
 {
-    public class Manifold
-    {
-        public RigidBody? A;
-        public RigidBody? B;
-        public float Penetration;
-        public Vector2 Normal;
-    }
+    public RigidBody? A;
+    public RigidBody? B;
+    public Vector2 Normal;
+    public float Penetration;
 }

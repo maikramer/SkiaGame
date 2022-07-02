@@ -6,15 +6,6 @@ using SkiaSharp;
 
 namespace SkiaGame.Physics;
 
-public enum TouchingFace
-{
-    None,
-    Left,
-    Right,
-    Up,
-    Down
-}
-
 public class RigidBody
 {
     public enum Type
@@ -22,6 +13,8 @@ public class RigidBody
         Box,
         Circle
     }
+
+    private float _forcedMass;
 
     /// <summary>
     ///     Flag que diz a fisica se o corpo gera gravidade
@@ -44,7 +37,7 @@ public class RigidBody
     public float Restitution { get; set; } = 0.95f;
 
     /// <summary>
-    /// Massa do Corpo, se não for setada, ela sera proporcional ao tamanho do objeto
+    ///     Massa do Corpo, se não for setada, ela sera proporcional ao tamanho do objeto
     /// </summary>
     public float Mass
     {
@@ -53,7 +46,7 @@ public class RigidBody
     }
 
     /// <summary>
-    /// Tamanho do Corpo
+    ///     Tamanho do Corpo
     /// </summary>
     public SKSize Size
     {
@@ -62,12 +55,12 @@ public class RigidBody
     }
 
     /// <summary>
-    /// Largura do corpo
+    ///     Largura do corpo
     /// </summary>
     public float Width => Aabb.Max.X - Aabb.Min.X;
 
     /// <summary>
-    /// Altura do corpo
+    ///     Altura do corpo
     /// </summary>
     public float Height => Aabb.Max.Y - Aabb.Min.Y;
 
@@ -86,35 +79,45 @@ public class RigidBody
     }
 
     /// <summary>
-    /// Perimetro utilizado no calculo de colisoes
+    ///     Perimetro utilizado no calculo de colisoes
     /// </summary>
     public AABB Aabb { get; set; }
 
     /// <summary>
-    /// Velocidade do corpo
+    ///     Velocidade do corpo
     /// </summary>
     public Vector2 Velocity { get; set; }
 
     /// <summary>
-    /// Coeficiente de atrito do objeto
+    ///     Coeficiente de atrito do objeto
     /// </summary>
     public float Friction { get; set; } = 0.9f;
 
     /// <summary>
-    /// Inverso da massa do corpo
+    ///     Inverso da massa do corpo
     /// </summary>
     public float MassInverse => 1 / Mass;
 
     /// <summary>
-    /// Formato de objeto utilizado nas colisões
+    ///     Formato de objeto utilizado nas colisões
     /// </summary>
     public Type ShapeType { get; set; } = Type.Box;
-
-    private float _forcedMass;
 
 
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Manifold LastCollision { get; internal set; } = new();
+
+    /// <summary>
+    ///     Adiciona uma força para agir no objeto. Deve ser chamado de dentro de <see cref="BeforePhysicsUpdate" />
+    /// </summary>
+    /// <param name="direction">Direção da força</param>
+    /// <param name="strength">Intensidade</param>
+    /// <param name="rigidBody">Corpo em que agirá a força</param>
+    /// <param name="timeStep">TimeStep, somente repasse</param>
+    public void AddForce(Vector2 direction, float strength, float timeStep)
+    {
+        Velocity += direction * strength * timeStep;
+    }
 
     public bool Contains(PointF p)
     {

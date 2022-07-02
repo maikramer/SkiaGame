@@ -20,7 +20,7 @@ public class FreeFall : Engine
         Position = new Vector2(0, 500),
         Primitive = Primitive.Rect,
         Size = new SKSize(100, 10),
-        Locked = true,
+        Locked = true
     };
 
 
@@ -40,8 +40,7 @@ public class FreeFall : Engine
         }
     }
 
-    protected override void OnPhysicsUpdate(float timeStep)
+    protected override void BeforePhysicsUpdate(float timeStep)
     {
-        
     }
 }

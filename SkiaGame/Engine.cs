@@ -24,7 +24,7 @@ public abstract class Engine
     {
         TouchKeys = new TouchKeys();
         PhysicsEngine = new PhysicsEngine();
-        PhysicsEngine.OnPhysicsUpdate += OnPhysicsUpdate;
+        PhysicsEngine.BeforePhysicsUpdate += BeforePhysicsUpdate;
     }
 
     public TouchKeys TouchKeys { get; }
@@ -69,6 +69,8 @@ public abstract class Engine
     ///     Evento que Ocorre quando uma tecla virtual é pressionada ou solta
     /// </summary>
     public event EventHandler<TouchKeyEventArgs> TouchKeyChanged = (_, _) => { };
+
+    public event EventHandler<ScreenSizeChangeEventArgs> ScreenSizeChanged = (_, _) => { };
 
     private void InitObjToEngine(GameObject gameObject)
     {
@@ -117,16 +119,6 @@ public abstract class Engine
         }
     }
 
-    /// <summary>
-    /// Adiciona uma força para agir no objeto. Deve ser chamado de dentro de <see cref="OnPhysicsUpdate"/>
-    /// </summary>
-    /// <param name="direction">Direção da força</param>
-    /// <param name="strength">Intensidade</param>
-    /// <param name="gameObject">Objeto em que a força irá agir</param>
-    /// <param name="timestep">TimeStep, somente repasse</param>
-    public void AddForce(Vector2 direction, float strength, GameObject gameObject, float timestep)
-    {
-    }
 
     /// <summary>
     ///     Para uso interno da plataforma, não deveria ser usado por enquanto pois não tem efeito em redimensionamento
@@ -189,6 +181,14 @@ public abstract class Engine
     /// <param name="e"></param>
     public void OnPaintSurface(PaintEventArgs e)
     {
+        if (Math.Abs(ScreenSize.Height - e.Info.Height) > 0.1f ||
+            Math.Abs(ScreenSize.Width - e.Info.Width) > 0.1f)
+        {
+            var oldValue = ScreenSize;
+            ScreenSize = e.Info.Size;
+            ScreenSizeChanged.Invoke(this, new ScreenSizeChangeEventArgs(oldValue, ScreenSize));
+        }
+
         ScreenSize = new SKSize(e.Info.Width, e.Info.Height);
         e.Surface.Canvas.Clear(CLearColor);
         var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds /
@@ -228,5 +228,5 @@ public abstract class Engine
     ///     Esta função é chamada a cada chamada da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected abstract void OnPhysicsUpdate(float timeStep);
+    protected abstract void BeforePhysicsUpdate(float timeStep);
 }

@@ -6,9 +6,7 @@ namespace SkiaGame;
 
 public class GameObject
 {
-    internal Engine? Engine;
-
-    public SKPaint Paint = new()
+    public readonly SKPaint Paint = new()
     {
         Color = SKColors.Black,
         IsAntialias = true,
@@ -16,6 +14,8 @@ public class GameObject
         TextAlign = SKTextAlign.Center,
         TextSize = 24
     };
+
+    internal Engine? Engine;
 
     public RigidBody RigidBody { get; set; } = new();
     public Primitive Primitive { get; set; } = Primitive.Rect;
@@ -60,25 +60,28 @@ public class GameObject
 
     public void Draw(SKCanvas canvas)
     {
-        switch (Primitive)
+        lock (RigidBody)
         {
-            case Primitive.Circle:
-                canvas.DrawCircle(RigidBody.Center.X, RigidBody.Center.Y,
-                    Size.Width / 2, Paint);
-                break;
-            case Primitive.Rect:
-                canvas.DrawRect(RigidBody.Position.X, RigidBody.Position.Y,
-                    Size.Width, Size.Height, Paint);
-                break;
-            case Primitive.RoundRect:
-                canvas.DrawRoundRect(RigidBody.Position.X, RigidBody.Position.Y,
-                    Size.Width, Size.Height,
-                    RoundRectCornerRadius.X, RoundRectCornerRadius.Y, Paint);
-                break;
-            case Primitive.Path:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            switch (Primitive)
+            {
+                case Primitive.Circle:
+                    canvas.DrawCircle(RigidBody.Center.X, RigidBody.Center.Y,
+                        Size.Width / 2, Paint);
+                    break;
+                case Primitive.Rect:
+                    canvas.DrawRect(RigidBody.Position.X, RigidBody.Position.Y,
+                        Size.Width, Size.Height, Paint);
+                    break;
+                case Primitive.RoundRect:
+                    canvas.DrawRoundRect(RigidBody.Position.X, RigidBody.Position.Y,
+                        Size.Width, Size.Height,
+                        RoundRectCornerRadius.X, RoundRectCornerRadius.Y, Paint);
+                    break;
+                case Primitive.Path:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

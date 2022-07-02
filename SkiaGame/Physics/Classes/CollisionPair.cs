@@ -2,6 +2,15 @@
 
 public class CollisionPair
 {
+    public readonly RigidBody A;
+    public readonly RigidBody B;
+
+    public CollisionPair(RigidBody a, RigidBody b)
+    {
+        A = a;
+        B = b;
+    }
+
     private bool Equals(CollisionPair other)
     {
         return A.Equals(other.A) && B.Equals(other.B);
@@ -17,15 +26,6 @@ public class CollisionPair
     public override int GetHashCode()
     {
         return HashCode.Combine(A, B);
-    }
-
-    public readonly RigidBody A;
-    public readonly RigidBody B;
-
-    public CollisionPair(RigidBody a, RigidBody b)
-    {
-        A = a;
-        B = b;
     }
 
     public static bool operator ==(CollisionPair left, CollisionPair right)
