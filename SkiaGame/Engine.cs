@@ -1,5 +1,6 @@
 using System.Numerics;
 using SkiaGame.Events;
+using SkiaGame.Info;
 using SkiaGame.Input;
 using SkiaGame.Physics;
 using SkiaSharp;
@@ -19,40 +20,42 @@ public abstract class Engine
 
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
+    private bool _startExecuted;
     private DateTime _startTime;
 
     protected Engine()
     {
         TouchKeys = new TouchKeys();
-        PhysicsEngine = new PhysicsEngine();
+        PhysicsEngine = new PhysicsEngine(this);
         PhysicsEngine.BeforePhysicsUpdate += BeforePhysicsUpdate;
     }
 
     /// <summary>
-    /// Teclado TouchScreen
+    ///     Teclado TouchScreen
     /// </summary>
     public TouchKeys TouchKeys { get; }
 
     /// <summary>
-    /// Desenha ou não o teclado Touch na tela
+    ///     Desenha ou não o teclado Touch na tela
     /// </summary>
     public bool DrawTouchKeys { get; set; } = true;
 
     /// <summary>
-    /// Tempo desde que o programa foi iniciado
+    ///     Tempo desde que o programa foi iniciado
     /// </summary>
 
     public TimeSpan TimeSinceStart => DateTime.Now - _startTime;
 
     /// <summary>
-    /// Propriedades de Mouse
+    ///     Propriedades de Mouse
     /// </summary>
     public Mouse Mouse { get; } = new();
 
     /// <summary>
-    ///     Obtem o Tamanho da tela
+    ///     Obtem Informações sobre a tela
     /// </summary>
-    public SKSize ScreenSize { get; private set; }
+    /// <returns></returns>
+    public ScreenInfo ScreenInfo { get; set; } = ScreenInfo.Zero;
 
     /// <summary>
     ///     Taxa de Quadros por segundo
@@ -88,6 +91,9 @@ public abstract class Engine
     public event EventHandler<TouchKeyEventArgs> TouchKeyChanged = (_, _) => { };
 
     public event EventHandler<ScreenSizeChangeEventArgs> ScreenSizeChanged = (_, _) => { };
+
+    public event EventHandler<ScreenOrientationChangeEventArgs> ScreenOrientationChanged =
+        (_, _) => { };
 
     private void InitObjToEngine(GameObject gameObject)
     {
@@ -128,7 +134,7 @@ public abstract class Engine
             if (_drawQueue.Contains(gameObject))
             {
                 Console.WriteLine(
-                    "Tentando ReAdicionar objeto a Lista de Desenho!!");
+                    "Tentando Adicionar objeto que já existe na lista de Desenho!!");
                 return;
             }
 
@@ -138,12 +144,13 @@ public abstract class Engine
 
 
     /// <summary>
-    ///     Para uso interno da plataforma, não deveria ser usado por enquanto pois não tem efeito em redimensionamento
+    ///     Para uso interno da plataforma, seta as caracteristicas basicas da tela
     /// </summary>
-    /// <param name="size"></param>
-    public void InternalSetScreenSize(SKSize size)
+    /// <param name="screenInfo"></param>
+    public void InternalSetScreenInfo(ScreenInfo screenInfo)
     {
-        ScreenSize = size;
+        if (!Equals(ScreenInfo, ScreenInfo.Zero)) return;
+        ScreenInfo = screenInfo;
     }
 
     /// <summary>
@@ -151,9 +158,12 @@ public abstract class Engine
     /// </summary>
     public void InternalExecuteOnStart()
     {
+        if (_startExecuted) return;
+        _startExecuted = true;
         OnStart();
         _startTime = DateTime.Now;
     }
+
 
     public void InternalSetMouseState(MouseInfo info)
     {
@@ -199,15 +209,8 @@ public abstract class Engine
     /// <param name="e"></param>
     public void OnPaintSurface(PaintEventArgs e)
     {
-        if (Math.Abs(ScreenSize.Height - e.Info.Height) > 0.1f ||
-            Math.Abs(ScreenSize.Width - e.Info.Width) > 0.1f)
-        {
-            var oldValue = ScreenSize;
-            ScreenSize = e.Info.Size;
-            ScreenSizeChanged.Invoke(this, new ScreenSizeChangeEventArgs(oldValue, ScreenSize));
-        }
+        UpdateScreenInfo(e);
 
-        ScreenSize = new SKSize(e.Info.Width, e.Info.Height);
         e.Surface.Canvas.Clear(CLearColor);
         var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds /
                        1000.0f;
@@ -229,6 +232,26 @@ public abstract class Engine
         _lastTime = DateTime.Now;
     }
 
+    private void UpdateScreenInfo(PaintEventArgs e)
+    {
+        if (Math.Abs(ScreenInfo.Size.Height - e.Info.Height) > 0.1f ||
+            Math.Abs(ScreenInfo.Size.Width - e.Info.Width) > 0.1f)
+        {
+            var oldSize = ScreenInfo.Size;
+            var orientation = e.Info.Size.Height > e.Info.Width
+                ? Orientation.Portrait
+                : Orientation.Landscape;
+            var oldOrientation = ScreenInfo.Orientation;
+            ScreenInfo = new ScreenInfo(e.Info.Size, orientation);
+            ScreenSizeChanged.Invoke(this, new ScreenSizeChangeEventArgs(oldSize, e.Info.Size));
+            if (orientation != oldOrientation)
+            {
+                ScreenOrientationChanged.Invoke(this,
+                    new ScreenOrientationChangeEventArgs(oldOrientation, orientation));
+            }
+        }
+    }
+
 
     /// <summary>
     ///     Esta função é chamada sempre que o jogo é iniciado.
@@ -247,5 +270,4 @@ public abstract class Engine
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
     protected abstract void BeforePhysicsUpdate(float timeStep);
-    
 }

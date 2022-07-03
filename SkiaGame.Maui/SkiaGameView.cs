@@ -1,5 +1,6 @@
 using System.Timers;
 using SkiaGame.Events;
+using SkiaGame.Info;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
@@ -15,9 +16,8 @@ public class SkiaGameView : SKCanvasView
             typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
 
     private readonly Timer _timer = new();
-
-    private SKSize _allocatedSize;
     private bool _initialized;
+    private ScreenInfo _screenInfo = ScreenInfo.Zero;
 
     public SkiaGameView()
     {
@@ -48,9 +48,20 @@ public class SkiaGameView : SKCanvasView
         }
         else
         {
-            Engine.InternalSetScreenSize(_allocatedSize);
+            Engine.InternalSetScreenInfo(_screenInfo);
             Engine.InternalExecuteOnStart();
         }
+    }
+
+    private void UpdateScreenInfo(SKSize screenSize)
+    {
+        var width = screenSize.Width;
+        var height = screenSize.Height;
+        var orientation = height > width
+            ? Orientation.Portrait
+            : Orientation.Landscape;
+        var size = new SKSize(width, height);
+        _screenInfo = new ScreenInfo(size, orientation);
     }
 
     private void FrameRateTimer(object? sender, ElapsedEventArgs e)
@@ -64,16 +75,18 @@ public class SkiaGameView : SKCanvasView
         if (Engine == null) return;
         if (Application.Current == null) return;
         var density = Application.Current.Windows[0].DisplayDensity;
-        _allocatedSize = new SKSize((float)Math.Round(density * width),
+        var screenSize = new SKSize((float)Math.Round(density * width),
             (float)Math.Round(density * height));
-        Engine.InternalSetScreenSize(_allocatedSize);
+        UpdateScreenInfo(screenSize);
+        Engine.InternalSetScreenInfo(_screenInfo);
+        //OnSizeAllocated é chamado não somente quando o programa é iniciado, mas o programa cuidará disso.
         Engine.InternalExecuteOnStart();
     }
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
-        _allocatedSize = new SKSize(e.Info.Width, e.Info.Height);
         base.OnPaintSurface(e);
+        UpdateScreenInfo(e.Info.Size);
         var eventArgs = new PaintEventArgs(e.Info, e.Surface);
         Engine?.OnPaintSurface(eventArgs);
     }

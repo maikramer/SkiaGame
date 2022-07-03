@@ -18,8 +18,8 @@ public static class GameObjectEx
             return;
         }
 
-        var centerScreenX = engine.ScreenSize.Width / 2.0f;
-        var centerScreenY = engine.ScreenSize.Height / 2.0f;
+        var centerScreenX = engine.ScreenInfo.Size.Width / 2.0f;
+        var centerScreenY = engine.ScreenInfo.Size.Height / 2.0f;
         var halfObjX = gameObject.Size.Width / 2;
         var halfObjY = gameObject.Size.Height / 2;
         gameObject.Position = new Vector2(centerScreenX - halfObjX,
@@ -40,7 +40,7 @@ public static class GameObjectEx
             return;
         }
 
-        var centerScreen = engine.ScreenSize.Width / 2.0f;
+        var centerScreen = engine.ScreenInfo.Size.Width / 2.0f;
         var halfObj = gameObject.Size.Width / 2;
         gameObject.Position = gameObject.Position with
         {
@@ -62,7 +62,7 @@ public static class GameObjectEx
             return;
         }
 
-        var centerScreen = engine.ScreenSize.Height / 2.0f;
+        var centerScreen = engine.ScreenInfo.Size.Height / 2.0f;
         var halfObj = gameObject.Size.Height / 2;
         gameObject.Position = gameObject.Position with
         {

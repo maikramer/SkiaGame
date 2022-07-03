@@ -6,6 +6,8 @@
 
 A Engine tem fisica 2D com as seguintes capacidades:
 
+> A Fisica foi baseada na implementação feita por @dankelley2 em <https://github.com/dankelley2/sharpPhysics>
+
 * Objetos podem ter Gravidade própria, de acordo com suas massas e distancias de seu centro (Gravitação de Newton).
 * Objetos podem sofrer Gravidade global (Porém em Pixels por segundo).
 * Objetos sofrem Atrito global.

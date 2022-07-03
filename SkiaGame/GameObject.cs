@@ -15,8 +15,9 @@ public class GameObject
         TextSize = 24
     };
 
-    internal Engine? Engine;
     private Primitive _primitive = Primitive.Rect;
+
+    internal Engine? Engine;
 
     public RigidBody RigidBody { get; set; } = new();
 

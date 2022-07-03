@@ -18,6 +18,8 @@ public class PhysicsEngine
 
     private readonly BoundingBox _boundingBox = new();
 
+    private readonly Engine _engine;
+
     //Lista de pares de possíveis colisões
     private readonly List<CollisionPair> _listCollisionPairs = new();
 
@@ -27,13 +29,14 @@ public class PhysicsEngine
     //Lista de objetos dentro da fisica
     private readonly List<RigidBody?> _listStaticObjects = new();
 
+    private float _lastTimeScale;
+
     //Ultima vez em que o tempo foi medido para a fisica
     private DateTime _physicsLastTime = DateTime.Now;
 
-    private float _lastTimeScale;
-
-    internal PhysicsEngine()
+    internal PhysicsEngine(Engine engine)
     {
+        _engine = engine;
         Task.Run(PhysicsTask);
     }
 
@@ -114,6 +117,14 @@ public class PhysicsEngine
         }
 
         CreateBoundingBox(size);
+    }
+
+    /// <summary>
+    ///     Cria uma caixa de contenção utilizando o tamanho total da tela
+    /// </summary>
+    public void CreateBoundingBox()
+    {
+        CreateBoundingBox(_engine.ScreenInfo.Size);
     }
 
     /// <summary>

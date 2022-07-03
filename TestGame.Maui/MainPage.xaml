@@ -4,6 +4,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maui="clr-namespace:SkiaGame.Maui;assembly=SkiaGame.Maui"
              xmlns:testGame="clr-namespace:TestGame;assembly=TestGame"
-             x:Class="TestGame.Maui.MainPage">
+             x:Class="TestGame.Maui.MainPage" NavigationPage.HasNavigationBar="False">
     <maui:SkiaGameView Engine="{Binding Engine, Source={x:Static testGame:Game.GameInstance}}" />
 </ContentPage>

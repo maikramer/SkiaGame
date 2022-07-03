@@ -9,12 +9,6 @@ public class PhysicsTester : Engine
 {
     private const float GroundHeight = 30;
     private const float CharDiameter = 20;
-    private bool _notStarted = true;
-
-    /// <summary>
-    /// Começa depois de 3 Segundos
-    /// </summary>
-    private readonly TimeSpan _startTime = TimeSpan.FromSeconds(3);
 
     private readonly GameObject _char = new()
     {
@@ -31,6 +25,13 @@ public class PhysicsTester : Engine
         Color = SKColors.Peru
     };
 
+    /// <summary>
+    ///     Começa depois de 3 Segundos
+    /// </summary>
+    private readonly TimeSpan _startTime = TimeSpan.FromSeconds(3);
+
+    private bool _notStarted = true;
+
     private void CreateAndPopulateBalls()
     {
         var rand = new Random(DateTime.Now.Millisecond);
@@ -39,15 +40,15 @@ public class PhysicsTester : Engine
             for (var j = 1; j < 14; j++)
             {
                 float calcX = 0;
-                while (calcX <= 0 || calcX >= ScreenSize.Width - CharDiameter)
+                while (calcX <= 0 || calcX >= ScreenInfo.Size.Width - CharDiameter)
                 {
-                    calcX = rand.NextSingle() * ScreenSize.Width - CharDiameter / 2;
+                    calcX = rand.NextSingle() * ScreenInfo.Size.Width - CharDiameter / 2;
                 }
 
                 float calcY = 0;
-                while (calcY <= 0 || calcY >= ScreenSize.Height - CharDiameter)
+                while (calcY <= 0 || calcY >= ScreenInfo.Size.Height - CharDiameter)
                 {
-                    calcY = rand.NextSingle() * ScreenSize.Height - CharDiameter / 2;
+                    calcY = rand.NextSingle() * ScreenInfo.Size.Height - CharDiameter / 2;
                 }
 
                 var ball = new GameObject
@@ -73,10 +74,14 @@ public class PhysicsTester : Engine
         PhysicsEngine.IsPaused = true;
         CreateAndPopulateBalls();
         _char.Position = new Vector2(100,
-            ScreenSize.Height - CharDiameter - GroundHeight - 30);
+            ScreenInfo.Size.Height - CharDiameter - GroundHeight - 30);
         AddToEngine(_char);
-        PhysicsEngine.CreateBoundingBox(ScreenSize);
+        PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
         ScreenSizeChanged += OnScreenSizeChanged;
+        ScreenOrientationChanged += (_, args) =>
+        {
+            Console.WriteLine($"Orientação mudou para {args.NewValue}");
+        };
     }
 
     private void OnScreenSizeChanged(object? sender, ScreenSizeChangeEventArgs e)
