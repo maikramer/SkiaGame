@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
-        <Nullable>enable</Nullable>
-        <UseWindowsForms>true</UseWindowsForms>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>TestGame.Forms</RootNamespace>
-    </PropertyGroup>
-
     <ItemGroup>
-      <ProjectReference Include="..\SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj" />
-      <ProjectReference Include="..\TestGame\TestGame.csproj" />
+        <ProjectReference Include="..\SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj" />
+        <ProjectReference Include="..\TestGame\TestGame.csproj" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>WinExe</OutputType>
+        <RootNamespace>TestGame.Forms</RootNamespace>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+    </PropertyGroup>
 
 </Project>

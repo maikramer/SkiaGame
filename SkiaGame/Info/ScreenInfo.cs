@@ -33,8 +33,5 @@ public class ScreenInfo
         return Equals((ScreenInfo)obj);
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Size, (int)Orientation);
-    }
+    public override int GetHashCode() { return HashCode.Combine(Size, (int)Orientation); }
 }

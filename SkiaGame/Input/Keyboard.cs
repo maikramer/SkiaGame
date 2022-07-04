@@ -10,5 +10,5 @@ public class Keyboard
         internal set => KeyboardState[keyCode] = value;
     }
 
-    public bool ContainsKey(KeyCode keyCode) => KeyboardState.ContainsKey(keyCode);
+    public bool ContainsKey(KeyCode keyCode) { return KeyboardState.ContainsKey(keyCode); }
 }

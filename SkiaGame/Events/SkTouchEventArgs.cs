@@ -6,8 +6,5 @@ public class SkTouchEventArgs : EventArgs
 {
     public readonly Vector2 Position;
 
-    public SkTouchEventArgs(Vector2 position)
-    {
-        Position = position;
-    }
+    public SkTouchEventArgs(Vector2 position) { Position = position; }
 }

@@ -15,5 +15,5 @@ public class Mouse
         internal set => MouseState[button] = value;
     }
 
-    public bool ContainsKey(MouseButton button) => MouseState.ContainsKey(button);
+    public bool ContainsKey(MouseButton button) { return MouseState.ContainsKey(button); }
 }

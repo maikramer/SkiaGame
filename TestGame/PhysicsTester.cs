@@ -35,33 +35,27 @@ public class PhysicsTester : Engine
     {
         var rand = new Random(DateTime.Now.Millisecond);
         for (var i = 1; i < 14; i++)
+        for (var j = 1; j < 14; j++)
         {
-            for (var j = 1; j < 14; j++)
+            float calcX = 0;
+            while (calcX <= 0 || calcX >= ScreenInfo.Size.Width - CharDiameter)
+                calcX = rand.NextSingle() * ScreenInfo.Size.Width - CharDiameter / 2;
+
+            float calcY = 0;
+            while (calcY <= 0 || calcY >= ScreenInfo.Size.Height - CharDiameter)
+                calcY = rand.NextSingle() * ScreenInfo.Size.Height - CharDiameter / 2;
+
+            var ball = new GameObject
             {
-                float calcX = 0;
-                while (calcX <= 0 || calcX >= ScreenInfo.Size.Width - CharDiameter)
-                {
-                    calcX = rand.NextSingle() * ScreenInfo.Size.Width - CharDiameter / 2;
-                }
+                Primitive = Primitive.Circle,
+                Diameter = CharDiameter,
+                Color = SKColors.Crimson,
+                Locked = false,
+                Position = new Vector2(calcX, calcY),
+                RigidBody = { Velocity = new Vector2(rand.Next(400), rand.Next(400)) }
+            };
 
-                float calcY = 0;
-                while (calcY <= 0 || calcY >= ScreenInfo.Size.Height - CharDiameter)
-                {
-                    calcY = rand.NextSingle() * ScreenInfo.Size.Height - CharDiameter / 2;
-                }
-
-                var ball = new GameObject
-                {
-                    Primitive = Primitive.Circle,
-                    Diameter = CharDiameter,
-                    Color = SKColors.Crimson,
-                    Locked = false,
-                    Position = new Vector2(calcX, calcY),
-                    RigidBody = { Velocity = new Vector2(rand.Next(400), rand.Next(400)) }
-                };
-
-                AddToEngine(ball);
-            }
+            AddToEngine(ball);
         }
     }
 
@@ -102,20 +96,15 @@ public class PhysicsTester : Engine
     {
         if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
             Keyboard[KeyCode.W].IsPressed)
-        {
             _char.RigidBody.AddForce(-Vector2.UnitY, 1000, timeStep);
-        } else if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
-                   Keyboard[KeyCode.S].IsPressed)
-        {
+        else if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
+                 Keyboard[KeyCode.S].IsPressed)
             _char.RigidBody.AddForce(Vector2.UnitY, 1000, timeStep);
-        } else if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
-                   Keyboard[KeyCode.D].IsPressed)
-        {
+        else if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
+                 Keyboard[KeyCode.D].IsPressed)
             _char.RigidBody.AddForce(Vector2.UnitX, 1000, timeStep);
-        } else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
-                   Keyboard[KeyCode.A].IsPressed)
-        {
+        else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
+                 Keyboard[KeyCode.A].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitX, 1000, timeStep);
-        }
     }
 }

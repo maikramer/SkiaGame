@@ -6,8 +6,5 @@ public class SkKeyPressEventArgs : EventArgs
 {
     public readonly KeyCode KeyCode;
 
-    public SkKeyPressEventArgs(KeyCode windowsKeyCode)
-    {
-        KeyCode = windowsKeyCode;
-    }
+    public SkKeyPressEventArgs(KeyCode windowsKeyCode) { KeyCode = windowsKeyCode; }
 }

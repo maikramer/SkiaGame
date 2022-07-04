@@ -52,18 +52,18 @@ public abstract class Engine
     public Mouse Mouse { get; } = new();
 
     /// <summary>
-    /// Propriedades do Teclado
+    ///     Propriedades do Teclado físico
     /// </summary>
     public Keyboard Keyboard { get; } = new();
 
     /// <summary>
-    ///     Obtem Informações sobre a tela
+    ///     Obtém Informações sobre a tela
     /// </summary>
     /// <returns></returns>
     public ScreenInfo ScreenInfo { get; set; } = ScreenInfo.Zero;
 
     /// <summary>
-    ///     Taxa de Quadros por segundo
+    ///     Taxa de quadros por segundo
     /// </summary>
     public int FrameRate { get; set; } = 60;
 
@@ -82,17 +82,18 @@ public abstract class Engine
     public SKColor CLearColor { get; set; } = SKColors.White;
 
     /// <summary>
-    ///     Aceleração da Gravidade : Default 9.81m/s²
-    /// </summary>
-    public Vector2 Gravity { get => PhysicsEngine.Gravity; set => PhysicsEngine.Gravity = value; }
-
-    /// <summary>
     ///     Evento que Ocorre quando uma tecla virtual é pressionada ou solta
     /// </summary>
     public event EventHandler<TouchKeyEventArgs> TouchKeyChanged = (_, _) => { };
 
+    /// <summary>
+    ///     Evento que ocorre quando o tamanho da tela muda
+    /// </summary>
     public event EventHandler<ScreenSizeChangeEventArgs> ScreenSizeChanged = (_, _) => { };
 
+    /// <summary>
+    ///     Evento que ocorre quando a orientação da tela muda
+    /// </summary>
     public event EventHandler<ScreenOrientationChangeEventArgs> ScreenOrientationChanged =
         (_, _) => { };
 
@@ -216,16 +217,11 @@ public abstract class Engine
         var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds / 1000.0f;
         OnUpdate(e, timeStep);
         if (DrawTouchKeys)
-        {
             TouchKeys.DrawFromCenter(e.Surface.Canvas, new Vector2(120, e.Info.Height - 120));
-        }
 
         lock (_drawQueue)
         {
-            foreach (var gameObject in _drawQueue)
-            {
-                gameObject.Draw(e.Surface.Canvas);
-            }
+            foreach (var gameObject in _drawQueue) gameObject.Draw(e.Surface.Canvas);
         }
 
         _lastTime = DateTime.Now;
@@ -244,10 +240,8 @@ public abstract class Engine
             ScreenInfo = new ScreenInfo(e.Info.Size, orientation);
             ScreenSizeChanged.Invoke(this, new ScreenSizeChangeEventArgs(oldSize, e.Info.Size));
             if (orientation != oldOrientation)
-            {
                 ScreenOrientationChanged.Invoke(this,
                     new ScreenOrientationChangeEventArgs(oldOrientation, orientation));
-            }
         }
     }
 

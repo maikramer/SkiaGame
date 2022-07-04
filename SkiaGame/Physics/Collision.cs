@@ -55,21 +55,9 @@ internal static class Collision
                 {
                     // Point towards B knowing that n points from A to B
                     if (n.X < 0)
-                    {
-                        m.Normal = new Vector2
-                        {
-                            X = -1,
-                            Y = 0
-                        };
-                    }
+                        m.Normal = new Vector2 { X = -1, Y = 0 };
                     else
-                    {
-                        m.Normal = new Vector2
-                        {
-                            X = 1,
-                            Y = 0
-                        };
-                    }
+                        m.Normal = new Vector2 { X = 1, Y = 0 };
 
                     m.Penetration = xOverlap;
                     return true;
@@ -77,21 +65,9 @@ internal static class Collision
 
                 // Point toward B knowing that n points from A to B
                 if (n.Y < 0)
-                {
-                    m.Normal = new Vector2
-                    {
-                        X = 0,
-                        Y = -1
-                    };
-                }
+                    m.Normal = new Vector2 { X = 0, Y = -1 };
                 else
-                {
-                    m.Normal = new Vector2
-                    {
-                        X = 0,
-                        Y = 1
-                    };
-                }
+                    m.Normal = new Vector2 { X = 0, Y = 1 };
 
                 m.Penetration = yOverlap;
                 return true;
@@ -115,10 +91,7 @@ internal static class Collision
         r *= r;
 
 
-        if (n.LengthSquared() > r)
-        {
-            return false;
-        }
+        if (n.LengthSquared() > r) return false;
 
         // Circles have collided, now compute manifold
         var d = n.Length(); // perform actual sqrt
@@ -137,11 +110,7 @@ internal static class Collision
         // Circles are on same position
         // Choose random (but consistent) values
         m.Penetration = a.Width / 2;
-        m.Normal = new Vector2
-        {
-            X = 1,
-            Y = 0
-        };
+        m.Normal = new Vector2 { X = 1, Y = 0 };
         return true;
     }
 
@@ -183,13 +152,9 @@ internal static class Collision
             {
                 // Clamp to closest extent
                 if (closest.X > 0)
-                {
                     closest.X = xExtent;
-                }
                 else
-                {
                     closest.X = -xExtent;
-                }
             }
 
             // y axis is shorter
@@ -197,13 +162,9 @@ internal static class Collision
             {
                 // Clamp to closest extent
                 if (closest.Y > 0)
-                {
                     closest.Y = yExtent;
-                }
                 else
-                {
                     closest.Y = -yExtent;
-                }
             }
         }
 
@@ -213,10 +174,7 @@ internal static class Collision
 
         // Early out of the radius is shorter than distance to closest point and
         // Circle not inside the AABB
-        if (d > r * r && !inside)
-        {
-            return false;
-        }
+        if (d > r * r && !inside) return false;
 
         // Avoided sqrt until we needed
         d = (float)Math.Sqrt(d);
@@ -227,8 +185,7 @@ internal static class Collision
         {
             m.Normal = Vector2.Normalize(-normal);
             m.Penetration = r - d;
-        }
-        else
+        } else
         {
             //If pushing up at all, go straight up (gravity hack)
             m.Normal = Vector2.Normalize(normal);
@@ -243,17 +200,11 @@ internal static class Collision
         if (m.A == null || m.B == null) return;
         var rv = m.B.Velocity - m.A.Velocity;
 
-        if (float.IsNaN(m.Normal.X) || float.IsNaN(m.Normal.Y))
-        {
-            return;
-        }
+        if (float.IsNaN(m.Normal.X) || float.IsNaN(m.Normal.Y)) return;
 
         var velAlongNormal = Vector2.Dot(rv, m.Normal);
 
-        if (velAlongNormal > 0)
-        {
-            return;
-        }
+        if (velAlongNormal > 0) return;
 
         var e = Math.Min(m.A.Restitution, m.B.Restitution);
 
@@ -272,15 +223,9 @@ internal static class Collision
         const float percent = 0.6F; // usually 20% to 80%
         var correction = m.Normal *
                          (percent * (m.Penetration / (m.A.MassInverse + m.B.MassInverse)));
-        if (!m.A.Locked)
-        {
-            m.A.Move(-correction * m.A.MassInverse);
-        }
+        if (!m.A.Locked) m.A.Move(-correction * m.A.MassInverse);
 
-        if (!m.B.Locked)
-        {
-            m.B.Move(correction * m.B.MassInverse);
-        }
+        if (!m.B.Locked) m.B.Move(correction * m.B.MassInverse);
     }
 
     private static float Clamp(float low, float high, float val)

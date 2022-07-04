@@ -1,29 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <ItemGroup>
+        <EmbeddedResource Include="**\*.glade" LogicalName="%(Filename)%(Extension)" />
+        <None Remove="**\*.glade" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GtkSharp" Version="3.24.24.38" />
+        <PackageReference Include="SkiaSharp" Version="2.88.0" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0" />
+        <PackageReference Include="SkiaSharp.Views.Gtk3" Version="2.88.0" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
+    </ItemGroup>
+
+
     <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
         <RootNamespace>Gtk</RootNamespace>
+        <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
-
-    <ItemGroup>
-        <None Remove="**\*.glade"/>
-        <EmbeddedResource Include="**\*.glade" LogicalName="%(Filename)%(Extension)"/>
-    </ItemGroup>
-
-
-    <ItemGroup>
-        <PackageReference Include="GtkSharp" Version="3.24.24.38"/>
-        <PackageReference Include="SkiaSharp" Version="2.88.0"/>
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0"/>
-        <PackageReference Include="SkiaSharp.Views.Gtk3" Version="2.88.0"/>
-    </ItemGroup>
-
-
-    <ItemGroup>
-        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
-    </ItemGroup>
 
 </Project>

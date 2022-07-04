@@ -11,23 +11,17 @@ namespace SkiaGame.Maui;
 public class SkiaGameView : SKCanvasView
 {
     // ReSharper disable once MemberCanBePrivate.Global
-    public static readonly BindableProperty EngineProperty =
-        BindableProperty.Create(nameof(Engine), typeof(Engine),
-            typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
+    public static readonly BindableProperty EngineProperty = BindableProperty.Create(nameof(Engine),
+        typeof(Engine), typeof(SkiaGameView), null, propertyChanged: OnEngineChanged);
 
     private readonly Timer _timer = new();
     private bool _initialized;
     private ScreenInfo _screenInfo = ScreenInfo.Zero;
 
-    public SkiaGameView()
-    {
-    }
+    public SkiaGameView() { }
 
     // ReSharper disable once UnusedMember.Global
-    public SkiaGameView(Engine engine)
-    {
-        Engine = engine;
-    }
+    public SkiaGameView(Engine engine) { Engine = engine; }
 
     public Engine? Engine
     {
@@ -45,8 +39,7 @@ public class SkiaGameView : SKCanvasView
             _timer.Elapsed += FrameRateTimer;
             _timer.Start();
             _initialized = true;
-        }
-        else
+        } else
         {
             Engine.InternalSetScreenInfo(_screenInfo);
             Engine.InternalExecuteOnStart();
@@ -57,17 +50,12 @@ public class SkiaGameView : SKCanvasView
     {
         var width = screenSize.Width;
         var height = screenSize.Height;
-        var orientation = height > width
-            ? Orientation.Portrait
-            : Orientation.Landscape;
+        var orientation = height > width ? Orientation.Portrait : Orientation.Landscape;
         var size = new SKSize(width, height);
         _screenInfo = new ScreenInfo(size, orientation);
     }
 
-    private void FrameRateTimer(object? sender, ElapsedEventArgs e)
-    {
-        InvalidateSurface();
-    }
+    private void FrameRateTimer(object? sender, ElapsedEventArgs e) { InvalidateSurface(); }
 
     protected override void OnSizeAllocated(double width, double height)
     {
@@ -91,8 +79,7 @@ public class SkiaGameView : SKCanvasView
         Engine?.OnPaintSurface(eventArgs);
     }
 
-    private static void OnEngineChanged(BindableObject d, object oldValue,
-        object value)
+    private static void OnEngineChanged(BindableObject d, object oldValue, object value)
     {
         if (d is not SkiaGameView view) return;
 

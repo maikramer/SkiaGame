@@ -50,8 +50,7 @@ public class PhysicsEngine
             {
                 _lastTimeScale = TimeScale;
                 TimeScale = 0;
-            }
-            else
+            } else
             {
                 TimeScale = _lastTimeScale;
             }
@@ -122,10 +121,7 @@ public class PhysicsEngine
     /// <summary>
     ///     Cria uma caixa de contenção utilizando o tamanho total da tela
     /// </summary>
-    public void CreateBoundingBox()
-    {
-        CreateBoundingBox(_engine.ScreenInfo.Size);
-    }
+    public void CreateBoundingBox() { CreateBoundingBox(_engine.ScreenInfo.Size); }
 
     /// <summary>
     ///     Cria uma caixa de contenção
@@ -162,9 +158,8 @@ public class PhysicsEngine
         {
             if (!IsPaused)
             {
-                var deltaTime =
-                    (float)(DateTime.Now - _physicsLastTime).TotalMilliseconds /
-                    1000.0f;
+                var deltaTime = (float)(DateTime.Now - _physicsLastTime).TotalMilliseconds /
+                                1000.0f;
                 deltaTime *= TimeScale;
                 BeforePhysicsUpdate.Invoke(deltaTime);
                 PhysicsTick(deltaTime);
@@ -184,10 +179,7 @@ public class PhysicsEngine
             {
                 var obj = _listStaticObjects[i];
                 if (obj == null) continue;
-                if (!obj.Locked && obj.Mass < 1000000)
-                {
-                    yield return obj;
-                }
+                if (!obj.Locked && obj.Mass < 1000000) yield return obj;
             }
         }
     }
@@ -201,11 +193,7 @@ public class PhysicsEngine
                 if (rigidBody == null) continue;
                 lock (rigidBody)
                 {
-                    rigidBody.Velocity = new Vector2
-                    {
-                        X = 0,
-                        Y = 0
-                    };
+                    rigidBody.Velocity = new Vector2 { X = 0, Y = 0 };
                 }
             }
         }
@@ -213,10 +201,7 @@ public class PhysicsEngine
 
     public void RemoveAllMovableObjects()
     {
-        foreach (var obj in GetMovableObjects())
-        {
-            RemovalQueue.Enqueue(obj);
-        }
+        foreach (var obj in GetMovableObjects()) RemovalQueue.Enqueue(obj);
     }
 
     public void PhysicsTick(float deltaTime)
@@ -244,10 +229,7 @@ public class PhysicsEngine
     private void ApplyConstants(RigidBody? body, float dt)
     {
         if (body == null) return;
-        if (body.Locked)
-        {
-            return;
-        }
+        if (body.Locked) return;
 
         AddGravity(body, dt);
         AddFriction(body, dt);
@@ -256,10 +238,7 @@ public class PhysicsEngine
     private void AddGravity(RigidBody? body, float dt)
     {
         if (body == null) return;
-        if (body.HasGravity)
-        {
-            body.Velocity += GetGravityVector(body) * dt;
-        }
+        if (body.HasGravity) body.Velocity += GetGravityVector(body) * dt;
     }
 
     private void AddFriction(RigidBody body, float delta)
@@ -271,10 +250,7 @@ public class PhysicsEngine
     {
         var forces = new Vector2(0, 0);
         if (body == null) return Vector2.Zero;
-        if (body.Locked)
-        {
-            return forces;
-        }
+        if (body.Locked) return forces;
 
         foreach (var rigidBody in _listGravityObjects)
         {
@@ -285,17 +261,12 @@ public class PhysicsEngine
             //apply inverse square law
             float falloffMultiplier = 0;
             if (diff.LengthSquared() != 0)
-            {
                 falloffMultiplier = rigidBody.Mass / diff.LengthSquared();
-            }
 
             diff.X = (int)diff.X == 0 ? 0 : diff.X * falloffMultiplier;
             diff.Y = (int)diff.Y == 0 ? 0 : diff.Y * falloffMultiplier;
 
-            if (diff.Length() > .005F)
-            {
-                forces += diff;
-            }
+            if (diff.Length() > .005F) forces += diff;
         }
 
         return forces;
@@ -345,8 +316,7 @@ public class PhysicsEngine
             {
                 m.A = objB;
                 m.B = objA;
-            }
-            else
+            } else
             {
                 m.A = objA;
                 m.B = objB;
@@ -356,34 +326,22 @@ public class PhysicsEngine
             if (m.A.ShapeType == RigidBody.Type.Box)
             {
                 if (m.B.ShapeType == RigidBody.Type.Box)
-                {
                     //continue;
                     if (Collision.AabbVsAabb(ref m))
-                    {
                         collision = true;
-                    }
-                }
 
                 if (m.B == null) continue;
                 if (m.B.ShapeType == RigidBody.Type.Circle)
-                {
                     if (Collision.AabBvsCircle(ref m))
-                    {
                         collision = true;
-                    }
-                }
             }
 
             //Circle Circle
             else
             {
                 if (m.B.ShapeType == RigidBody.Type.Circle)
-                {
                     if (Collision.CircleVsCircle(ref m))
-                    {
                         collision = true;
-                    }
-                }
             }
 
             //Resolve Collision
@@ -415,9 +373,7 @@ public class PhysicsEngine
     {
         if (body.Center.Y is > OutOfBoundsValue or < -OutOfBoundsValue ||
             body.Center.X is > OutOfBoundsValue or < -OutOfBoundsValue)
-        {
             RemovalQueue.Enqueue(body);
-        }
     }
 
     private void BroadPhaseGeneratePairs()
@@ -427,26 +383,19 @@ public class PhysicsEngine
         lock (_listStaticObjects)
         {
             for (var i = 0; i < _listStaticObjects.Count; i++)
+            for (var j = i; j < _listStaticObjects.Count; j++)
             {
-                for (var j = i; j < _listStaticObjects.Count; j++)
-                {
-                    if (j == i)
-                    {
-                        continue;
-                    }
+                if (j == i) continue;
 
-                    var a = _listStaticObjects[i];
-                    var b = _listStaticObjects[j];
-                    if (a == null || b == null) continue;
+                var a = _listStaticObjects[i];
+                var b = _listStaticObjects[j];
+                if (a == null || b == null) continue;
 
-                    var aBb = a.Aabb;
-                    var aabb = b.Aabb;
+                var aBb = a.Aabb;
+                var aabb = b.Aabb;
 
-                    if (Collision.AabbVsAabb(aBb, aabb))
-                    {
-                        _listCollisionPairs.Add(new CollisionPair(a, b));
-                    }
-                }
+                if (Collision.AabbVsAabb(aBb, aabb))
+                    _listCollisionPairs.Add(new CollisionPair(a, b));
             }
         }
     }

@@ -1,29 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <TargetFrameworks>net6.0;net6.0-android</TargetFrameworks>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
     <ItemGroup>
-        <PackageReference Include="SkiaSharp" Version="2.88.0"/>
+        <PackageReference Include="SkiaSharp" Version="2.88.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
     </ItemGroup>
-
-    <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
-        <AndroidSdkDirectory>$(ANDROID_SDK_PATH)</AndroidSdkDirectory>
-        <AndroidNdkDirectory>$(ANDROID_NDK_PATH)</AndroidNdkDirectory>
-    </PropertyGroup>
 
     <ItemGroup>
         <Reference Include="SkiaSharp.Views.Desktop.Common">
             <HintPath>..\..\..\.nuget\packages\skiasharp.views.desktop.common\2.88.0\lib\netcoreapp3.1\SkiaSharp.Views.Desktop.Common.dll</HintPath>
         </Reference>
     </ItemGroup>
+
+    <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+        <AndroidNdkDirectory>$(ANDROID_NDK_PATH)</AndroidNdkDirectory>
+        <AndroidSdkDirectory>$(ANDROID_SDK_PATH)</AndroidSdkDirectory>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <TargetFrameworks>net6.0;net6.0-android</TargetFrameworks>
+    </PropertyGroup>
 
 </Project>

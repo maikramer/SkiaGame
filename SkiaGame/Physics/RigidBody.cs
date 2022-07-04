@@ -8,11 +8,15 @@ namespace SkiaGame.Physics;
 
 public class RigidBody
 {
+    #region Type enum
+
     public enum Type
     {
         Box,
         Circle
     }
+
+    #endregion
 
     private float _forcedMass;
 
@@ -113,22 +117,15 @@ public class RigidBody
     public bool Contains(PointF p)
     {
         if (Aabb.Max.X > p.X && p.X > Aabb.Min.X)
-        {
             if (Aabb.Max.Y > p.Y && p.Y > Aabb.Min.Y)
-            {
                 return true;
-            }
-        }
 
         return false;
     }
 
     public void Move(float dt)
     {
-        if (Mass >= 1000000)
-        {
-            return;
-        }
+        if (Mass >= 1000000) return;
 
         RoundSpeedToZero();
 
@@ -151,10 +148,7 @@ public class RigidBody
 
     public void Move(Vector2 dVector)
     {
-        if (Locked)
-        {
-            return;
-        }
+        if (Locked) return;
 
         var aabb = Aabb;
         aabb.Min += dVector;

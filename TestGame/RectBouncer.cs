@@ -13,8 +13,7 @@ public class RectBouncer : Engine
 
     private readonly GameObject _gameObject = new()
     {
-        Primitive = Primitive.Rect,
-        Size = new SKSize(50, 50)
+        Primitive = Primitive.Rect, Size = new SKSize(50, 50)
     };
 
     private bool _growX = true;
@@ -22,10 +21,7 @@ public class RectBouncer : Engine
     private SKPoint _lastPosition;
 
 
-    protected override void OnStart()
-    {
-        AddToDrawQueue(_gameObject);
-    }
+    protected override void OnStart() { AddToDrawQueue(_gameObject); }
 
     protected override void OnUpdate(PaintEventArgs e, float timeStep)
     {
@@ -38,8 +34,7 @@ public class RectBouncer : Engine
                 _growX = false;
                 nextX = e.Info.Width - RectSize;
             }
-        }
-        else
+        } else
         {
             nextX = _lastPosition.X - Speed * timeStep;
             if (nextX < 0)
@@ -58,8 +53,7 @@ public class RectBouncer : Engine
                 _growY = false;
                 nextY = e.Info.Height - RectSize;
             }
-        }
-        else
+        } else
         {
             nextY = _lastPosition.Y - Speed * timeStep;
             if (nextY < 0)
@@ -75,7 +69,5 @@ public class RectBouncer : Engine
         _lastPosition.Y = nextY;
     }
 
-    protected override void BeforePhysicsUpdate(float timeStep)
-    {
-    }
+    protected override void BeforePhysicsUpdate(float timeStep) { }
 }

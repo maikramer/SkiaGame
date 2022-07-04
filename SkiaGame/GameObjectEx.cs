@@ -22,8 +22,7 @@ public static class GameObjectEx
         var centerScreenY = engine.ScreenInfo.Size.Height / 2.0f;
         var halfObjX = gameObject.Size.Width / 2;
         var halfObjY = gameObject.Size.Height / 2;
-        gameObject.Position = new Vector2(centerScreenX - halfObjX,
-            centerScreenY - halfObjY);
+        gameObject.Position = new Vector2(centerScreenX - halfObjX, centerScreenY - halfObjY);
     }
 
     /// <summary>
@@ -42,10 +41,7 @@ public static class GameObjectEx
 
         var centerScreen = engine.ScreenInfo.Size.Width / 2.0f;
         var halfObj = gameObject.Size.Width / 2;
-        gameObject.Position = gameObject.Position with
-        {
-            X = centerScreen - halfObj
-        };
+        gameObject.Position = gameObject.Position with { X = centerScreen - halfObj };
     }
 
     /// <summary>
@@ -64,10 +60,7 @@ public static class GameObjectEx
 
         var centerScreen = engine.ScreenInfo.Size.Height / 2.0f;
         var halfObj = gameObject.Size.Height / 2;
-        gameObject.Position = gameObject.Position with
-        {
-            Y = centerScreen - halfObj
-        };
+        gameObject.Position = gameObject.Position with { Y = centerScreen - halfObj };
     }
 
     /// <summary>
@@ -77,10 +70,7 @@ public static class GameObjectEx
     /// <param name="x"></param>
     public static void SetX(this GameObject gameObject, float x)
     {
-        gameObject.Position = gameObject.Position with
-        {
-            X = x
-        };
+        gameObject.Position = gameObject.Position with { X = x };
     }
 
     /// <summary>
@@ -90,9 +80,6 @@ public static class GameObjectEx
     /// <param name="y"></param>
     public static void SetY(this GameObject gameObject, float y)
     {
-        gameObject.Position = gameObject.Position with
-        {
-            Y = y
-        };
+        gameObject.Position = gameObject.Position with { Y = y };
     }
 }

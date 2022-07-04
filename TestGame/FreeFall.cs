@@ -11,8 +11,7 @@ public class FreeFall : Engine
 
     private readonly GameObject _ball = new()
     {
-        Primitive = Primitive.Circle,
-        Diameter = CircleDiameter
+        Primitive = Primitive.Circle, Diameter = CircleDiameter
     };
 
     private readonly GameObject _racket = new()
@@ -34,13 +33,8 @@ public class FreeFall : Engine
     {
         _ball.CenterX();
         _racket.CenterX();
-        if (_ball.Position.Y > e.Info.Height)
-        {
-            _ball.Position = new Vector2(e.Info.Width / 2.0f, 0);
-        }
+        if (_ball.Position.Y > e.Info.Height) _ball.Position = new Vector2(e.Info.Width / 2.0f, 0);
     }
 
-    protected override void BeforePhysicsUpdate(float timeStep)
-    {
-    }
+    protected override void BeforePhysicsUpdate(float timeStep) { }
 }

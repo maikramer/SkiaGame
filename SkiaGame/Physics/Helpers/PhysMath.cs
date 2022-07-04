@@ -8,33 +8,17 @@ internal static class PhysMath
 {
     public static decimal DotProduct(PointF pa, PointF pb)
     {
-        decimal[] a =
-        {
-            (decimal)pa.X, (decimal)pa.Y
-        };
-        decimal[] b =
-        {
-            (decimal)pb.X, (decimal)pb.Y
-        };
+        decimal[] a = { (decimal)pa.X, (decimal)pa.Y };
+        decimal[] b = { (decimal)pb.X, (decimal)pb.Y };
         return a.Zip(b, (x, y) => x * y).Sum();
     }
 
     public static void CorrectBoundingBox(ref AABB aabb)
     {
-        var p1 = new PointF(Math.Min(aabb.Min.X, aabb.Max.X),
-            Math.Min(aabb.Min.Y, aabb.Max.Y));
-        var p2 = new PointF(Math.Max(aabb.Min.X, aabb.Max.X),
-            Math.Max(aabb.Min.Y, aabb.Max.Y));
-        aabb.Min = new Vector2
-        {
-            X = p1.X,
-            Y = p1.Y
-        };
-        aabb.Max = new Vector2
-        {
-            X = p2.X,
-            Y = p2.Y
-        };
+        var p1 = new PointF(Math.Min(aabb.Min.X, aabb.Max.X), Math.Min(aabb.Min.Y, aabb.Max.Y));
+        var p2 = new PointF(Math.Max(aabb.Min.X, aabb.Max.X), Math.Max(aabb.Min.Y, aabb.Max.Y));
+        aabb.Min = new Vector2 { X = p1.X, Y = p1.Y };
+        aabb.Max = new Vector2 { X = p2.X, Y = p2.Y };
     }
 
     public static void CorrectBoundingPoints(ref PointF p1, ref PointF p2)
@@ -53,8 +37,5 @@ internal static class PhysMath
         vector.Y = 0;
     }
 
-    public static float RadiansToDegrees(this float rads)
-    {
-        return (float)(180 / Math.PI) * rads;
-    }
+    public static float RadiansToDegrees(this float rads) { return (float)(180 / Math.PI) * rads; }
 }
