@@ -10,14 +10,16 @@ public enum Orientation
 
 public class ScreenInfo
 {
-    public static ScreenInfo Zero = new(SKSize.Empty, Orientation.Landscape);
+    public static readonly ScreenInfo Zero = new(SKSize.Empty, Orientation.Landscape, 1.0f);
     public readonly Orientation Orientation;
     public readonly SKSize Size;
+    public readonly float Density;
 
-    public ScreenInfo(SKSize size, Orientation orientation)
+    public ScreenInfo(SKSize size, Orientation orientation, float density)
     {
         Size = size;
         Orientation = orientation;
+        Density = density;
     }
 
     private bool Equals(ScreenInfo other)
@@ -33,5 +35,8 @@ public class ScreenInfo
         return Equals((ScreenInfo)obj);
     }
 
-    public override int GetHashCode() { return HashCode.Combine(Size, (int)Orientation); }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Size, (int)Orientation);
+    }
 }

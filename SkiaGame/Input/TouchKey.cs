@@ -13,6 +13,9 @@ public class TouchKey
         Arrow = arrow;
     }
 
+    /// <summary>
+    /// Perímetro da tecla touch, até onde ela se extende
+    /// </summary>
     public SKRect Bounds
     {
         get => _bounds;
@@ -23,8 +26,14 @@ public class TouchKey
         }
     }
 
+    /// <summary>
+    /// Informações sobre desenho de sua seta
+    /// </summary>
     public SKPath Arrow { get; set; }
 
+    /// <summary>
+    /// Atualiza a posição da tecla
+    /// </summary>
     public void UpdatePosition()
     {
         var arrowX = Bounds.MidX - Arrow.Bounds.Width / 2;

@@ -17,7 +17,9 @@ public static class Implementation
         var winHeight = win.Height - win.DockPadding.Top - win.DockPadding.Bottom;
         var orientation = winHeight > winWidth ? Orientation.Portrait : Orientation.Landscape;
         var size = new SKSize(winWidth, winHeight);
-        engine.InternalSetScreenInfo(new ScreenInfo(size, orientation));
+        engine.Platform.IsWindowsForms = true;
+        engine.Platform.IsDesktop = true;
+        engine.InternalSetScreenInfo(new ScreenInfo(size, orientation, 1.0f));
         engine.InternalExecuteOnStart();
 
         Application.Run(win);

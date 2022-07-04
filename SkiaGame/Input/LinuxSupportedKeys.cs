@@ -3,7 +3,7 @@
 namespace SkiaGame.Input;
 
 /// <summary>
-///     Somente para Referencia por enquanto
+///     Teclas Linux, Somente para Referencia por enquanto
 /// </summary>
 public enum LinuxSupportedKeys
 {

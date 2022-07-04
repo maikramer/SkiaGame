@@ -1,4 +1,5 @@
-﻿using GLib;
+﻿using Gdk;
+using GLib;
 using SkiaGame;
 using SkiaGame.Info;
 using SkiaSharp;
@@ -24,7 +25,9 @@ public static class Implementation
             ? SkiaGame.Info.Orientation.Portrait
             : SkiaGame.Info.Orientation.Landscape;
         var size = new SKSize(winWidth, winHeight);
-        engine.InternalSetScreenInfo(new ScreenInfo(size, orientation));
+        engine.Platform.IsDesktop = true;
+        engine.Platform.IsGtk = true;
+        engine.InternalSetScreenInfo(new ScreenInfo(size, orientation, 1.0f));
         engine.InternalExecuteOnStart();
         Application.Run();
     }

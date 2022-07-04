@@ -20,6 +20,8 @@ public class RigidBody
 
     private float _forcedMass;
 
+    public bool CanBeRayCasted { get; set; } = true;
+
     /// <summary>
     ///     Flag que diz a fisica se o corpo gera gravidade
     /// </summary>
@@ -52,7 +54,11 @@ public class RigidBody
     /// <summary>
     ///     Tamanho do Corpo
     /// </summary>
-    public SKSize Size { set => SetSize(value); get => new(Width, Height); }
+    public SKSize Size
+    {
+        set => SetSize(value);
+        get => new(Width, Height);
+    }
 
     /// <summary>
     ///     Largura do corpo
@@ -67,12 +73,20 @@ public class RigidBody
     /// <summary>
     ///     Centro do Objeto
     /// </summary>
-    public Vector2 Center => new(Aabb.Min.X + Width / 2, Aabb.Min.Y + Height / 2);
+    public Vector2 Center
+    {
+        set => SetPosition(new Vector2(value.X - Width / 2, value.Y - Height / 2));
+        get => new(Aabb.Min.X + Width / 2, Aabb.Min.Y + Height / 2);
+    }
 
     /// <summary>
     ///     Posição do Objeto
     /// </summary>
-    public Vector2 Position { set => SetPosition(value); get => new(Aabb.Min.X, Aabb.Min.Y); }
+    public Vector2 Position
+    {
+        set => SetPosition(value);
+        get => new(Aabb.Min.X, Aabb.Min.Y);
+    }
 
     /// <summary>
     ///     Perimetro utilizado no calculo de colisoes
@@ -114,6 +128,11 @@ public class RigidBody
         Velocity += direction * strength * timeStep;
     }
 
+    /// <summary>
+    /// Verifica se o ponto está dentro deste corpo
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
     public bool Contains(PointF p)
     {
         if (Aabb.Max.X > p.X && p.X > Aabb.Min.X)
@@ -131,7 +150,11 @@ public class RigidBody
 
         var p1 = Aabb.Min + Velocity * dt;
         var p2 = Aabb.Max + Velocity * dt;
-        Aabb = new AABB { Min = p1, Max = p2 };
+        Aabb = new AABB
+        {
+            Min = p1,
+            Max = p2
+        };
     }
 
     private void RoundSpeedToZero()

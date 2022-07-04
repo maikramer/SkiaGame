@@ -18,10 +18,15 @@ public class SkiaGameView : SKCanvasView
     private bool _initialized;
     private ScreenInfo _screenInfo = ScreenInfo.Zero;
 
-    public SkiaGameView() { }
+    public SkiaGameView()
+    {
+    }
 
     // ReSharper disable once UnusedMember.Global
-    public SkiaGameView(Engine engine) { Engine = engine; }
+    public SkiaGameView(Engine engine)
+    {
+        Engine = engine;
+    }
 
     public Engine? Engine
     {
@@ -29,6 +34,9 @@ public class SkiaGameView : SKCanvasView
         set => SetValue(EngineProperty, value);
     }
 
+    /// <summary>
+    /// A Pessoa não deveria Reatribuir a Engine em Runtime, isso não é muito previsível e suportado.
+    /// </summary>
     public void EngineReinit()
     {
         if (Engine == null) return;
@@ -39,8 +47,10 @@ public class SkiaGameView : SKCanvasView
             _timer.Elapsed += FrameRateTimer;
             _timer.Start();
             _initialized = true;
-        } else
+        }
+        else
         {
+            Engine.Platform.IsMaui = true;
             Engine.InternalSetScreenInfo(_screenInfo);
             Engine.InternalExecuteOnStart();
         }
@@ -52,10 +62,16 @@ public class SkiaGameView : SKCanvasView
         var height = screenSize.Height;
         var orientation = height > width ? Orientation.Portrait : Orientation.Landscape;
         var size = new SKSize(width, height);
-        _screenInfo = new ScreenInfo(size, orientation);
+        var density = 1.0f;
+        if (Application.Current != null)
+            density = Application.Current.Windows[0].DisplayDensity;
+        _screenInfo = new ScreenInfo(size, orientation, density);
     }
 
-    private void FrameRateTimer(object? sender, ElapsedEventArgs e) { InvalidateSurface(); }
+    private void FrameRateTimer(object? sender, ElapsedEventArgs e)
+    {
+        InvalidateSurface();
+    }
 
     protected override void OnSizeAllocated(double width, double height)
     {

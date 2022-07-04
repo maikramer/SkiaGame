@@ -1,12 +1,20 @@
 using SkiaGame.Info;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace SkiaGame.Events;
 
 public class ScreenOrientationChangeEventArgs : EventArgs
 {
-    public Orientation NewValue;
+    /// <summary>
+    /// Novo valor da orientação
+    /// </summary>
+    public readonly Orientation NewValue;
 
-    public Orientation OldValue;
+    /// <summary>
+    /// Valor anterior
+    /// </summary>
+    public readonly Orientation OldValue;
 
     public ScreenOrientationChangeEventArgs(Orientation oldValue, Orientation newValue)
     {

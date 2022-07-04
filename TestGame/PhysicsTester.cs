@@ -1,7 +1,9 @@
+using System.Drawing;
 using System.Numerics;
 using SkiaGame;
 using SkiaGame.Events;
 using SkiaGame.Input;
+using SkiaGame.Physics;
 using SkiaSharp;
 
 namespace TestGame;
@@ -10,6 +12,8 @@ public class PhysicsTester : Engine
 {
     private const float GroundHeight = 30;
     private const float CharDiameter = 20;
+    private RigidBody? _holdingBody;
+    private bool _lastMouseState;
 
     private readonly GameObject _char = new()
     {
@@ -21,7 +25,9 @@ public class PhysicsTester : Engine
 
     private readonly GameObject _ground = new()
     {
-        Primitive = Primitive.Rect, Locked = true, Color = SKColors.Peru
+        Primitive = Primitive.Rect,
+        Locked = true,
+        Color = SKColors.Peru
     };
 
     /// <summary>
@@ -52,7 +58,10 @@ public class PhysicsTester : Engine
                 Color = SKColors.Crimson,
                 Locked = false,
                 Position = new Vector2(calcX, calcY),
-                RigidBody = { Velocity = new Vector2(rand.Next(400), rand.Next(400)) }
+                RigidBody =
+                {
+                    Velocity = new Vector2(rand.Next(400), rand.Next(400))
+                }
             };
 
             AddToEngine(ball);
@@ -94,6 +103,8 @@ public class PhysicsTester : Engine
 
     protected override void BeforePhysicsUpdate(float timeStep)
     {
+        
+
         if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
             Keyboard[KeyCode.W].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitY, 1000, timeStep);
@@ -106,5 +117,29 @@ public class PhysicsTester : Engine
         else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
                  Keyboard[KeyCode.A].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitX, 1000, timeStep);
+    }
+
+    protected override void AfterPhysicsUpdate(float timeStep)
+    {
+        base.AfterPhysicsUpdate(timeStep);
+        if (Mouse[MouseButton.Left].IsPressed)
+        {
+            var point = (PointF)Mouse[MouseButton.Left].ClickPosition;
+            _holdingBody = PhysicsEngine.Raycast(point);
+            if (_holdingBody != null)
+            {
+                _holdingBody.Velocity = Vector2.Zero;
+                _holdingBody.Locked = true;
+                _holdingBody.Center = Mouse[MouseButton.Left].ClickPosition;
+            }
+
+            _lastMouseState = Mouse[MouseButton.Left].IsPressed;
+        }
+
+        //Soltou o botao do mouse
+        if (_lastMouseState && _holdingBody != null)
+        {
+            _holdingBody.Locked = false;
+        }
     }
 }

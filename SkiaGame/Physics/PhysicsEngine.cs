@@ -1,7 +1,6 @@
 using System.Drawing;
 using System.Numerics;
 using SkiaGame.Physics.Classes;
-using SkiaGame.Physics.Helpers;
 using SkiaSharp;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -13,6 +12,8 @@ namespace SkiaGame.Physics;
 public class PhysicsEngine
 {
     private const int OutOfBoundsValue = 5000;
+    private const float MinimalGravityVelocity = 3f;
+    private const float MinimalVelocity = 0.1f;
 
     public static readonly Queue<RigidBody?> RemovalQueue = new();
 
@@ -50,7 +51,8 @@ public class PhysicsEngine
             {
                 _lastTimeScale = TimeScale;
                 TimeScale = 0;
-            } else
+            }
+            else
             {
                 TimeScale = _lastTimeScale;
             }
@@ -101,6 +103,8 @@ public class PhysicsEngine
     /// </summary>
     public event Action<float> BeforePhysicsUpdate = _ => { };
 
+    public event Action<float> AfterPhysicsUpdate = _ => { };
+
     /// <summary>
     ///     Atualiza o tamanho da caixa de contenção
     /// </summary>
@@ -121,7 +125,10 @@ public class PhysicsEngine
     /// <summary>
     ///     Cria uma caixa de contenção utilizando o tamanho total da tela
     /// </summary>
-    public void CreateBoundingBox() { CreateBoundingBox(_engine.ScreenInfo.Size); }
+    public void CreateBoundingBox()
+    {
+        CreateBoundingBox(_engine.ScreenInfo.Size);
+    }
 
     /// <summary>
     ///     Cria uma caixa de contenção
@@ -163,6 +170,7 @@ public class PhysicsEngine
                 deltaTime *= TimeScale;
                 BeforePhysicsUpdate.Invoke(deltaTime);
                 PhysicsTick(deltaTime);
+                AfterPhysicsUpdate.Invoke(deltaTime);
             }
 
             _physicsLastTime = DateTime.Now;
@@ -193,7 +201,11 @@ public class PhysicsEngine
                 if (rigidBody == null) continue;
                 lock (rigidBody)
                 {
-                    rigidBody.Velocity = new Vector2 { X = 0, Y = 0 };
+                    rigidBody.Velocity = new Vector2
+                    {
+                        X = 0,
+                        Y = 0
+                    };
                 }
             }
         }
@@ -244,6 +256,10 @@ public class PhysicsEngine
     private void AddFriction(RigidBody body, float delta)
     {
         body.Velocity = Attenuate(body.Velocity, body.Friction * delta);
+        if (body.Velocity.Length() < MinimalVelocity)
+        {
+            body.Velocity = Vector2.Zero;
+        }
     }
 
     private Vector2 CalculatePointGravity(RigidBody? body)
@@ -256,7 +272,11 @@ public class PhysicsEngine
         {
             if (rigidBody is not { GeneratesGravity: true }) continue;
             var diff = rigidBody.Center - body.Center;
-            PhysMath.RoundToZero(ref diff, 5F);
+            if (diff.Length() < MinimalGravityVelocity)
+            {
+                diff.X = 0;
+                diff.Y = 0;
+            }
 
             //apply inverse square law
             float falloffMultiplier = 0;
@@ -272,11 +292,12 @@ public class PhysicsEngine
         return forces;
     }
 
-    private RigidBody? RaytraceAtPoint(PointF p)
+    public RigidBody? Raycast(PointF p)
     {
         lock (_listStaticObjects)
         {
-            return _listStaticObjects.FirstOrDefault(body => body != null && body.Contains(p));
+            return _listStaticObjects.FirstOrDefault(body =>
+                body is { CanBeRayCasted: true } && body.Contains(p));
         }
     }
 
@@ -316,7 +337,8 @@ public class PhysicsEngine
             {
                 m.A = objB;
                 m.B = objA;
-            } else
+            }
+            else
             {
                 m.A = objA;
                 m.B = objB;

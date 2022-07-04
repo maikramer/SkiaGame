@@ -5,6 +5,8 @@ using SkiaGame.Input;
 using SkiaGame.Physics;
 using SkiaSharp;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 // ReSharper disable MemberCanBeProtected.Global
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -28,7 +30,13 @@ public abstract class Engine
         TouchKeys = new TouchKeys();
         PhysicsEngine = new PhysicsEngine(this);
         PhysicsEngine.BeforePhysicsUpdate += BeforePhysicsUpdate;
+        PhysicsEngine.AfterPhysicsUpdate += AfterPhysicsUpdate;
     }
+
+    /// <summary>
+    /// Informações sobre a plataforma
+    /// </summary>
+    public Platform Platform { get; } = new();
 
     /// <summary>
     ///     Teclado TouchScreen
@@ -60,26 +68,19 @@ public abstract class Engine
     ///     Obtém Informações sobre a tela
     /// </summary>
     /// <returns></returns>
-    public ScreenInfo ScreenInfo { get; set; } = ScreenInfo.Zero;
+    public ScreenInfo ScreenInfo { get; internal set; } = ScreenInfo.Zero;
 
     /// <summary>
     ///     Taxa de quadros por segundo
     /// </summary>
     public int FrameRate { get; set; } = 60;
 
-    /// <summary>
-    ///     Espaço de tempo em que a fisica ocorre, quanto menor o tempo, mais precisa, e mais custosa. Default:30ms
-    /// </summary>
-    public int PhysicsTimeStep
-    {
-        get => PhysicsEngine.PhysicsTimeStep;
-        set => PhysicsEngine.PhysicsTimeStep = value;
-    }
+    public int InputFeedRate { get; set; } = 250;
 
     /// <summary>
     ///     Essa é a cor em que a tela é limpa antes de desenhar os objetos
     /// </summary>
-    public SKColor CLearColor { get; set; } = SKColors.White;
+    public SKColor ClearColor { get; set; } = SKColors.White;
 
     /// <summary>
     ///     Evento que Ocorre quando uma tecla virtual é pressionada ou solta
@@ -151,6 +152,7 @@ public abstract class Engine
     public void InternalSetScreenInfo(ScreenInfo screenInfo)
     {
         if (!Equals(ScreenInfo, ScreenInfo.Zero)) return;
+        TouchKeys.Resize(screenInfo.Density);
         ScreenInfo = screenInfo;
     }
 
@@ -166,7 +168,10 @@ public abstract class Engine
     }
 
 
-    public void InternalSetMouseState(MouseInfo info) { Mouse[info.Button] = info; }
+    public void InternalSetMouseState(MouseInfo info)
+    {
+        Mouse[info.Button] = info;
+    }
 
     public void InternalTouchPress(SkTouchEventArgs args)
     {
@@ -200,8 +205,13 @@ public abstract class Engine
 
     public void InternalKeyRelease(SkKeyPressEventArgs args)
     {
-        if (args.KeyCode == KeyCode.None || !Keyboard.ContainsKey(args.KeyCode)) return;
+        if (args.KeyCode == KeyCode.None) return;
         Keyboard[args.KeyCode] = new KeyInfo(false);
+    }
+
+    public void InternalUpdateMouseDesktop(Vector2 position)
+    {
+        Mouse.UpdatePosition(position);
     }
 
 
@@ -213,16 +223,21 @@ public abstract class Engine
     {
         UpdateScreenInfo(e);
 
-        e.Surface.Canvas.Clear(CLearColor);
+        e.Surface.Canvas.Clear(ClearColor);
         var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds / 1000.0f;
         OnUpdate(e, timeStep);
-        if (DrawTouchKeys)
-            TouchKeys.DrawFromCenter(e.Surface.Canvas, new Vector2(120, e.Info.Height - 120));
-
         lock (_drawQueue)
         {
             foreach (var gameObject in _drawQueue) gameObject.Draw(e.Surface.Canvas);
         }
+
+        if (DrawTouchKeys)
+        {
+            var size = TouchKeys.ControlSize;
+            TouchKeys.DrawFromCenter(e.Surface.Canvas,
+                new Vector2(0.75f * size, e.Info.Height - 0.75f * size));
+        }
+
 
         _lastTime = DateTime.Now;
     }
@@ -237,7 +252,8 @@ public abstract class Engine
                 ? Orientation.Portrait
                 : Orientation.Landscape;
             var oldOrientation = ScreenInfo.Orientation;
-            ScreenInfo = new ScreenInfo(e.Info.Size, orientation);
+            ScreenInfo = new ScreenInfo(e.Info.Size, orientation, ScreenInfo.Density);
+            TouchKeys.Resize(ScreenInfo.Density);
             ScreenSizeChanged.Invoke(this, new ScreenSizeChangeEventArgs(oldSize, e.Info.Size));
             if (orientation != oldOrientation)
                 ScreenOrientationChanged.Invoke(this,
@@ -259,8 +275,18 @@ public abstract class Engine
     protected abstract void OnUpdate(PaintEventArgs e, float timeStep);
 
     /// <summary>
-    ///     Esta função é chamada a cada chamada da física
+    ///     Esta função é chamada antes da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected abstract void BeforePhysicsUpdate(float timeStep);
+    protected virtual void BeforePhysicsUpdate(float timeStep)
+    {
+    }
+
+    /// <summary>
+    ///     Esta função é chamada depois da física
+    /// </summary>
+    /// <param name="timeStep">Tempo entre as chamadas</param>
+    protected virtual void AfterPhysicsUpdate(float timeStep)
+    {
+    }
 }

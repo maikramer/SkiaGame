@@ -2,6 +2,9 @@
 
 namespace SkiaGame.Input;
 
+/// <summary>
+/// Aqui Ficam todos os Keycodes possíveis do Windows e Linux, pode ser que funcione no Mac.
+/// </summary>
 public enum KeyCode
 {
     None = 0,

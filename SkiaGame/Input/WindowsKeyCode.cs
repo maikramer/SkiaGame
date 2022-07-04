@@ -3,7 +3,7 @@
 namespace SkiaGame.Input;
 
 /// <summary>
-///     Somente para Referencia
+///     Teclas Windows, somente para Referencia
 /// </summary>
 public enum WindowsKeyCode
 {
