@@ -1,6 +1,7 @@
 using System.Numerics;
 using SkiaGame;
 using SkiaGame.Events;
+using SkiaGame.Input;
 using SkiaSharp;
 
 namespace TestGame;
@@ -20,9 +21,7 @@ public class PhysicsTester : Engine
 
     private readonly GameObject _ground = new()
     {
-        Primitive = Primitive.Rect,
-        Locked = true,
-        Color = SKColors.Peru
+        Primitive = Primitive.Rect, Locked = true, Color = SKColors.Peru
     };
 
     /// <summary>
@@ -58,10 +57,7 @@ public class PhysicsTester : Engine
                     Color = SKColors.Crimson,
                     Locked = false,
                     Position = new Vector2(calcX, calcY),
-                    RigidBody =
-                    {
-                        Velocity = new Vector2(rand.Next(400), rand.Next(400))
-                    }
+                    RigidBody = { Velocity = new Vector2(rand.Next(400), rand.Next(400)) }
                 };
 
                 AddToEngine(ball);
@@ -104,19 +100,20 @@ public class PhysicsTester : Engine
 
     protected override void BeforePhysicsUpdate(float timeStep)
     {
-        if (TouchKeys.Up.IsPressed)
+        if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
+            Keyboard[KeyCode.W].IsPressed)
         {
             _char.RigidBody.AddForce(-Vector2.UnitY, 1000, timeStep);
-        }
-        else if (TouchKeys.Down.IsPressed)
+        } else if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
+                   Keyboard[KeyCode.S].IsPressed)
         {
             _char.RigidBody.AddForce(Vector2.UnitY, 1000, timeStep);
-        }
-        else if (TouchKeys.Right.IsPressed)
+        } else if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
+                   Keyboard[KeyCode.D].IsPressed)
         {
             _char.RigidBody.AddForce(Vector2.UnitX, 1000, timeStep);
-        }
-        else if (TouchKeys.Left.IsPressed)
+        } else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
+                   Keyboard[KeyCode.A].IsPressed)
         {
             _char.RigidBody.AddForce(-Vector2.UnitX, 1000, timeStep);
         }

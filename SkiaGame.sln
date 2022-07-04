@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{ED955063-E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGame.WindowsForms", "SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj", "{C3D058ED-7A8B-4624-B94B-3C682A99046F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGame.Forms", "TestGame.Forms\TestGame.Forms.csproj", "{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGame.WindowsForms", "TestGame.WindowsForms\TestGame.WindowsForms.csproj", "{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -52,6 +52,11 @@ public abstract class Engine
     public Mouse Mouse { get; } = new();
 
     /// <summary>
+    /// Propriedades do Teclado
+    /// </summary>
+    public Keyboard Keyboard { get; } = new();
+
+    /// <summary>
     ///     Obtem Informações sobre a tela
     /// </summary>
     /// <returns></returns>
@@ -79,11 +84,7 @@ public abstract class Engine
     /// <summary>
     ///     Aceleração da Gravidade : Default 9.81m/s²
     /// </summary>
-    public Vector2 Gravity
-    {
-        get => PhysicsEngine.Gravity;
-        set => PhysicsEngine.Gravity = value;
-    }
+    public Vector2 Gravity { get => PhysicsEngine.Gravity; set => PhysicsEngine.Gravity = value; }
 
     /// <summary>
     ///     Evento que Ocorre quando uma tecla virtual é pressionada ou solta
@@ -133,8 +134,7 @@ public abstract class Engine
         {
             if (_drawQueue.Contains(gameObject))
             {
-                Console.WriteLine(
-                    "Tentando Adicionar objeto que já existe na lista de Desenho!!");
+                Console.WriteLine("Tentando Adicionar objeto que já existe na lista de Desenho!!");
                 return;
             }
 
@@ -165,10 +165,7 @@ public abstract class Engine
     }
 
 
-    public void InternalSetMouseState(MouseInfo info)
-    {
-        Mouse.MouseState[info.Button] = info;
-    }
+    public void InternalSetMouseState(MouseInfo info) { Mouse[info.Button] = info; }
 
     public void InternalTouchPress(SkTouchEventArgs args)
     {
@@ -176,8 +173,7 @@ public abstract class Engine
         if (key != TouchKeyEventCode.None)
         {
             Console.WriteLine($"Tecla {key} pressionada");
-            TouchKeyChanged.Invoke(this,
-                new TouchKeyEventArgs(key, TouchKeyEventType.Press));
+            TouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, TouchKeyEventType.Press));
         }
 
         Console.WriteLine($"Touch em {args.Position.X},{args.Position.Y}");
@@ -189,17 +185,22 @@ public abstract class Engine
         if (key != TouchKeyEventCode.None)
         {
             Console.WriteLine($"Tecla {key} soltada");
-            TouchKeyChanged.Invoke(this,
-                new TouchKeyEventArgs(key, TouchKeyEventType.Release));
+            TouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, TouchKeyEventType.Release));
         }
 
-        Console.WriteLine(
-            $"Touch Release em {args.Position.X},{args.Position.Y}");
+        Console.WriteLine($"Touch Release em {args.Position.X},{args.Position.Y}");
     }
 
     public void InternalKeyPress(SkKeyPressEventArgs args)
     {
-        Console.WriteLine($"Tecla {args.KeyCode} pressionada");
+        if (args.KeyCode == KeyCode.None) return;
+        Keyboard[args.KeyCode] = new KeyInfo(true);
+    }
+
+    public void InternalKeyRelease(SkKeyPressEventArgs args)
+    {
+        if (args.KeyCode == KeyCode.None || !Keyboard.ContainsKey(args.KeyCode)) return;
+        Keyboard[args.KeyCode] = new KeyInfo(false);
     }
 
 
@@ -212,13 +213,11 @@ public abstract class Engine
         UpdateScreenInfo(e);
 
         e.Surface.Canvas.Clear(CLearColor);
-        var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds /
-                       1000.0f;
+        var timeStep = (float)(DateTime.Now - _lastTime).TotalMilliseconds / 1000.0f;
         OnUpdate(e, timeStep);
         if (DrawTouchKeys)
         {
-            TouchKeys.DrawFromCenter(e.Surface.Canvas,
-                new Vector2(120, e.Info.Height - 120));
+            TouchKeys.DrawFromCenter(e.Surface.Canvas, new Vector2(120, e.Info.Height - 120));
         }
 
         lock (_drawQueue)
