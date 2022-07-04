@@ -1,9 +1,12 @@
+using System.Numerics;
 using System.Timers;
 using SkiaGame.Events;
 using SkiaGame.Info;
+using SkiaGame.Input;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
+using static System.Enum;
 using Timer = System.Timers.Timer;
 
 namespace SkiaGame.Maui;
@@ -27,6 +30,7 @@ public class SkiaGameView : SKCanvasView
     {
         Engine = engine;
     }
+
 
     public Engine? Engine
     {
@@ -85,6 +89,11 @@ public class SkiaGameView : SKCanvasView
         Engine.InternalSetScreenInfo(_screenInfo);
         //OnSizeAllocated é chamado não somente quando o programa é iniciado, mas o programa cuidará disso.
         Engine.InternalExecuteOnStart();
+        if (!EnableTouchEvents)
+        {
+            Console.WriteLine(
+                "Os controles de Touch não funcionarão, adicione <EnableTouchEvents=True> ao seu controle SkiaGameView");
+        }
     }
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
@@ -93,6 +102,49 @@ public class SkiaGameView : SKCanvasView
         UpdateScreenInfo(e.Info.Size);
         var eventArgs = new PaintEventArgs(e.Info, e.Surface);
         Engine?.OnPaintSurface(eventArgs);
+    }
+
+    protected override void OnTouch(SKTouchEventArgs e)
+    {
+        base.OnTouch(e);
+        var result = TryParse(e.MouseButton.ToString(), out MouseButton button);
+        var location = new Vector2(e.Location.X, e.Location.Y);
+        switch (e.ActionType)
+        {
+            case SKTouchAction.Pressed:
+            {
+                Engine?.InternalTouchPress(
+                    new SkTouchEventArgs(location));
+                if (result)
+                {
+                    Engine?.InternalSetMouseState(new MouseInfo(button, location, true));
+                }
+
+                break;
+            }
+            case SKTouchAction.Released:
+            {
+                Engine?.InternalTouchRelease(
+                    new SkTouchEventArgs(location));
+                if (result)
+                {
+                    Engine?.InternalSetMouseState(new MouseInfo(button, location, false));
+                }
+
+                break;
+            }
+            case SKTouchAction.Moved:
+            {
+                if (result)
+                {
+                    Engine?.InternalSetMouseState(new MouseInfo(button, location, true));
+                }
+
+                break;
+            }
+        }
+
+        e.Handled = true;
     }
 
     private static void OnEngineChanged(BindableObject d, object oldValue, object value)

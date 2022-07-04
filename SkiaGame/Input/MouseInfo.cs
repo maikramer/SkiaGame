@@ -18,16 +18,16 @@ public class MouseInfo
     /// <summary>
     /// Posição do clique
     /// </summary>
-    public readonly Vector2 ClickPosition;
+    public readonly Vector2 Position;
     /// <summary>
     /// Se está pressionado ou não
     /// </summary>
     public readonly bool IsPressed;
 
-    public MouseInfo(MouseButton button, Vector2 clickPosition, bool isPressed)
+    public MouseInfo(MouseButton button, Vector2 position, bool isPressed)
     {
         Button = button;
-        ClickPosition = clickPosition;
+        Position = position;
         IsPressed = isPressed;
     }
 }

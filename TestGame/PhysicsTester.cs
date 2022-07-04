@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using SkiaGame;
 using SkiaGame.Events;
@@ -11,17 +10,11 @@ namespace TestGame;
 public class PhysicsTester : Engine
 {
     private const float GroundHeight = 30;
-    private const float CharDiameter = 20;
+    private static float _charDiameter = 20;
     private RigidBody? _holdingBody;
     private bool _lastMouseState;
-
-    private readonly GameObject _char = new()
-    {
-        Primitive = Primitive.Circle,
-        Diameter = CharDiameter,
-        Color = SKColors.Crimson,
-        Locked = false
-    };
+    private Vector2 _clickPoint;
+    private GameObject _char = new();
 
     private readonly GameObject _ground = new()
     {
@@ -44,17 +37,17 @@ public class PhysicsTester : Engine
         for (var j = 1; j < 14; j++)
         {
             float calcX = 0;
-            while (calcX <= 0 || calcX >= ScreenInfo.Size.Width - CharDiameter)
-                calcX = rand.NextSingle() * ScreenInfo.Size.Width - CharDiameter / 2;
+            while (calcX <= 0 || calcX >= ScreenInfo.Size.Width - _charDiameter)
+                calcX = rand.NextSingle() * ScreenInfo.Size.Width - _charDiameter / 2;
 
             float calcY = 0;
-            while (calcY <= 0 || calcY >= ScreenInfo.Size.Height - CharDiameter)
-                calcY = rand.NextSingle() * ScreenInfo.Size.Height - CharDiameter / 2;
+            while (calcY <= 0 || calcY >= ScreenInfo.Size.Height - _charDiameter)
+                calcY = rand.NextSingle() * ScreenInfo.Size.Height - _charDiameter / 2;
 
             var ball = new GameObject
             {
                 Primitive = Primitive.Circle,
-                Diameter = CharDiameter,
+                Diameter = _charDiameter,
                 Color = SKColors.Crimson,
                 Locked = false,
                 Position = new Vector2(calcX, calcY),
@@ -70,10 +63,19 @@ public class PhysicsTester : Engine
 
     protected override void OnStart()
     {
+        _charDiameter *= ScreenInfo.Density;
+        _char = new()
+        {
+            Primitive = Primitive.Circle,
+            Diameter = _charDiameter * 1.4f,
+            Color = SKColors.Blue,
+            Locked = false
+        };
         PhysicsEngine.IsPaused = true;
+
         CreateAndPopulateBalls();
         _char.Position = new Vector2(100,
-            ScreenInfo.Size.Height - CharDiameter - GroundHeight - 30);
+            ScreenInfo.Size.Height - _charDiameter - GroundHeight - 30);
         AddToEngine(_char);
         PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
         ScreenSizeChanged += OnScreenSizeChanged;
@@ -103,8 +105,43 @@ public class PhysicsTester : Engine
 
     protected override void BeforePhysicsUpdate(float timeStep)
     {
-        
+        HandleMouseAndTouchOnBody();
+        HandleKeyboardAndTouchKeys(timeStep);
+    }
 
+    private void HandleMouseAndTouchOnBody()
+    {
+        if (Mouse[MouseButton.Left].IsPressed)
+        {
+            var point = Mouse[MouseButton.Left].Position;
+            //Primeiro click
+            if (_lastMouseState == false)
+            {
+                _clickPoint = point;
+            }
+
+            _holdingBody = PhysicsEngine.Raycast(point);
+            if (_holdingBody != null)
+            {
+                _holdingBody.Velocity = Vector2.Zero;
+                _holdingBody.Locked = true;
+                _holdingBody.Center = Mouse[MouseButton.Left].Position;
+            }
+
+            _lastMouseState = Mouse[MouseButton.Left].IsPressed;
+        }
+
+        //Soltou o botao do mouse ou touch
+        if (_lastMouseState && _holdingBody != null)
+        {
+            _holdingBody.Locked = false;
+            _clickPoint = Vector2.Zero;
+            _lastMouseState = false;
+        }
+    }
+
+    private void HandleKeyboardAndTouchKeys(float timeStep)
+    {
         if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
             Keyboard[KeyCode.W].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitY, 1000, timeStep);
@@ -117,29 +154,5 @@ public class PhysicsTester : Engine
         else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
                  Keyboard[KeyCode.A].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitX, 1000, timeStep);
-    }
-
-    protected override void AfterPhysicsUpdate(float timeStep)
-    {
-        base.AfterPhysicsUpdate(timeStep);
-        if (Mouse[MouseButton.Left].IsPressed)
-        {
-            var point = (PointF)Mouse[MouseButton.Left].ClickPosition;
-            _holdingBody = PhysicsEngine.Raycast(point);
-            if (_holdingBody != null)
-            {
-                _holdingBody.Velocity = Vector2.Zero;
-                _holdingBody.Locked = true;
-                _holdingBody.Center = Mouse[MouseButton.Left].ClickPosition;
-            }
-
-            _lastMouseState = Mouse[MouseButton.Left].IsPressed;
-        }
-
-        //Soltou o botao do mouse
-        if (_lastMouseState && _holdingBody != null)
-        {
-            _holdingBody.Locked = false;
-        }
     }
 }

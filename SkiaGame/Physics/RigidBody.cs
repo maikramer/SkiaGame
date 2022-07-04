@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using SkiaGame.Physics.Classes;
 using SkiaGame.Physics.Structs;
@@ -133,7 +132,7 @@ public class RigidBody
     /// </summary>
     /// <param name="p"></param>
     /// <returns></returns>
-    public bool Contains(PointF p)
+    public bool Contains(Vector2 p)
     {
         if (Aabb.Max.X > p.X && p.X > Aabb.Min.X)
             if (Aabb.Max.Y > p.Y && p.Y > Aabb.Min.Y)

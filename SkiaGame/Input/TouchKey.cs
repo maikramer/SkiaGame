@@ -14,7 +14,7 @@ public class TouchKey
     }
 
     /// <summary>
-    /// Perímetro da tecla touch, até onde ela se extende
+    /// Perímetro da tecla touch, até onde ela se estende
     /// </summary>
     public SKRect Bounds
     {

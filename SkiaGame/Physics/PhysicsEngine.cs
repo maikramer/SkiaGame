@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using SkiaGame.Physics.Classes;
 using SkiaSharp;
@@ -292,7 +291,7 @@ public class PhysicsEngine
         return forces;
     }
 
-    public RigidBody? Raycast(PointF p)
+    public RigidBody? Raycast(Vector2 p)
     {
         lock (_listStaticObjects)
         {
