@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SkiaGame.Forms\SkiaGame.Forms.csproj" />
+      <ProjectReference Include="..\SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj" />
       <ProjectReference Include="..\TestGame\TestGame.csproj" />
     </ItemGroup>
 

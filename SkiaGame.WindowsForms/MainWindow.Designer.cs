@@ -39,7 +39,6 @@
             this.skiaControl.Size = new System.Drawing.Size(832, 553);
             this.skiaControl.TabIndex = 0;
             this.skiaControl.Text = "SkiaGame";
-            this.skiaControl.PaintSurface += new System.EventHandler<SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs>(this.skiaControl_PaintSurface);
             // 
             // MainWindow
             // 
