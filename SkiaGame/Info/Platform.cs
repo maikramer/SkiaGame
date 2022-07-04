@@ -1,4 +1,4 @@
-namespace SkiaGame.Util;
+namespace SkiaGame.Info;
 
 public class Platform
 {

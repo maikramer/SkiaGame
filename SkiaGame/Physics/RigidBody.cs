@@ -48,11 +48,7 @@ public class RigidBody
     /// <summary>
     ///     Tamanho do Corpo
     /// </summary>
-    public SKSize Size
-    {
-        set => SetSize(value);
-        get => new(Width, Height);
-    }
+    public SKSize Size { set => SetSize(value); get => new(Width, Height); }
 
     /// <summary>
     ///     Largura do corpo
@@ -72,11 +68,7 @@ public class RigidBody
     /// <summary>
     ///     Posição do Objeto
     /// </summary>
-    public Vector2 Position
-    {
-        set => SetPosition(value);
-        get => new(Aabb.Min.X, Aabb.Min.Y);
-    }
+    public Vector2 Position { set => SetPosition(value); get => new(Aabb.Min.X, Aabb.Min.Y); }
 
     /// <summary>
     ///     Perimetro utilizado no calculo de colisoes
@@ -108,11 +100,10 @@ public class RigidBody
     public Manifold LastCollision { get; internal set; } = new();
 
     /// <summary>
-    ///     Adiciona uma força para agir no objeto. Deve ser chamado de dentro de <see cref="BeforePhysicsUpdate" />
+    ///     Adiciona uma força para agir no objeto. Deve ser chamado de dentro de OnPhysicsUpdate
     /// </summary>
     /// <param name="direction">Direção da força</param>
     /// <param name="strength">Intensidade</param>
-    /// <param name="rigidBody">Corpo em que agirá a força</param>
     /// <param name="timeStep">TimeStep, somente repasse</param>
     public void AddForce(Vector2 direction, float strength, float timeStep)
     {
@@ -143,11 +134,7 @@ public class RigidBody
 
         var p1 = Aabb.Min + Velocity * dt;
         var p2 = Aabb.Max + Velocity * dt;
-        Aabb = new AABB
-        {
-            Min = p1,
-            Max = p2
-        };
+        Aabb = new AABB { Min = p1, Max = p2 };
     }
 
     private void RoundSpeedToZero()

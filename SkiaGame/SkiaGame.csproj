@@ -8,11 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SkiaSharp" Version="2.88.0"/>
-        <PackageReference Include="SkiaSharp.Views" Version="2.88.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Util"/>
+        <PackageReference Include="SkiaSharp" Version="2.88.0" />
+        <PackageReference Include="SkiaSharp.Views" Version="2.88.0" />
     </ItemGroup>
 </Project>
