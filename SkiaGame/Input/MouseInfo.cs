@@ -5,8 +5,11 @@ namespace SkiaGame.Input;
 public enum MouseButton
 {
     Left = 1,
+    LeftButton = 1,
     Middle = 2,
-    Right = 3
+    MiddleButton = 2,
+    Right = 3,
+    RightButton = 3
 }
 
 public class MouseInfo
@@ -15,10 +18,12 @@ public class MouseInfo
     /// Botão do mouse
     /// </summary>
     public readonly MouseButton Button;
+
     /// <summary>
     /// Posição do clique
     /// </summary>
     public readonly Vector2 Position;
+
     /// <summary>
     /// Se está pressionado ou não
     /// </summary>

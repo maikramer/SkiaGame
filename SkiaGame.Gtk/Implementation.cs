@@ -1,5 +1,4 @@
-﻿using Gdk;
-using GLib;
+﻿using GLib;
 using SkiaGame;
 using SkiaGame.Info;
 using SkiaSharp;
@@ -15,7 +14,6 @@ public static class Implementation
 
         var app = new Application("com.skiagame.gtk", ApplicationFlags.None);
         app.Register(Cancellable.Current);
-
         var win = new MainWindow(engine);
         app.AddWindow(win);
         win.Show();

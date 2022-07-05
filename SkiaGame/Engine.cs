@@ -23,7 +23,7 @@ public abstract class Engine
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
     private bool _startExecuted;
-    private DateTime _startTime;
+    private readonly DateTime _startTime = DateTime.Now;
 
     protected Engine()
     {
@@ -74,7 +74,9 @@ public abstract class Engine
     ///     Taxa de quadros por segundo
     /// </summary>
     public int FrameRate { get; set; } = 60;
-
+    /// <summary>
+    /// Taxa em que que o input é verificado em algumas plataformas como o GTK
+    /// </summary>
     public int InputFeedRate { get; set; } = 250;
 
     /// <summary>
@@ -164,14 +166,10 @@ public abstract class Engine
         if (_startExecuted) return;
         _startExecuted = true;
         OnStart();
-        _startTime = DateTime.Now;
     }
 
 
-    public void InternalSetMouseState(MouseInfo info)
-    {
-        Mouse[info.Button] = info;
-    }
+    public void InternalSetMouseState(MouseInfo info) { Mouse[info.Button] = info; }
 
     public void InternalTouchPress(SkTouchEventArgs args)
     {
@@ -209,10 +207,7 @@ public abstract class Engine
         Keyboard[args.KeyCode] = new KeyInfo(false);
     }
 
-    public void InternalUpdateMouseDesktop(Vector2 position)
-    {
-        Mouse.UpdatePosition(position);
-    }
+    public void InternalUpdateMouseDesktop(Vector2 position) { Mouse.UpdatePosition(position); }
 
 
     /// <summary>
@@ -278,15 +273,11 @@ public abstract class Engine
     ///     Esta função é chamada antes da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected virtual void BeforePhysicsUpdate(float timeStep)
-    {
-    }
+    protected virtual void BeforePhysicsUpdate(float timeStep) { }
 
     /// <summary>
     ///     Esta função é chamada depois da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected virtual void AfterPhysicsUpdate(float timeStep)
-    {
-    }
+    protected virtual void AfterPhysicsUpdate(float timeStep) { }
 }

@@ -21,9 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGame.Maui", "SkiaGame.M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{ED955063-E87E-4680-A77C-3A3E60F276C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGame.WindowsForms", "SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj", "{C3D058ED-7A8B-4624-B94B-3C682A99046F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGame.WindowsForms", "SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj", "{C3D058ED-7A8B-4624-B94B-3C682A99046F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGame.WindowsForms", "TestGame.WindowsForms\TestGame.WindowsForms.csproj", "{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestGame.WindowsForms", "TestGame.WindowsForms\TestGame.WindowsForms.csproj", "{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaGame.Wpf", "SkiaGame.Wpf\SkiaGame.Wpf.csproj", "{E4A7A1B5-CC60-4B9D-81F5-816F930DF37A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGame.Wpf", "TestGame.Wpf\TestGame.Wpf.csproj", "{09FBEE53-0823-442E-834A-4339F44C6739}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +67,14 @@ Global
 		{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{646064DF-9ACD-48D6-A2E7-F29DFE89E76F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4A7A1B5-CC60-4B9D-81F5-816F930DF37A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4A7A1B5-CC60-4B9D-81F5-816F930DF37A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4A7A1B5-CC60-4B9D-81F5-816F930DF37A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4A7A1B5-CC60-4B9D-81F5-816F930DF37A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09FBEE53-0823-442E-834A-4339F44C6739}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09FBEE53-0823-442E-834A-4339F44C6739}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09FBEE53-0823-442E-834A-4339F44C6739}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09FBEE53-0823-442E-834A-4339F44C6739}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +88,8 @@ Global
 		{209BFFC1-A5BD-48EB-84AF-E69869B8BD74} = {8DE583F3-D23E-45C5-A121-51D47D34B525}
 		{C3D058ED-7A8B-4624-B94B-3C682A99046F} = {8DE583F3-D23E-45C5-A121-51D47D34B525}
 		{646064DF-9ACD-48D6-A2E7-F29DFE89E76F} = {672CD4E2-5625-4B63-8C1D-712A648C10AB}
+		{E4A7A1B5-CC60-4B9D-81F5-816F930DF37A} = {8DE583F3-D23E-45C5-A121-51D47D34B525}
+		{09FBEE53-0823-442E-834A-4339F44C6739} = {672CD4E2-5625-4B63-8C1D-712A648C10AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8F857D3-651C-4B90-8BB6-9B8C75E8976B}
