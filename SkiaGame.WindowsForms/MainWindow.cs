@@ -19,12 +19,20 @@ public partial class MainWindow : Form
         timer.AutoReset = true;
         timer.Elapsed += (_, _) => { skiaControl.Invalidate(); };
         timer.Start();
+        skiaControl.MouseMove += SkiaControlOnCursorChanged;
         _engine = engine;
         skiaControl.PaintSurface += SkiaControlOnPaintSurface;
         skiaControl.MouseDown += SkiaControlOnMouseDown;
         skiaControl.MouseUp += SkiaControlOnMouseUp;
         skiaControl.KeyDown += OnKeyDownEvent;
         skiaControl.KeyUp += OnKeyUpEvent;
+    }
+
+    private void SkiaControlOnCursorChanged(object? sender, EventArgs e)
+    {
+        var clientPos = PointToClient(Cursor.Position);
+        var position = new Vector2(clientPos.X, clientPos.Y);
+        _engine.InternalUpdateMouseDesktop(position);
     }
 
     private void OnKeyDownEvent(object? o, KeyEventArgs keyEventArgs)
@@ -49,8 +57,8 @@ public partial class MainWindow : Form
     {
         var res = TryParse(e.Button.ToString(), out MouseButton but);
         if (!res) return;
-        if (_engine.Mouse.ContainsKey(but) && _engine.Mouse[but].IsPressed) return;
-        var evArgs = SetMouseState(e, true);
+        if (_engine.Mouse[but].IsPressed) return;
+        var evArgs = SetMouseState(but, e.Location, true);
         _engine.InternalTouchPress(evArgs);
     }
 
@@ -58,16 +66,16 @@ public partial class MainWindow : Form
     {
         var res = TryParse(e.Button.ToString(), out MouseButton but);
         if (!res) return;
-        if (_engine.Mouse.ContainsKey(but) && _engine.Mouse[but].IsPressed) return;
-        var evArgs = SetMouseState(e, false);
+        if (!_engine.Mouse[but].IsPressed) return;
+        var evArgs = SetMouseState(but, e.Location, false);
         _engine.InternalTouchRelease(evArgs);
     }
 
-    private SkTouchEventArgs SetMouseState(MouseEventArgs eventButton, bool state)
+    private SkTouchEventArgs SetMouseState(MouseButton button, Point point, bool state)
     {
-        var eventArgs = new SkTouchEventArgs(new Vector2(eventButton.X, eventButton.Y));
-        var mouseInfo = new MouseInfo((MouseButton)eventButton.Button,
-            new Vector2(eventButton.X, eventButton.Y), state);
+        var position = new Vector2(point.X, point.Y);
+        var eventArgs = new SkTouchEventArgs(position);
+        var mouseInfo = new MouseInfo(button, position, state);
         _engine.InternalSetMouseState(mouseInfo);
         return eventArgs;
     }

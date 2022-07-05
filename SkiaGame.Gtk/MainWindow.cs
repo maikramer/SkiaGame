@@ -14,9 +14,7 @@ public class MainWindow : Window
 {
     private readonly Engine _engine;
 
-    public MainWindow(Engine engine) : this(new Builder("MainWindow.glade"), engine)
-    {
-    }
+    public MainWindow(Engine engine) : this(new Builder("MainWindow.glade"), engine) { }
 
     private MainWindow(Builder builder, Engine engine) : base(
         builder.GetObject("MainWindow").Handle)
@@ -49,8 +47,7 @@ public class MainWindow : Window
         var devices = Display.Default.ListDevices();
         if (devices.Length == 0) return;
         devices[0].GetPosition(null, out var posX, out var posY);
-        TranslateCoordinates(Child, posX, posY, out posX,
-            out posY);
+        TranslateCoordinates(Child, posX, posY, out posX, out posY);
         _engine.InternalUpdateMouseDesktop(new Vector2(posX, posY));
     }
 
@@ -74,8 +71,21 @@ public class MainWindow : Window
 
     private SkTouchEventArgs SetMouseState(EventButton eventButton, bool state)
     {
-        TranslateCoordinates(Child, (int)eventButton.XRoot, (int)eventButton.YRoot, out var coordX,
-            out var coordY);
+        var platform = Environment.OSVersion.Platform;
+        int coordX;
+        int coordY;
+
+        //Não Funciona corretamente no Windows precisa de correção
+        if (platform is PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows)
+        {
+            TranslateCoordinates(Child, (int)eventButton.X, (int)eventButton.Y, out coordX,
+                out coordY);
+        } else
+        {
+            TranslateCoordinates(Child, (int)eventButton.XRoot, (int)eventButton.YRoot, out coordX,
+                out coordY);
+        }
+
         var eventArgs = new SkTouchEventArgs(new Vector2(coordX, coordY));
         var mouseInfo = new MouseInfo((MouseButton)eventButton.Button, new Vector2(coordX, coordY),
             state);
@@ -85,16 +95,14 @@ public class MainWindow : Window
 
     private void OnButtonPressEvent(object o, ButtonPressEventArgs args)
     {
-        if (_engine.Mouse[(MouseButton)args.Event.Button].IsPressed)
-            return;
+        if (_engine.Mouse[(MouseButton)args.Event.Button].IsPressed) return;
         var evArgs = SetMouseState(args.Event, true);
         _engine.InternalTouchPress(evArgs);
     }
 
     private void OnButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
     {
-        if (!_engine.Mouse[(MouseButton)args.Event.Button].IsPressed)
-            return;
+        if (!_engine.Mouse[(MouseButton)args.Event.Button].IsPressed) return;
         var evArgs = SetMouseState(args.Event, false);
         _engine.InternalTouchRelease(evArgs);
     }
@@ -105,8 +113,5 @@ public class MainWindow : Window
         _engine.OnPaintSurface(eventArgs);
     }
 
-    private void OnWindowDeleteEvent(object sender, DeleteEventArgs a)
-    {
-        Application.Quit();
-    }
+    private void OnWindowDeleteEvent(object sender, DeleteEventArgs a) { Application.Quit(); }
 }
