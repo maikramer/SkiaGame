@@ -9,11 +9,14 @@ public enum MouseButton
     Middle = 2,
     MiddleButton = 2,
     Right = 3,
-    RightButton = 3
+    RightButton = 3,
+    Invalid = int.MaxValue
 }
 
 public class MouseInfo
 {
+    public static MouseInfo Invalid { get; } = new(MouseButton.Invalid, Vector2.Zero, false);
+
     /// <summary>
     /// Botão do mouse
     /// </summary>
@@ -22,7 +25,7 @@ public class MouseInfo
     /// <summary>
     /// Posição do clique
     /// </summary>
-    public readonly Vector2 Position;
+    public Vector2 Position { get; internal set; }
 
     /// <summary>
     /// Se está pressionado ou não
