@@ -1,4 +1,5 @@
 using System.Numerics;
+using Newtonsoft.Json;
 using SkiaGame.Events;
 using SkiaGame.Info;
 using SkiaGame.Input;
@@ -32,6 +33,11 @@ public abstract class Engine
         PhysicsEngine.BeforePhysicsUpdate += BeforePhysicsUpdate;
         PhysicsEngine.AfterPhysicsUpdate += AfterPhysicsUpdate;
     }
+
+    private string _gameFolder = string.Empty;
+    private FileStream? _gamePrefs;
+
+    public string Title { get; set; } = "SkiaGame";
 
     /// <summary>
     /// Informações sobre a plataforma
@@ -74,6 +80,7 @@ public abstract class Engine
     ///     Taxa de quadros por segundo
     /// </summary>
     public int FrameRate { get; set; } = 60;
+
     /// <summary>
     /// Taxa em que que o input é verificado em algumas plataformas como o GTK
     /// </summary>
@@ -146,6 +153,14 @@ public abstract class Engine
         }
     }
 
+    public void SaveObjToFile<T>(T obj, string fileName)
+    {
+        var path = Path.Join(_gameFolder, fileName + ".json");
+        using var file = File.CreateText(path);
+        var serializer = new JsonSerializer();
+        serializer.Serialize(file, obj);
+    }
+
 
     /// <summary>
     ///     Para uso interno da plataforma, seta as caracteristicas basicas da tela
@@ -168,8 +183,10 @@ public abstract class Engine
         OnStart();
     }
 
-
-    public void InternalSetMouseState(MouseInfo info) { Mouse[info.Button] = info; }
+    public void InternalSetMouseState(MouseInfo info)
+    {
+        Mouse[info.Button] = info;
+    }
 
     public void InternalTouchPress(SkTouchEventArgs args)
     {
@@ -207,8 +224,20 @@ public abstract class Engine
         Keyboard[args.KeyCode] = new KeyInfo(false);
     }
 
-    public void InternalUpdateMouseDesktop(Vector2 position) { Mouse.UpdatePosition(position); }
+    public void InternalUpdateMouseDesktop(Vector2 position)
+    {
+        Mouse.UpdatePosition(position);
+    }
 
+    public void InternalSetGameFolder(string gameFolder)
+    {
+        if (!Directory.Exists(gameFolder))
+        {
+            Directory.CreateDirectory(gameFolder);
+        }
+
+        _gameFolder = gameFolder;
+    }
 
     /// <summary>
     ///     Este é o evento onde os objetos são desenhados na tela.
@@ -273,11 +302,15 @@ public abstract class Engine
     ///     Esta função é chamada antes da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected virtual void BeforePhysicsUpdate(float timeStep) { }
+    protected virtual void BeforePhysicsUpdate(float timeStep)
+    {
+    }
 
     /// <summary>
     ///     Esta função é chamada depois da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
-    protected virtual void AfterPhysicsUpdate(float timeStep) { }
+    protected virtual void AfterPhysicsUpdate(float timeStep)
+    {
+    }
 }

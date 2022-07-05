@@ -7,8 +7,15 @@ using SkiaSharp;
 
 namespace TestGame;
 
+public class Preferences
+{
+    public bool Fire = true;
+    public int Bullets = 10;
+}
+
 public class PhysicsTester : Engine
 {
+    public Preferences Preferences = new();
     private const float GroundHeight = 30;
     private static float _charDiameter = 20;
     private RigidBody? _holdingBody;
@@ -28,6 +35,11 @@ public class PhysicsTester : Engine
     private readonly TimeSpan _startTime = TimeSpan.FromSeconds(3);
 
     private bool _notStarted = true;
+
+    protected PhysicsTester()
+    {
+        Title = "PhysicsTester";
+    }
 
     private void CreateAndPopulateBalls()
     {
@@ -62,6 +74,7 @@ public class PhysicsTester : Engine
 
     protected override void OnStart()
     {
+        SaveObjToFile(Preferences, nameof(Preferences));
         _charDiameter *= ScreenInfo.Density;
         _char = new GameObject
         {
@@ -77,7 +90,11 @@ public class PhysicsTester : Engine
             ScreenInfo.Size.Height - _charDiameter - GroundHeight - 30);
         AddToEngine(_char);
         PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
-        Mouse.AddListenerToButton(MouseButton.Left, args => { Console.WriteLine("Click"); });
+        Mouse.AddListenerToButton(MouseButton.Left,
+            args =>
+            {
+                Console.WriteLine($"Botao do mouse mudou de {args.OldValue} para {args.NewValue}");
+            });
         ScreenSizeChanged += OnScreenSizeChanged;
         ScreenOrientationChanged += (_, args) =>
         {

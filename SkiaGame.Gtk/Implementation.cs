@@ -25,6 +25,10 @@ public static class Implementation
         var size = new SKSize(winWidth, winHeight);
         engine.Platform.IsDesktop = true;
         engine.Platform.IsGtk = true;
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var dotLocal = Path.Join(home, ".local", "share");
+        var gameFolder = Path.Join(dotLocal, engine.Title.Trim());
+        engine.InternalSetGameFolder(gameFolder);
         engine.InternalSetScreenInfo(new ScreenInfo(size, orientation, 1.0f));
         engine.InternalExecuteOnStart();
         Application.Run();

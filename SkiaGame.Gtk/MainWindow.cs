@@ -14,7 +14,9 @@ public class MainWindow : Window
 {
     private readonly Engine _engine;
 
-    public MainWindow(Engine engine) : this(new Builder("MainWindow.glade"), engine) { }
+    public MainWindow(Engine engine) : this(new Builder("MainWindow.glade"), engine)
+    {
+    }
 
     private MainWindow(Builder builder, Engine engine) : base(
         builder.GetObject("MainWindow").Handle)
@@ -47,6 +49,7 @@ public class MainWindow : Window
         var devices = Display.Default.ListDevices();
         if (devices.Length == 0) return;
         devices[0].GetPosition(null, out var posX, out var posY);
+        if (Child == null) return;
         TranslateCoordinates(Child, posX, posY, out posX, out posY);
         _engine.InternalUpdateMouseDesktop(new Vector2(posX, posY));
     }
@@ -80,7 +83,8 @@ public class MainWindow : Window
         {
             TranslateCoordinates(Child, (int)eventButton.X, (int)eventButton.Y, out coordX,
                 out coordY);
-        } else
+        }
+        else
         {
             TranslateCoordinates(Child, (int)eventButton.XRoot, (int)eventButton.YRoot, out coordX,
                 out coordY);
@@ -113,5 +117,8 @@ public class MainWindow : Window
         _engine.OnPaintSurface(eventArgs);
     }
 
-    private void OnWindowDeleteEvent(object sender, DeleteEventArgs a) { Application.Quit(); }
+    private void OnWindowDeleteEvent(object sender, DeleteEventArgs a)
+    {
+        Application.Quit();
+    }
 }
