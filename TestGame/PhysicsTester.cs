@@ -1,40 +1,49 @@
 using System.Numerics;
 using SkiaGame;
 using SkiaGame.Events;
+using SkiaGame.Helpers;
 using SkiaGame.Input;
 using SkiaGame.Physics;
+using SkiaGame.UI;
 using SkiaSharp;
 
+//todo: Este exemplo já testa coisas demais, deve ser dividido.
 namespace TestGame;
 
-public class Preferences
+public class Settings
 {
-    public bool Fire = true;
-    public int Bullets = 10;
+    public int CharSize = 30;
+}
+
+public enum PhysicsStatus
+{
+    Running,
+    NotRunning
 }
 
 public class PhysicsTester : Engine
 {
-    public Preferences Preferences = new();
-    private const float GroundHeight = 30;
+    private readonly CircularEnumerator<int> _charSizeOptions =
+        new(new CircularList<int>
+        {
+            20,
+            30,
+            40,
+            50
+        });
+
+    private readonly CircularEnumerator<PhysicsStatus> _physicsOptions =
+        new(new CircularList<PhysicsStatus>
+        {
+            PhysicsStatus.NotRunning,
+            PhysicsStatus.Running
+        });
+
+    public Settings Settings = new();
     private static float _charDiameter = 20;
     private RigidBody? _holdingBody;
     private bool _lastMouseState;
     private GameObject _char = new();
-
-    private readonly GameObject _ground = new()
-    {
-        Primitive = Primitive.Rect,
-        Locked = true,
-        Color = SKColors.Peru
-    };
-
-    /// <summary>
-    ///     Começa depois de 3 Segundos
-    /// </summary>
-    private readonly TimeSpan _startTime = TimeSpan.FromSeconds(3);
-
-    private bool _notStarted = true;
 
     protected PhysicsTester()
     {
@@ -74,7 +83,9 @@ public class PhysicsTester : Engine
 
     protected override void OnStart()
     {
-        SaveObjToFile(Preferences, nameof(Preferences));
+        AddPhysicsStateMenuItem();
+        AddCharSizeMenuItem();
+        SaveObjToFile(Settings, nameof(Settings));
         _charDiameter *= ScreenInfo.Density;
         _char = new GameObject
         {
@@ -87,19 +98,44 @@ public class PhysicsTester : Engine
 
         CreateAndPopulateBalls();
         _char.Position = new Vector2(100,
-            ScreenInfo.Size.Height - _charDiameter - GroundHeight - 30);
+            ScreenInfo.Size.Height - _charDiameter);
         AddToEngine(_char);
         PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
         Mouse.AddListenerToButton(MouseButton.Left,
             args =>
             {
-                Console.WriteLine($"Botao do mouse mudou de {args.OldValue} para {args.NewValue}");
+                Console.WriteLine(
+                    $"Botão do mouse mudou de {args.OldValue.IsPressed} para {args.NewValue.IsPressed}");
             });
         ScreenSizeChanged += OnScreenSizeChanged;
         ScreenOrientationChanged += (_, args) =>
         {
             Console.WriteLine($"Orientação mudou para {args.NewValue}");
         };
+    }
+
+    private void AddCharSizeMenuItem()
+    {
+        var charSizeMenuItem = new MenuItem("Char Size: " + _charSizeOptions.Current);
+        charSizeMenuItem.Press += () =>
+        {
+            _charSizeOptions.MoveNext();
+            charSizeMenuItem.Text.Text = "Char Size: " + _charSizeOptions.Current;
+            _char.Diameter = _charSizeOptions.Current * ScreenInfo.Density;
+        };
+        MainMenu.AddItem(charSizeMenuItem);
+    }
+
+    private void AddPhysicsStateMenuItem()
+    {
+        var item = new MenuItem("Physics: " + _physicsOptions.Current);
+        item.Press += () =>
+        {
+            _physicsOptions.MoveNext();
+            item.Text.Text = "Physics: " + _physicsOptions.Current;
+            PhysicsEngine.IsPaused = _physicsOptions.Current != PhysicsStatus.Running;
+        };
+        MainMenu.AddItem(item);
     }
 
     private void OnScreenSizeChanged(object? sender, ScreenSizeChangeEventArgs e)
@@ -109,15 +145,6 @@ public class PhysicsTester : Engine
 
     protected override void OnUpdate(PaintEventArgs e, float timeStep)
     {
-        if (_notStarted && TimeSinceStart > _startTime)
-        {
-            _notStarted = false;
-            PhysicsEngine.IsPaused = false;
-        }
-
-        //Seta posição em Runtime, de acordo com que a pessoa altera o tamanho da tela
-        _ground.Position = new Vector2(0, e.Info.Height - GroundHeight);
-        _ground.Size = new SKSize(e.Info.Width, GroundHeight);
     }
 
     protected override void BeforePhysicsUpdate(float timeStep)

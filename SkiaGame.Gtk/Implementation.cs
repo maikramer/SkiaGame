@@ -1,4 +1,5 @@
 ﻿using GLib;
+using Gtk.Workarounds;
 using SkiaGame;
 using SkiaGame.Info;
 using SkiaSharp;
@@ -10,6 +11,8 @@ public static class Implementation
     [STAThread]
     public static void Run(Engine engine)
     {
+        var richTextWorkAround = new HarfBuzzWorkAround();
+        richTextWorkAround.ApplyHarfbuzzWorkaround();
         Application.Init();
 
         var app = new Application("com.skiagame.gtk", ApplicationFlags.None);

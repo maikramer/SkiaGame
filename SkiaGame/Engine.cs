@@ -1,9 +1,11 @@
 using System.Numerics;
 using Newtonsoft.Json;
 using SkiaGame.Events;
+using SkiaGame.Extensions;
 using SkiaGame.Info;
 using SkiaGame.Input;
 using SkiaGame.Physics;
+using SkiaGame.UI;
 using SkiaSharp;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
@@ -35,8 +37,15 @@ public abstract class Engine
     }
 
     private string _gameFolder = string.Empty;
-    private FileStream? _gamePrefs;
 
+    /// <summary>
+    /// Menu Principal do jogo
+    /// </summary>
+    public Menu MainMenu { get; set; } = new();
+
+    /// <summary>
+    /// Título do jogo, utilizado também como nome das pastas do jogo
+    /// </summary>
     public string Title { get; set; } = "SkiaGame";
 
     /// <summary>
@@ -155,12 +164,13 @@ public abstract class Engine
 
     public void SaveObjToFile<T>(T obj, string fileName)
     {
+        //Somente GTK por enquanto
+        if (!Platform.IsGtk) return;
         var path = Path.Join(_gameFolder, fileName + ".json");
         using var file = File.CreateText(path);
         var serializer = new JsonSerializer();
         serializer.Serialize(file, obj);
     }
-
 
     /// <summary>
     ///     Para uso interno da plataforma, seta as caracteristicas basicas da tela
@@ -170,6 +180,7 @@ public abstract class Engine
     {
         if (!Equals(ScreenInfo, ScreenInfo.Zero)) return;
         TouchKeys.Resize(screenInfo.Density);
+        MainMenu.UpdateSizes(screenInfo.Density);
         ScreenInfo = screenInfo;
     }
 
@@ -190,26 +201,26 @@ public abstract class Engine
 
     public void InternalTouchPress(SkTouchEventArgs args)
     {
-        var key = TouchKeys.VerifyTouchCollision(args.Position, true);
-        if (key != TouchKeyEventCode.None)
-        {
-            Console.WriteLine($"Tecla {key} pressionada");
-            TouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, TouchKeyEventType.Press));
-        }
-
-        Console.WriteLine($"Touch em {args.Position.X},{args.Position.Y}");
+        VerifyTouchClick(args, true, TouchKeyEventType.Press);
     }
 
     public void InternalTouchRelease(SkTouchEventArgs args)
     {
-        var key = TouchKeys.VerifyTouchCollision(args.Position, false);
+        VerifyTouchClick(args, false, TouchKeyEventType.Release);
+    }
+
+    private void VerifyTouchClick(SkTouchEventArgs args, bool isPress, TouchKeyEventType eventType)
+    {
+        var key = TouchKeys.VerifyTouchCollision(args.Position, isPress);
         if (key != TouchKeyEventCode.None)
         {
-            Console.WriteLine($"Tecla {key} soltada");
-            TouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, TouchKeyEventType.Release));
+            Console.WriteLine($"Tecla {key}");
+            TouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, eventType));
         }
 
-        Console.WriteLine($"Touch Release em {args.Position.X},{args.Position.Y}");
+        MainMenu.VerifyClick(args.Position.ToSkPoint(), isPress);
+
+        Console.WriteLine($"Touch {eventType} em {args.Position.X},{args.Position.Y}");
     }
 
     public void InternalKeyPress(SkKeyPressEventArgs args)
@@ -224,9 +235,11 @@ public abstract class Engine
         Keyboard[args.KeyCode] = new KeyInfo(false);
     }
 
+    //todo:O Tratamento de input deve ser unificado
     public void InternalUpdateMouseDesktop(Vector2 position)
     {
         Mouse.UpdatePosition(position);
+        MainMenu.VerifyClick(position.ToSkPoint(), false);
     }
 
     public void InternalSetGameFolder(string gameFolder)
@@ -262,6 +275,11 @@ public abstract class Engine
                 new Vector2(0.75f * size, e.Info.Height - 0.75f * size));
         }
 
+        if (MainMenu.Enabled)
+        {
+            MainMenu.Draw(e);
+        }
+
 
         _lastTime = DateTime.Now;
     }
@@ -278,6 +296,7 @@ public abstract class Engine
             var oldOrientation = ScreenInfo.Orientation;
             ScreenInfo = new ScreenInfo(e.Info.Size, orientation, ScreenInfo.Density);
             TouchKeys.Resize(ScreenInfo.Density);
+            MainMenu.UpdateSizes(ScreenInfo.Density);
             ScreenSizeChanged.Invoke(this, new ScreenSizeChangeEventArgs(oldSize, e.Info.Size));
             if (orientation != oldOrientation)
                 ScreenOrientationChanged.Invoke(this,

@@ -2,30 +2,25 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
 
         <!-- Splash Screen -->
-        <MauiFont Include="Resources\Fonts\*" />
+        <MauiFont Include="Resources\Fonts\*"/>
 
         <!-- Images -->
-        <MauiIcon Color="#512BD4" ForegroundFile="Resources\AppIcon\appiconfg.svg" Include="Resources\AppIcon\appicon.svg" />
-        <MauiImage Include="Resources\Images\*" />
+        <MauiIcon Color="#512BD4" ForegroundFile="Resources\AppIcon\appiconfg.svg" Include="Resources\AppIcon\appicon.svg"/>
+        <MauiImage Include="Resources\Images\*"/>
 
         <!-- Custom Fonts -->
-        <MauiImage BaseSize="168,208" Update="Resources\Images\dotnet_bot.svg" />
+        <MauiImage BaseSize="168,208" Update="Resources\Images\dotnet_bot.svg"/>
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiSplashScreen BaseSize="128,128" Color="#512BD4" Include="Resources\Splash\splash.svg" />
+        <MauiSplashScreen BaseSize="128,128" Color="#512BD4" Include="Resources\Splash\splash.svg"/>
     </ItemGroup>
-
     <ItemGroup>
-        <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="2.88.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\SkiaGame.Maui\SkiaGame.Maui.csproj" />
-        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
-        <ProjectReference Include="..\TestGame\TestGame.csproj" />
+        <ProjectReference Include="..\SkiaGame.Maui\SkiaGame.Maui.csproj"/>
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
+        <ProjectReference Include="..\TestGame\TestGame.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
