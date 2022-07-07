@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Newtonsoft.Json;
 using SkiaGame.Events;
@@ -7,6 +8,7 @@ using SkiaGame.Input;
 using SkiaGame.Physics;
 using SkiaGame.UI;
 using SkiaSharp;
+using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
@@ -37,6 +39,11 @@ public abstract class Engine
     }
 
     private string _gameFolder = string.Empty;
+
+    public JsonSerializerSettings JsonSerializerSettings = new()
+    {
+        Error = JsonError
+    };
 
     /// <summary>
     /// Menu Principal do jogo
@@ -162,14 +169,27 @@ public abstract class Engine
         }
     }
 
-    public void SaveObjToFile<T>(T obj, string fileName)
+    public bool WriteObjToFile<T>(T obj, string fileName)
     {
         //Somente GTK por enquanto
-        if (!Platform.IsGtk) return;
+        if (!Platform.IsGtk) return false;
         var path = Path.Join(_gameFolder, fileName + ".json");
         using var file = File.CreateText(path);
         var serializer = new JsonSerializer();
         serializer.Serialize(file, obj);
+        return true;
+    }
+
+    public bool ReadObjFromFile<T>(out T? obj, string fileName)
+    {
+        //Somente GTK por enquanto
+        obj = default;
+        if (!Platform.IsGtk) return false;
+        var path = Path.Join(_gameFolder, fileName + ".json");
+        if (!File.Exists(path)) return false;
+        var str = File.ReadAllText(path);
+        obj = JsonConvert.DeserializeObject<T>(str, JsonSerializerSettings);
+        return true;
     }
 
     /// <summary>
@@ -302,6 +322,11 @@ public abstract class Engine
                 ScreenOrientationChanged.Invoke(this,
                     new ScreenOrientationChangeEventArgs(oldOrientation, orientation));
         }
+    }
+
+    private static void JsonError(object? sender, ErrorEventArgs e)
+    {
+        Debug.WriteLine($"Erro de Serialização com o objeto {e.CurrentObject}");
     }
 
 

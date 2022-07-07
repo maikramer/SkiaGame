@@ -53,6 +53,7 @@ public class PhysicsEngine
             }
             else
             {
+                if(_lastTimeScale == 0) return;
                 TimeScale = _lastTimeScale;
             }
         }

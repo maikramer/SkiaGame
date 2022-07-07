@@ -70,7 +70,9 @@ public class Mouse
     {
         foreach (var info in MouseState)
         {
-            MouseState[info.Key].LastState.Position = position;
+            var lastState = MouseState[info.Key].State.Position;
+            MouseState[info.Key].LastState.Position = lastState;
+            MouseState[info.Key].State.Position = position;
         }
     }
 }
