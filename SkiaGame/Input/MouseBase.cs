@@ -13,9 +13,9 @@ public enum MouseButton
     Invalid = int.MaxValue
 }
 
-public class MouseInfo
+public class MouseBase : SkiaInputBase
 {
-    public static MouseInfo Invalid { get; } = new(MouseButton.Invalid, Vector2.Zero, false);
+    public static MouseBase Invalid { get; } = new(MouseButton.Invalid, Vector2.Zero, false);
 
     /// <summary>
     /// Botão do mouse
@@ -27,15 +27,20 @@ public class MouseInfo
     /// </summary>
     public Vector2 Position { get; internal set; }
 
-    /// <summary>
-    /// Se está pressionado ou não
-    /// </summary>
-    public readonly bool IsPressed;
+    public MouseBase(MouseButton button) : this(button, Vector2.Zero, false)
+    {
+    }
 
-    public MouseInfo(MouseButton button, Vector2 position, bool isPressed)
+    public MouseBase(MouseButton button, Vector2 position, bool isPressed)
     {
         Button = button;
         Position = position;
         IsPressed = isPressed;
+    }
+
+    public void CopyFrom(MouseBase mouseBase)
+    {
+        Position = mouseBase.Position;
+        IsPressed = mouseBase.IsPressed;
     }
 }

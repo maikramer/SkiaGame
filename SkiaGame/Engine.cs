@@ -214,9 +214,9 @@ public abstract class Engine
         OnStart();
     }
 
-    public void InternalSetMouseState(MouseInfo info)
+    public void InternalSetMouseState(MouseBase mouseBase)
     {
-        Mouse[info.Button] = info;
+        Mouse[mouseBase.Button] = mouseBase;
     }
 
     public void InternalTouchPress(SkTouchEventArgs args)
@@ -246,13 +246,13 @@ public abstract class Engine
     public void InternalKeyPress(SkKeyPressEventArgs args)
     {
         if (args.KeyCode == KeyCode.None) return;
-        Keyboard[args.KeyCode] = new KeyInfo(true);
+        Keyboard[args.KeyCode] = new KeyBase(true);
     }
 
     public void InternalKeyRelease(SkKeyPressEventArgs args)
     {
         if (args.KeyCode == KeyCode.None) return;
-        Keyboard[args.KeyCode] = new KeyInfo(false);
+        Keyboard[args.KeyCode] = new KeyBase(false);
     }
 
     //todo:O Tratamento de input deve ser unificado

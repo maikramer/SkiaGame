@@ -1,16 +1,18 @@
+using SkiaGame.Events;
 using SkiaSharp;
 
 namespace SkiaGame.Input;
 
-public class TouchKey
+public class TouchKey : SkiaInputBase
 {
     private readonly SKPath _noModArrow;
     private SKRect _bounds;
 
-    public TouchKey(SKPath arrow)
+    public TouchKey(SKPath? arrow = null)
     {
-        _noModArrow = arrow;
-        Arrow = arrow;
+        var path = arrow ?? new SKPath();
+        _noModArrow = path;
+        Arrow = path;
     }
 
     /// <summary>
@@ -42,4 +44,6 @@ public class TouchKey
         newPath.Transform(SKMatrix.CreateTranslation(arrowX, arrowY));
         Arrow = newPath;
     }
+
+    public TouchKeyEventCode EventCode { get; init; }
 }

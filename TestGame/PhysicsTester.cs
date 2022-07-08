@@ -103,12 +103,14 @@ public class PhysicsTester : Engine
             ScreenInfo.Size.Height - (Settings.CharSize));
         AddToEngine(_char);
         PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
-        Mouse.AddListenerToButton(MouseButton.Left,
-            args =>
-            {
-                Console.WriteLine(
-                    $"Botão do mouse mudou de {args.OldValue.IsPressed} para {args.NewValue.IsPressed}");
-            });
+        Mouse[MouseButton.Left].Pressed += () =>
+        {
+            Console.WriteLine("Botao Esquerdo Pressionado");
+        };
+        Mouse[MouseButton.RightButton].Released += () =>
+        {
+            Console.WriteLine("Botao Direito Soltado");
+        };
         ScreenSizeChanged += OnScreenSizeChanged;
         ScreenOrientationChanged += (_, args) =>
         {

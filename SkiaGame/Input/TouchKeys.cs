@@ -10,49 +10,59 @@ namespace SkiaGame.Input;
 
 public class TouchKeys
 {
-    private readonly List<Key> _keys = new();
+    private readonly List<TouchKey> _keys = new();
 
     private readonly SKPoint[] _setaPoints =
     {
         new(0, 0), new(-0.25f, 0.25f), new(0, 0.5f), new(0, 0.375f), new(0.25f, 0.375f),
         new(0.25f, 0.125f), new(0, 0.125f), new(0, 0)
     };
+
     /// <summary>
     /// Informações sobre a tecla virtual baixo
     /// </summary>
-    public Key Down { get; private set; } = new(TouchKeyEventCode.Down);
+    public TouchKey Down { get; private set; } = new();
+
     /// <summary>
     /// Informações sobre a tecla virtual esquerda
     /// </summary>
-    public Key Left { get; private set; } = new(TouchKeyEventCode.Left);
+    public TouchKey Left { get; private set; } = new();
+
     /// <summary>
     /// Informações sobre a tecla virtual direita
     /// </summary>
-    public Key Right { get; private set; } = new(TouchKeyEventCode.Right);
+    public TouchKey Right { get; private set; } = new();
+
     /// <summary>
     /// Informações sobre a tecla virtual cima
     /// </summary>
-    public Key Up { get; private set; } = new(TouchKeyEventCode.Up);
+    public TouchKey Up { get; private set; } = new();
+
     /// <summary>
     /// Obtém ou seta o tamanho base do controle touch, lembrando que ele é dependente da densidade nas plataformas móveis
     /// </summary>
     public float Size { get; set; } = 120f;
+
     /// <summary>
     /// Obtém o tamanho do controle touch descontado a margem
     /// </summary>
     public float ControlSize { get; private set; }
+
     /// <summary>
     /// Obtém o tamanho do botão (Ele é <see cref="ControlSize"/> / 3)
     /// </summary>
     public float ButtonSize { get; private set; }
+
     /// <summary>
     /// Obtém a Margem (Ela é <see cref="Size"/> / 10)
     /// </summary>
     public float Margin { get; private set; }
+
     /// <summary>
     /// A tolerancia para fora do botão em que a pessoa pode clicar
     /// </summary>
     public float TouchTolerance { get; set; } = 10;
+
     /// <summary>
     /// Paint com as propriedades para desenhar o circulo do botão (Com a cor por exemplo)
     /// </summary>
@@ -62,6 +72,7 @@ public class TouchKeys
         IsAntialias = true,
         Style = SKPaintStyle.Fill
     };
+
     /// <summary>
     /// Paint com as propriedades para desenhar as setas (Com a cor por exemplo)
     /// </summary>
@@ -71,6 +82,7 @@ public class TouchKeys
         IsAntialias = true,
         Style = SKPaintStyle.Fill
     };
+
     //Utilizado internamente para redesenhar os botões
     internal void Resize(float density)
     {
@@ -84,40 +96,42 @@ public class TouchKeys
         baseArrow.Transform(translate);
         var scaleMatrix = SKMatrix.CreateScale(ButtonSize, ButtonSize);
         baseArrow.Transform(scaleMatrix);
-        Left = new Key(TouchKeyEventCode.Left)
+        Left = new TouchKey(baseArrow)
         {
-            TouchKey = new TouchKey(baseArrow)
+            EventCode = TouchKeyEventCode.Left
         };
         var up = new SKPath(baseArrow);
         up.Transform(SKMatrix.CreateRotation((float)(Math.PI / 2), up.Bounds.MidX, up.Bounds.MidY));
-        Up = new Key(TouchKeyEventCode.Up)
+        Up = new TouchKey(up)
         {
-            TouchKey = new TouchKey(up)
+            EventCode = TouchKeyEventCode.Up
         };
         var down = new SKPath(baseArrow);
         down.Transform(SKMatrix.CreateRotation((float)(-Math.PI / 2), down.Bounds.MidX,
             down.Bounds.MidY));
-        Down = new Key(TouchKeyEventCode.Down)
+        Down = new TouchKey(down)
         {
-            TouchKey = new TouchKey(down)
+            EventCode = TouchKeyEventCode.Down
         };
         var right = new SKPath(baseArrow);
         right.Transform(SKMatrix.CreateRotation((float)Math.PI, right.Bounds.MidX,
             right.Bounds.MidY));
-        Right = new Key(TouchKeyEventCode.Right)
+        Right = new TouchKey(right)
         {
-            TouchKey = new TouchKey(right)
+            EventCode = TouchKeyEventCode.Right
         };
         _keys.AddRange(new[]
         {
             Up, Down, Left, Right
         });
     }
+
     //Desenha a partir de um ponto central
     public void DrawFromCenter(SKCanvas canvas, Vector2 center)
     {
         Draw(canvas, new Vector2(center.X - ControlSize / 2, center.Y - ControlSize / 2));
     }
+
     //Desenha a partir de um canto superior esquerdo padrão
     public void Draw(SKCanvas canvas, Vector2 position)
     {
@@ -130,36 +144,37 @@ public class TouchKeys
         //Cima
         //Desenha o circulo
         canvas.DrawCircle(centerUpDown, position.Y + firstOffset, radius, Paint);
-        Up.TouchKey.Bounds = SKRect.Create(
+        Up.Bounds = SKRect.Create(
             new SKPoint(centerUpDown - radius, position.Y + firstOffset - radius),
             new SKSize(ButtonSize, ButtonSize));
         //Desenha a seta
-        canvas.DrawPath(Up.TouchKey.Arrow, PaintArrows);
+        canvas.DrawPath(Up.Arrow, PaintArrows);
         //Baixo
         //Desenha o circulo
         canvas.DrawCircle(centerUpDown, position.Y + thirdOffset, radius, Paint);
-        Down.TouchKey.Bounds = SKRect.Create(
+        Down.Bounds = SKRect.Create(
             new SKPoint(centerUpDown - radius, position.Y + thirdOffset - radius),
             new SKSize(ButtonSize, ButtonSize));
         //Desenha a seta
-        canvas.DrawPath(Down.TouchKey.Arrow, PaintArrows);
+        canvas.DrawPath(Down.Arrow, PaintArrows);
         //Esquerda
         //Desenha o circulo
         canvas.DrawCircle(position.X + firstOffset, centerLeftRight, radius, Paint);
-        Left.TouchKey.Bounds = SKRect.Create(
+        Left.Bounds = SKRect.Create(
             new SKPoint(position.X + firstOffset - radius, centerLeftRight - radius),
             new SKSize(ButtonSize, ButtonSize));
         //Desenha a seta
-        canvas.DrawPath(Left.TouchKey.Arrow, PaintArrows);
+        canvas.DrawPath(Left.Arrow, PaintArrows);
         //Direita
         //Desenha o circulo
         canvas.DrawCircle(position.X + thirdOffset, centerLeftRight, radius, Paint);
-        Right.TouchKey.Bounds = SKRect.Create(
+        Right.Bounds = SKRect.Create(
             new SKPoint(position.X + thirdOffset - radius, centerLeftRight - radius),
             new SKSize(ButtonSize, ButtonSize));
         //Desenha a seta
-        canvas.DrawPath(Right.TouchKey.Arrow, PaintArrows);
+        canvas.DrawPath(Right.Arrow, PaintArrows);
     }
+
     //Verifica colisão
     public TouchKeyEventCode VerifyTouchCollision(Vector2 touchPoint, bool isPress)
     {
@@ -170,27 +185,10 @@ public class TouchKeys
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var key in _keys)
         {
-            key.IsPressed = isPress && touchRect.IntersectsWithInclusive(key.TouchKey.Bounds);
+            key.IsPressed = isPress && touchRect.IntersectsWithInclusive(key.Bounds);
             if (key.IsPressed) lastKeyPressed = key.EventCode;
         }
 
         return lastKeyPressed;
     }
-
-    #region Nested type: Key
-
-    public class Key
-    {
-        public bool IsPressed;
-        internal TouchKey TouchKey = new(new SKPath());
-
-        public Key(TouchKeyEventCode eventCode)
-        {
-            EventCode = eventCode;
-        }
-
-        public TouchKeyEventCode EventCode { get; }
-    }
-
-    #endregion
 }

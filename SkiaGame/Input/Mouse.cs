@@ -1,68 +1,44 @@
+using System.Collections.ObjectModel;
 using System.Numerics;
-using SkiaGame.Events;
 
 namespace SkiaGame.Input;
 
 public class Mouse
 {
-    //Dicionário com os botões do mouse e seus valores
-    private class StateElement
+    public Mouse()
     {
-        public MouseInfo State;
-        public MouseInfo LastState;
-
-        public StateElement(MouseInfo state, MouseInfo lastState)
+        var dict = new Dictionary<MouseButton, MouseBase>();
+        foreach (var button in Enum.GetValues(typeof(MouseButton)))
         {
-            State = state;
-            LastState = lastState;
+            dict[(MouseButton)button] = new MouseBase((MouseButton)button);
         }
 
-        public event Action<MouseInfoChangeEventArgs>? IsPressedChanged;
-
-        internal void OnPressedChanged(MouseInfoChangeEventArgs obj)
-        {
-            IsPressedChanged?.Invoke(obj);
-        }
+        MouseState = new ReadOnlyDictionary<MouseButton, MouseBase>(dict);
     }
 
-    private Dictionary<MouseButton, StateElement> MouseState { get; } = new();
+    //Dicionário com os botões do mouse e seus valores
+    private ReadOnlyDictionary<MouseButton, MouseBase> MouseState { get; }
 
     /// <summary>
     /// Indexador com informações do botão do mouse
     /// </summary>
     /// <param name="button">Botão do mouse a ser pesquisado</param>
-    public MouseInfo this[MouseButton button]
+    public MouseBase this[MouseButton button]
     {
-        get => GetOrCreate(button).State;
-        internal set
-        {
-            if (!MouseState.ContainsKey(button))
-            {
-                MouseState[button] = new StateElement(MouseInfo.Invalid, MouseInfo.Invalid);
-            }
-
-            MouseState[button].LastState = MouseState[button].State;
-            MouseState[button].State = value;
-            if (MouseState[button].LastState.IsPressed == value.IsPressed) return;
-            var args = new MouseInfoChangeEventArgs(MouseState[button].LastState,
-                MouseState[button].State);
-            MouseState[button].OnPressedChanged(args);
-        }
+        get => MouseState[button];
+        internal set => MouseState[button].CopyFrom(value);
     }
 
-    private StateElement GetOrCreate(MouseButton button)
+    public void AddListenerToButtonPress(MouseButton button, Action action)
     {
-        if (MouseState.ContainsKey(button)) return MouseState[button];
-        var mouseInfo = new MouseInfo(button, Vector2.Zero, false);
-        var element = new StateElement(mouseInfo, mouseInfo);
-        MouseState[button] = element;
-        return element;
+        var element = MouseState[button];
+        element.Pressed += action;
     }
 
-    public void AddListenerToButton(MouseButton button, Action<MouseInfoChangeEventArgs> action)
+    public void AddListenerToButtonRelease(MouseButton button, Action action)
     {
-        var element = GetOrCreate(button);
-        element.IsPressedChanged += action;
+        var element = MouseState[button];
+        element.Released += action;
     }
 
     //No desktop, todos os cliques terão a mesma posição
@@ -70,9 +46,7 @@ public class Mouse
     {
         foreach (var info in MouseState)
         {
-            var lastState = MouseState[info.Key].State.Position;
-            MouseState[info.Key].LastState.Position = lastState;
-            MouseState[info.Key].State.Position = position;
+            MouseState[info.Key].Position = position;
         }
     }
 }

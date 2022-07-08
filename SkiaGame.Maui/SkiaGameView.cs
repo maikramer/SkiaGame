@@ -117,7 +117,7 @@ public class SkiaGameView : SKCanvasView
                     new SkTouchEventArgs(location));
                 if (result)
                 {
-                    Engine?.InternalSetMouseState(new MouseInfo(button, location, true));
+                    Engine?.InternalSetMouseState(new MouseBase(button, location, true));
                 }
 
                 break;
@@ -128,7 +128,7 @@ public class SkiaGameView : SKCanvasView
                     new SkTouchEventArgs(location));
                 if (result)
                 {
-                    Engine?.InternalSetMouseState(new MouseInfo(button, location, false));
+                    Engine?.InternalSetMouseState(new MouseBase(button, location, false));
                 }
 
                 break;
@@ -137,7 +137,7 @@ public class SkiaGameView : SKCanvasView
             {
                 if (result)
                 {
-                    Engine?.InternalSetMouseState(new MouseInfo(button, location, true));
+                    Engine?.InternalSetMouseState(new MouseBase(button, location, true));
                 }
 
                 break;

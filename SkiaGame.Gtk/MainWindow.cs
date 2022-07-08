@@ -91,7 +91,7 @@ public class MainWindow : Window
         }
 
         var eventArgs = new SkTouchEventArgs(new Vector2(coordX, coordY));
-        var mouseInfo = new MouseInfo((MouseButton)eventButton.Button, new Vector2(coordX, coordY),
+        var mouseInfo = new MouseBase((MouseButton)eventButton.Button, new Vector2(coordX, coordY),
             state);
         _engine.InternalSetMouseState(mouseInfo);
         return eventArgs;
