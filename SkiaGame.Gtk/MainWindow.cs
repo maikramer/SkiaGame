@@ -63,6 +63,7 @@ public class MainWindow : Window
         _engine.InternalKeyRelease(eventArgs);
     }
 
+    [GLib.ConnectBefore]
     private void OnKeyPressEvent(object o, KeyPressEventArgs args)
     {
         var keyStr = args.Event.Key.ToString();

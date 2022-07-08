@@ -116,5 +116,9 @@ public enum KeyCode
     altR = 69,
     Alt_R = 69,
     RMenu = 69,
-    ISO_Level3_Shift = 69
+    ISO_Level3_Shift = 69,
+    Up = 70,
+    Down = 71,
+    Left = 72,
+    Right = 73
 }

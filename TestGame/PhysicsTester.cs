@@ -218,16 +218,16 @@ public class PhysicsTester : Engine
     private void HandleKeyboardAndTouchKeys(float timeStep)
     {
         if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
-            Keyboard[KeyCode.W].IsPressed)
+            Keyboard[KeyCode.W].IsPressed || Keyboard[KeyCode.Up].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitY, 1000, timeStep);
         else if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
-                 Keyboard[KeyCode.S].IsPressed)
+                 Keyboard[KeyCode.S].IsPressed || Keyboard[KeyCode.Down].IsPressed)
             _char.RigidBody.AddForce(Vector2.UnitY, 1000, timeStep);
         else if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
-                 Keyboard[KeyCode.D].IsPressed)
+                 Keyboard[KeyCode.D].IsPressed || Keyboard[KeyCode.Right].IsPressed)
             _char.RigidBody.AddForce(Vector2.UnitX, 1000, timeStep);
         else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
-                 Keyboard[KeyCode.A].IsPressed)
+                 Keyboard[KeyCode.A].IsPressed || Keyboard[KeyCode.Left].IsPressed)
             _char.RigidBody.AddForce(-Vector2.UnitX, 1000, timeStep);
     }
 }

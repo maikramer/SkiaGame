@@ -234,13 +234,10 @@ public abstract class Engine
         var key = TouchKeys.VerifyTouchCollision(args.Position, isPress);
         if (key != TouchKeyEventCode.None)
         {
-            Console.WriteLine($"Tecla {key}");
             TouchKeyChanged.Invoke(this, new TouchKeyEventArgs(key, eventType));
         }
 
         MainMenu.VerifyClick(args.Position.ToSkPoint(), isPress);
-
-        Console.WriteLine($"Touch {eventType} em {args.Position.X},{args.Position.Y}");
     }
 
     public void InternalKeyPress(SkKeyPressEventArgs args)

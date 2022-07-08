@@ -31,6 +31,5 @@ public class Keyboard
     public void UpdateValues(KeyCode keyCode, KeyBase keyBase)
     {
         KeyboardState[keyCode].IsPressed = keyBase.IsPressed;
-        Console.WriteLine($"Tecla {keyCode} Atualizada");
     }
 }
