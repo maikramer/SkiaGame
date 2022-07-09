@@ -20,7 +20,7 @@ public class Mouse
     private ReadOnlyDictionary<MouseButton, MouseBase> MouseState { get; }
 
     /// <summary>
-    /// Indexador com informações do botão do mouse
+    ///     Indexador com informações do botão do mouse
     /// </summary>
     /// <param name="button">Botão do mouse a ser pesquisado</param>
     public MouseBase this[MouseButton button]

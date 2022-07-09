@@ -1,6 +1,7 @@
 ﻿namespace SkiaGame.Physics.Classes;
+
 /// <summary>
-/// Classe que define os pares de possíveis colisões
+///     Classe que define os pares de possíveis colisões
 /// </summary>
 public class CollisionPair
 {

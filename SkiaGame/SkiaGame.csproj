@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="SkiaSharp.Views" Version="2.88.0" />
-        <PackageReference Include="Topten.RichTextKit" Version="0.4.162-preview" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="SkiaSharp.Views" Version="2.88.0"/>
+        <PackageReference Include="Topten.RichTextKit" Version="0.4.162-preview"/>
     </ItemGroup>
 
     <PropertyGroup>

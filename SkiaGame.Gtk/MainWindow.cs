@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Timers;
 using Gdk;
+using GLib;
 using SkiaGame;
 using SkiaGame.Events;
 using SkiaGame.Input;
@@ -63,7 +64,7 @@ public class MainWindow : Window
         _engine.InternalKeyRelease(eventArgs);
     }
 
-    [GLib.ConnectBefore]
+    [ConnectBefore]
     private void OnKeyPressEvent(object o, KeyPressEventArgs args)
     {
         var keyStr = args.Event.Key.ToString();

@@ -5,11 +5,12 @@ namespace SkiaGame.Events;
 public class ScreenSizeChangeEventArgs : EventArgs
 {
     /// <summary>
-    /// Novo valor do tamanho da tela
+    ///     Novo valor do tamanho da tela
     /// </summary>
     public readonly SKSize NewValue;
+
     /// <summary>
-    /// Valor anterior do tamanho da tela
+    ///     Valor anterior do tamanho da tela
     /// </summary>
     public readonly SKSize OldValue;
 

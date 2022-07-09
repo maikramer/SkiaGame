@@ -19,7 +19,7 @@ public class Keyboard
     private ReadOnlyDictionary<KeyCode, KeyBase> KeyboardState { get; }
 
     /// <summary>
-    /// Indexador que pesquisa informações sobre uma tecla do teclado
+    ///     Indexador que pesquisa informações sobre uma tecla do teclado
     /// </summary>
     /// <param name="keyCode">Tecla a ser pesquisada</param>
     public KeyBase this[KeyCode keyCode]

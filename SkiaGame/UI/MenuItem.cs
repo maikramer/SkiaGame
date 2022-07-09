@@ -1,11 +1,17 @@
 using SkiaSharp;
-using Topten.RichTextKit;
 
 namespace SkiaGame.UI;
 
 public class MenuItem
 {
     private const float Tolerance = 5f;
+
+    private SKRect _rect;
+
+    public SKPaint BoxPaint = new()
+    {
+        IsAntialias = true
+    };
 
     public MenuItem(string text)
     {
@@ -17,17 +23,10 @@ public class MenuItem
     public SKSize ItemSize => Text.Size + BoxMargin;
     public float CornerRadius { get; set; } = 8;
 
-    public SKPaint BoxPaint = new()
-    {
-        IsAntialias = true
-    };
-
-    public event Action? Press;
-
     public SKColor NormalColor { get; set; } = SKColor.Parse("#CC8A2BE2");
     public SKColor HoverColor { get; set; } = SKColor.Parse("#CC9400D3");
 
-    private SKRect _rect;
+    public event Action? Press;
 
     public void SetBaseSize()
     {

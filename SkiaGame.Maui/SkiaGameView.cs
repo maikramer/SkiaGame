@@ -39,7 +39,7 @@ public class SkiaGameView : SKCanvasView
     }
 
     /// <summary>
-    /// A Pessoa não deveria Reatribuir a Engine em Runtime, isso não é muito previsível e suportado.
+    ///     A Pessoa não deveria Reatribuir a Engine em Runtime, isso não é muito previsível e suportado.
     /// </summary>
     public void EngineReinit()
     {

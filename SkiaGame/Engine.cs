@@ -22,13 +22,20 @@ public abstract class Engine
 {
     //Lista de corpos para desenho
     private readonly List<GameObject> _drawQueue = new();
+    private readonly DateTime _startTime = DateTime.Now;
 
     public readonly PhysicsEngine PhysicsEngine;
+
+    private string _gameFolder = string.Empty;
 
     //Ultima vez em que o tempo foi medido para desenho
     private DateTime _lastTime = DateTime.Now;
     private bool _startExecuted;
-    private readonly DateTime _startTime = DateTime.Now;
+
+    public JsonSerializerSettings JsonSerializerSettings = new()
+    {
+        Error = JsonError
+    };
 
     protected Engine()
     {
@@ -38,25 +45,18 @@ public abstract class Engine
         PhysicsEngine.AfterPhysicsUpdate += AfterPhysicsUpdate;
     }
 
-    private string _gameFolder = string.Empty;
-
-    public JsonSerializerSettings JsonSerializerSettings = new()
-    {
-        Error = JsonError
-    };
-
     /// <summary>
-    /// Menu Principal do jogo
+    ///     Menu Principal do jogo
     /// </summary>
     public Menu MainMenu { get; set; } = new();
 
     /// <summary>
-    /// Título do jogo, utilizado também como nome das pastas do jogo
+    ///     Título do jogo, utilizado também como nome das pastas do jogo
     /// </summary>
     public string Title { get; set; } = "SkiaGame";
 
     /// <summary>
-    /// Informações sobre a plataforma
+    ///     Informações sobre a plataforma
     /// </summary>
     public Platform Platform { get; } = new();
 
@@ -98,7 +98,7 @@ public abstract class Engine
     public int FrameRate { get; set; } = 60;
 
     /// <summary>
-    /// Taxa em que que o input é verificado em algumas plataformas como o GTK
+    ///     Taxa em que que o input é verificado em algumas plataformas como o GTK
     /// </summary>
     public int InputFeedRate { get; set; } = 250;
 

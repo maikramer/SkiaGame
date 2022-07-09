@@ -31,20 +31,22 @@ public struct Settings
 
 public class PhysicsTester : Engine
 {
+    private static float _ballsDiameter = 20;
+
     private readonly CircularSetting<int> _charSizeOptions =
         new(new[]
         {
             20, 30, 40, 50
         });
 
-    public Settings Settings;
-    private static float _ballsDiameter = 20;
+    private GameObject _char = new();
+    private MenuItem? _charSizeMenuItem;
     private RigidBody? _holdingBody;
     private RigidBody? _lastHoldingBody;
     private bool _lastMouseState;
-    private GameObject _char = new();
-    private MenuItem? _charSizeMenuItem;
     private MenuItem? _physicsStateMenuItem;
+
+    public Settings Settings;
 
     protected PhysicsTester()
     {
@@ -77,7 +79,7 @@ public class PhysicsTester : Engine
                     Velocity = new Vector2(rand.Next(400), rand.Next(400))
                 }
             };
-            
+
             AddToEngine(ball);
         }
     }
@@ -100,7 +102,7 @@ public class PhysicsTester : Engine
         PhysicsEngine.IsPaused = Settings.PhysicsStatus.Status != PhysicsStatus.Running;
         CreateAndPopulateBalls();
         _char.Position = new Vector2(100,
-            ScreenInfo.Size.Height - (Settings.CharSize));
+            ScreenInfo.Size.Height - Settings.CharSize);
         AddToEngine(_char);
         PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
         Mouse[MouseButton.Left].Pressed += () =>

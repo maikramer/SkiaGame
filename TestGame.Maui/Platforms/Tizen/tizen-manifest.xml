@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest api-version="7" package="com.companyname.TestGame.Maui" version="1.0.0" xmlns="http://tizen.org/ns/packages">
-    <dependencies />
+    <dependencies/>
     <privileges>
         <privilege>http://tizen.org/privilege/internet</privilege>
     </privileges>
-    <profile name="common" />
-    <provides-appdefined-privileges />
-    <shortcut-list />
+    <profile name="common"/>
+    <provides-appdefined-privileges/>
+    <shortcut-list/>
     <ui-application appid="com.companyname.TestGame.Maui" exec="TestGame.Maui.dll" launch_mode="single" multiple="false"
-        nodisplay="false" taskmanage="true" type="dotnet">
+                    nodisplay="false" taskmanage="true" type="dotnet">
         <icon>appicon.xhigh.png</icon>
         <label>TestGame.Maui</label>
-        <metadata key="http://tizen.org/metadata/prefer_dotnet_aot" value="true" />
+        <metadata key="http://tizen.org/metadata/prefer_dotnet_aot" value="true"/>
     </ui-application>
 </manifest>

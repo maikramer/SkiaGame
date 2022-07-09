@@ -15,17 +15,10 @@ public enum MouseButton
 
 public class MouseBase : SkiaInputBase
 {
-    public static MouseBase Invalid { get; } = new(MouseButton.Invalid, Vector2.Zero, false);
-
     /// <summary>
-    /// Botão do mouse
+    ///     Botão do mouse
     /// </summary>
     public readonly MouseButton Button;
-
-    /// <summary>
-    /// Posição do clique
-    /// </summary>
-    public Vector2 Position { get; internal set; }
 
     public MouseBase(MouseButton button) : this(button, Vector2.Zero, false)
     {
@@ -37,6 +30,13 @@ public class MouseBase : SkiaInputBase
         Position = position;
         IsPressed = isPressed;
     }
+
+    public static MouseBase Invalid { get; } = new(MouseButton.Invalid, Vector2.Zero, false);
+
+    /// <summary>
+    ///     Posição do clique
+    /// </summary>
+    public Vector2 Position { get; internal set; }
 
     public void CopyFrom(MouseBase mouseBase)
     {

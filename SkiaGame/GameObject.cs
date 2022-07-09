@@ -47,19 +47,43 @@ public class GameObject
         }
     }
 
-    public SKSize Size { get => RigidBody.Size; set => RigidBody.SetSize(value); }
+    public SKSize Size
+    {
+        get => RigidBody.Size;
+        set => RigidBody.SetSize(value);
+    }
 
-    public SKColor Color { get => Paint.Color; set => Paint.Color = value; }
+    public SKColor Color
+    {
+        get => Paint.Color;
+        set => Paint.Color = value;
+    }
 
-    public float Diameter { get => Size.Width; set => Size = new SKSize(value, value); }
+    public float Diameter
+    {
+        get => Size.Width;
+        set => Size = new SKSize(value, value);
+    }
 
     public SKPoint RoundRectCornerRadius { get; set; } = new(1, 1);
 
-    public Vector2 Position { get => RigidBody.Position; set => RigidBody.SetPosition(value); }
+    public Vector2 Position
+    {
+        get => RigidBody.Position;
+        set => RigidBody.SetPosition(value);
+    }
 
-    public bool Locked { get => RigidBody.Locked; set => RigidBody.Locked = value; }
+    public bool Locked
+    {
+        get => RigidBody.Locked;
+        set => RigidBody.Locked = value;
+    }
 
-    public bool HasGravity { get => RigidBody.HasGravity; set => RigidBody.HasGravity = value; }
+    public bool HasGravity
+    {
+        get => RigidBody.HasGravity;
+        set => RigidBody.HasGravity = value;
+    }
 
     public void Draw(SKCanvas canvas)
     {

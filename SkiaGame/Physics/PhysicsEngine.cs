@@ -39,22 +39,22 @@ public class PhysicsEngine
     }
 
     /// <summary>
-    /// Gravidade mínima entre 2 objetos
+    ///     Gravidade mínima entre 2 objetos
     /// </summary>
     public float MinimalGravityVelocity { get; set; } = 3.0f;
 
     /// <summary>
-    /// Velocidade mínima de um objeto
+    ///     Velocidade mínima de um objeto
     /// </summary>
     public float MinimalVelocity { get; set; } = 1.0f;
 
     /// <summary>
-    /// Escala de tempo em que a física ocorre, em que Zero significa o jogo em pausa
+    ///     Escala de tempo em que a física ocorre, em que Zero significa o jogo em pausa
     /// </summary>
     public float TimeScale { get; set; } = 1.0f;
 
     /// <summary>
-    /// Define o jogo em pausa, efetivamente seta <see cref="TimeScale"/> para 0 e salva o timescale anterior
+    ///     Define o jogo em pausa, efetivamente seta <see cref="TimeScale" /> para 0 e salva o timescale anterior
     /// </summary>
     public bool IsPaused
     {
@@ -78,11 +78,6 @@ public class PhysicsEngine
     ///     Espessura da parede de contenção
     /// </summary>
     public float WallThickness { get; set; } = 50;
-
-    /// <summary>
-    /// Arraste com o ar
-    /// </summary>
-    public float AirDrag { get; set; } = 10f;
 
     /// <summary>
     ///     Escala em que a gravidade ocorre
@@ -123,7 +118,7 @@ public class PhysicsEngine
     public event Action<float> BeforePhysicsUpdate = _ => { };
 
     /// <summary>
-    /// Evento que acontece após o frame de física
+    ///     Evento que acontece após o frame de física
     /// </summary>
     public event Action<float> AfterPhysicsUpdate = _ => { };
 
@@ -271,7 +266,7 @@ public class PhysicsEngine
     private void ApplyConstants(RigidBody? body, float dt)
     {
         if (body == null) return;
-
+        if (body.Locked) return;
         AddGravity(body, dt);
         AddFriction(body, dt);
         if (body.Velocity.Length() < MinimalVelocity)

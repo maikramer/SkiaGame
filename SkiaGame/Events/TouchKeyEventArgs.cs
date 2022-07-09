@@ -18,11 +18,12 @@ public enum TouchKeyEventType
 public class TouchKeyEventArgs : EventArgs
 {
     /// <summary>
-    /// Tipo de evento de Touch
+    ///     Tipo de evento de Touch
     /// </summary>
     public readonly TouchKeyEventType EventType;
+
     /// <summary>
-    /// Qual a tecla de Touch foi pressionada
+    ///     Qual a tecla de Touch foi pressionada
     /// </summary>
     public readonly TouchKeyEventCode Key;
 

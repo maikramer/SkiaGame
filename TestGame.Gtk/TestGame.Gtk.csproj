@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\TestGame\TestGame.csproj" />
+        <ProjectReference Include="..\TestGame\TestGame.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SkiaGame.Gtk\SkiaGame.Gtk.csproj" />
+        <ProjectReference Include="..\SkiaGame.Gtk\SkiaGame.Gtk.csproj"/>
     </ItemGroup>
 
     <PropertyGroup>

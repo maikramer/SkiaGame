@@ -2,5 +2,8 @@
 
 public class KeyBase : SkiaInputBase
 {
-    public KeyBase(bool isPressed) { IsPressed = isPressed; }
+    public KeyBase(bool isPressed)
+    {
+        IsPressed = isPressed;
+    }
 }

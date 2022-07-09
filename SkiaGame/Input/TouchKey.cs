@@ -16,7 +16,7 @@ public class TouchKey : SkiaInputBase
     }
 
     /// <summary>
-    /// Perímetro da tecla touch, até onde ela se estende
+    ///     Perímetro da tecla touch, até onde ela se estende
     /// </summary>
     public SKRect Bounds
     {
@@ -29,12 +29,14 @@ public class TouchKey : SkiaInputBase
     }
 
     /// <summary>
-    /// Informações sobre desenho de sua seta
+    ///     Informações sobre desenho de sua seta
     /// </summary>
     public SKPath Arrow { get; set; }
 
+    public TouchKeyEventCode EventCode { get; init; }
+
     /// <summary>
-    /// Atualiza a posição da tecla
+    ///     Atualiza a posição da tecla
     /// </summary>
     public void UpdatePosition()
     {
@@ -44,6 +46,4 @@ public class TouchKey : SkiaInputBase
         newPath.Transform(SKMatrix.CreateTranslation(arrowX, arrowY));
         Arrow = newPath;
     }
-
-    public TouchKeyEventCode EventCode { get; init; }
 }

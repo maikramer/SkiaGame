@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.0" />
-        <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="2.88.0" />
+        <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.0"/>
+        <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="2.88.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
     </ItemGroup>
 
     <PropertyGroup>

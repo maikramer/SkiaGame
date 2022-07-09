@@ -5,15 +5,14 @@ namespace SkiaGame.UI;
 
 public class Menu
 {
+    public readonly List<MenuItem> Items = new();
+    private float _density = 1.0f;
     public bool Enabled { get; set; } = true;
     public float ItemSpacing { get; set; } = 5f;
 
     public float BaseFontSize { get; set; } = 20f;
 
-    public readonly List<MenuItem> Items = new();
-
     public MenuItem this[int i] => Items[i];
-    private float _density = 1.0f;
 
     public void AddItem(MenuItem item)
     {

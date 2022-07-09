@@ -55,9 +55,17 @@ internal static class Collision
                 {
                     // Point towards B knowing that n points from A to B
                     if (n.X < 0)
-                        m.Normal = new Vector2 { X = -1, Y = 0 };
+                        m.Normal = new Vector2
+                        {
+                            X = -1,
+                            Y = 0
+                        };
                     else
-                        m.Normal = new Vector2 { X = 1, Y = 0 };
+                        m.Normal = new Vector2
+                        {
+                            X = 1,
+                            Y = 0
+                        };
 
                     m.Penetration = xOverlap;
                     return true;
@@ -65,9 +73,17 @@ internal static class Collision
 
                 // Point toward B knowing that n points from A to B
                 if (n.Y < 0)
-                    m.Normal = new Vector2 { X = 0, Y = -1 };
+                    m.Normal = new Vector2
+                    {
+                        X = 0,
+                        Y = -1
+                    };
                 else
-                    m.Normal = new Vector2 { X = 0, Y = 1 };
+                    m.Normal = new Vector2
+                    {
+                        X = 0,
+                        Y = 1
+                    };
 
                 m.Penetration = yOverlap;
                 return true;
@@ -110,7 +126,11 @@ internal static class Collision
         // Circles are on same position
         // Choose random (but consistent) values
         m.Penetration = a.Width / 2;
-        m.Normal = new Vector2 { X = 1, Y = 0 };
+        m.Normal = new Vector2
+        {
+            X = 1,
+            Y = 0
+        };
         return true;
     }
 
@@ -185,7 +205,8 @@ internal static class Collision
         {
             m.Normal = Vector2.Normalize(-normal);
             m.Penetration = r - d;
-        } else
+        }
+        else
         {
             //If pushing up at all, go straight up (gravity hack)
             m.Normal = Vector2.Normalize(normal);

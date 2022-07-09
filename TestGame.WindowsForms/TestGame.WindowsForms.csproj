@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj" />
-        <ProjectReference Include="..\TestGame\TestGame.csproj" />
+        <ProjectReference Include="..\SkiaGame.WindowsForms\SkiaGame.WindowsForms.csproj"/>
+        <ProjectReference Include="..\TestGame\TestGame.csproj"/>
     </ItemGroup>
 
     <PropertyGroup>

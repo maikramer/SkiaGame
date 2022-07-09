@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj" />
+        <ProjectReference Include="..\SkiaGame\SkiaGame.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

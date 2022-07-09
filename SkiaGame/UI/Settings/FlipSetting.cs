@@ -9,6 +9,10 @@ public abstract class FlipSetting : IEquatable<FlipSetting>
         Status = Positive;
     }
 
+    public string Status { get; private set; }
+    [JsonIgnore] protected virtual string Positive => "Positive";
+    [JsonIgnore] protected virtual string Negative => "Negative";
+
     public bool Equals(FlipSetting? other)
     {
         if (ReferenceEquals(null, other)) return false;
@@ -20,7 +24,7 @@ public abstract class FlipSetting : IEquatable<FlipSetting>
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj.GetType() != GetType()) return false;
         return Equals((FlipSetting)obj);
     }
 
@@ -29,10 +33,6 @@ public abstract class FlipSetting : IEquatable<FlipSetting>
         // ReSharper disable once NonReadonlyMemberInGetHashCode
         return Status.GetHashCode();
     }
-
-    public string Status { get; private set; }
-    [JsonIgnore] protected virtual string Positive => "Positive";
-    [JsonIgnore] protected virtual string Negative => "Negative";
 
     public void Flip()
     {

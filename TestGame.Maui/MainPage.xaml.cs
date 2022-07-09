@@ -2,5 +2,8 @@
 
 public partial class MainPage
 {
-    public MainPage() { InitializeComponent(); }
+    public MainPage()
+    {
+        InitializeComponent();
+    }
 }

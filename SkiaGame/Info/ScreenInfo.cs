@@ -11,9 +11,9 @@ public enum Orientation
 public class ScreenInfo
 {
     public static readonly ScreenInfo Zero = new(SKSize.Empty, Orientation.Landscape, 1.0f);
+    public readonly float Density;
     public readonly Orientation Orientation;
     public readonly SKSize Size;
-    public readonly float Density;
 
     public ScreenInfo(SKSize size, Orientation orientation, float density)
     {

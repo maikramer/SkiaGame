@@ -19,52 +19,52 @@ public class TouchKeys
     };
 
     /// <summary>
-    /// Informações sobre a tecla virtual baixo
+    ///     Informações sobre a tecla virtual baixo
     /// </summary>
     public TouchKey Down { get; private set; } = new();
 
     /// <summary>
-    /// Informações sobre a tecla virtual esquerda
+    ///     Informações sobre a tecla virtual esquerda
     /// </summary>
     public TouchKey Left { get; private set; } = new();
 
     /// <summary>
-    /// Informações sobre a tecla virtual direita
+    ///     Informações sobre a tecla virtual direita
     /// </summary>
     public TouchKey Right { get; private set; } = new();
 
     /// <summary>
-    /// Informações sobre a tecla virtual cima
+    ///     Informações sobre a tecla virtual cima
     /// </summary>
     public TouchKey Up { get; private set; } = new();
 
     /// <summary>
-    /// Obtém ou seta o tamanho base do controle touch, lembrando que ele é dependente da densidade nas plataformas móveis
+    ///     Obtém ou seta o tamanho base do controle touch, lembrando que ele é dependente da densidade nas plataformas móveis
     /// </summary>
     public float Size { get; set; } = 120f;
 
     /// <summary>
-    /// Obtém o tamanho do controle touch descontado a margem
+    ///     Obtém o tamanho do controle touch descontado a margem
     /// </summary>
     public float ControlSize { get; private set; }
 
     /// <summary>
-    /// Obtém o tamanho do botão (Ele é <see cref="ControlSize"/> / 3)
+    ///     Obtém o tamanho do botão (Ele é <see cref="ControlSize" /> / 3)
     /// </summary>
     public float ButtonSize { get; private set; }
 
     /// <summary>
-    /// Obtém a Margem (Ela é <see cref="Size"/> / 10)
+    ///     Obtém a Margem (Ela é <see cref="Size" /> / 10)
     /// </summary>
     public float Margin { get; private set; }
 
     /// <summary>
-    /// A tolerancia para fora do botão em que a pessoa pode clicar
+    ///     A tolerancia para fora do botão em que a pessoa pode clicar
     /// </summary>
     public float TouchTolerance { get; set; } = 10;
 
     /// <summary>
-    /// Paint com as propriedades para desenhar o circulo do botão (Com a cor por exemplo)
+    ///     Paint com as propriedades para desenhar o circulo do botão (Com a cor por exemplo)
     /// </summary>
     public SKPaint Paint { get; } = new()
     {
@@ -74,7 +74,7 @@ public class TouchKeys
     };
 
     /// <summary>
-    /// Paint com as propriedades para desenhar as setas (Com a cor por exemplo)
+    ///     Paint com as propriedades para desenhar as setas (Com a cor por exemplo)
     /// </summary>
     public SKPaint PaintArrows { get; } = new()
     {

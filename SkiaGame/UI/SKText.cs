@@ -12,16 +12,16 @@ public enum TextDirection
 
 public class SkiaText
 {
+    public SkiaText(string text)
+    {
+        Text = text;
+    }
+
     public string Text { get; set; }
     public SKSize Size => GetSize();
 
     public NotifiableStyle Style { get; } = new();
     public TextDirection TextDirection { get; set; } = TextDirection.Center;
-
-    public SkiaText(string text)
-    {
-        Text = text;
-    }
 
     public override string ToString()
     {
@@ -56,7 +56,7 @@ public class SkiaText
                 return;
         }
 
-        var rs = new RichString()
+        var rs = new RichString
         {
             DefaultStyle = Style
         };

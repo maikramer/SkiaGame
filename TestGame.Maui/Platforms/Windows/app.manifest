@@ -12,5 +12,5 @@
         </windowsSettings>
     </application>
 
-    <assemblyIdentity name="TestGame.Maui.WinUI.app" version="1.0.0.0" />
+    <assemblyIdentity name="TestGame.Maui.WinUI.app" version="1.0.0.0"/>
 </assembly>

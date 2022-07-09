@@ -110,7 +110,7 @@ public class PreyHackGame : Engine
                 Size = rect.Size,
                 Color = SKColors.Red,
                 Locked = true,
-                Position = rect.Location.ToVector2(),
+                Position = rect.Location.ToVector2()
             };
             AddToEngine(box);
         }

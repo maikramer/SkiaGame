@@ -7,12 +7,12 @@ namespace SkiaGame.Events;
 public class ScreenOrientationChangeEventArgs : EventArgs
 {
     /// <summary>
-    /// Novo valor da orientação
+    ///     Novo valor da orientação
     /// </summary>
     public readonly Orientation NewValue;
 
     /// <summary>
-    /// Valor anterior
+    ///     Valor anterior
     /// </summary>
     public readonly Orientation OldValue;
 
