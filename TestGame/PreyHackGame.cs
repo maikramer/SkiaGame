@@ -9,7 +9,7 @@ namespace TestGame;
 
 public class PreyHackGame : Engine
 {
-    private const float BaseCharForce = 300f;
+    private const float BaseCharForce = 1000f;
     private const float BaseCharSize = 40;
     private const float MinimalBoxSize = 30;
     private const float BoxBaseSize = 40;
@@ -22,6 +22,7 @@ public class PreyHackGame : Engine
     protected override void OnStart()
     {
         PhysicsEngine.Gravity = Vector2.Zero;
+        PhysicsEngine.MinimalVelocity = 3;
         var charSize = BaseCharSize * ScreenInfo.Density;
         _char = new GameObject
         {
@@ -34,8 +35,8 @@ public class PreyHackGame : Engine
                 ScreenInfo.Size.Height - charSize),
             RigidBody =
             {
-                Restitution = 0.4f,
-                Friction = 0.9f,
+                Restitution = 1.2f,
+                Friction = 2f,
                 HasGravity = false
             }
         };

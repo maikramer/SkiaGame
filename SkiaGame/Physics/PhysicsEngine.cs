@@ -11,8 +11,7 @@ namespace SkiaGame.Physics;
 public class PhysicsEngine
 {
     private const int OutOfBoundsValue = 5000;
-    private const float MinimalGravityVelocity = 3f;
-
+    private const float FrictionCompensation = 0.002f;
     public static readonly Queue<RigidBody?> RemovalQueue = new();
 
     private readonly BoundingBox _boundingBox = new();
@@ -39,8 +38,24 @@ public class PhysicsEngine
         Task.Run(PhysicsTask);
     }
 
+    /// <summary>
+    /// Gravidade mínima entre 2 objetos
+    /// </summary>
+    public float MinimalGravityVelocity { get; set; } = 3.0f;
+
+    /// <summary>
+    /// Velocidade mínima de um objeto
+    /// </summary>
+    public float MinimalVelocity { get; set; } = 1.0f;
+
+    /// <summary>
+    /// Escala de tempo em que a física ocorre, em que Zero significa o jogo em pausa
+    /// </summary>
     public float TimeScale { get; set; } = 1.0f;
 
+    /// <summary>
+    /// Define o jogo em pausa, efetivamente seta <see cref="TimeScale"/> para 0 e salva o timescale anterior
+    /// </summary>
     public bool IsPaused
     {
         set
@@ -107,6 +122,9 @@ public class PhysicsEngine
     /// </summary>
     public event Action<float> BeforePhysicsUpdate = _ => { };
 
+    /// <summary>
+    /// Evento que acontece após o frame de física
+    /// </summary>
     public event Action<float> AfterPhysicsUpdate = _ => { };
 
     /// <summary>
@@ -235,7 +253,12 @@ public class PhysicsEngine
 
     private static float Attenuate(float value, float factor)
     {
-        if (factor > value) factor = 0;
+        if (factor == 0 || value == 0) return value;
+        while (factor > Math.Abs(value))
+        {
+            factor /= 2;
+        }
+
         value += Math.Sign(value) * -1 * factor;
         return value;
     }
@@ -251,6 +274,10 @@ public class PhysicsEngine
 
         AddGravity(body, dt);
         AddFriction(body, dt);
+        if (body.Velocity.Length() < MinimalVelocity)
+        {
+            body.Velocity = Vector2.Zero;
+        }
     }
 
     private void AddGravity(RigidBody? body, float dt)
@@ -262,7 +289,7 @@ public class PhysicsEngine
     private static void AddFriction(RigidBody body, float delta)
     {
         body.Velocity = Attenuate(body.Velocity,
-            body.Friction * delta * body.Velocity.LengthSquared() * 0.01f);
+            body.Friction * delta * body.Velocity.LengthSquared() * FrictionCompensation);
     }
 
     private Vector2 CalculatePointGravity(RigidBody? body)
