@@ -4,7 +4,7 @@ namespace TestGame;
 
 // public class Game : RectBouncer
 // public class Game : FreeFall
-public class Game : PhysicsTester
+public class Game : PreyHackGame
 {
     // ReSharper disable once InconsistentNaming
     private static readonly Game? _gameInstance = null;

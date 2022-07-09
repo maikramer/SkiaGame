@@ -5,6 +5,7 @@ namespace SkiaGame.Physics;
 
 public class BoundingBox
 {
+    private SKRect _bounds;
     public RigidBody Down = new();
     public RigidBody Left = new();
     public RigidBody Right = new();
@@ -12,6 +13,7 @@ public class BoundingBox
 
     public void Create(float wallThickness, SKSize size)
     {
+        _bounds = SKRect.Create(size);
         var up = new RigidBody
         {
             Position = new Vector2(0, -wallThickness),
@@ -44,6 +46,11 @@ public class BoundingBox
         Down = down;
         Left = left;
         Right = right;
+    }
+
+    public bool Contains(SKRect rect)
+    {
+        return _bounds.Contains(rect);
     }
 
     public void UpdateSize(float wallThickness, SKSize size)

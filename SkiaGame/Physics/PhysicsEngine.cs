@@ -12,7 +12,6 @@ public class PhysicsEngine
 {
     private const int OutOfBoundsValue = 5000;
     private const float MinimalGravityVelocity = 3f;
-    private const float MinimalVelocity = 0.1f;
 
     public static readonly Queue<RigidBody?> RemovalQueue = new();
 
@@ -53,7 +52,7 @@ public class PhysicsEngine
             }
             else
             {
-                if(_lastTimeScale == 0) return;
+                if (_lastTimeScale == 0) return;
                 TimeScale = _lastTimeScale;
             }
         }
@@ -64,6 +63,11 @@ public class PhysicsEngine
     ///     Espessura da parede de contenção
     /// </summary>
     public float WallThickness { get; set; } = 50;
+
+    /// <summary>
+    /// Arraste com o ar
+    /// </summary>
+    public float AirDrag { get; set; } = 10f;
 
     /// <summary>
     ///     Escala em que a gravidade ocorre
@@ -146,6 +150,11 @@ public class PhysicsEngine
         }
     }
 
+    public bool IsInsideBounds(SKRect rect)
+    {
+        return _boundingBox.Contains(rect);
+    }
+
     public void AddBody(RigidBody rigidBody)
     {
         lock (_listStaticObjects)
@@ -224,24 +233,21 @@ public class PhysicsEngine
     }
 
 
-    private Vector2 Attenuate(Vector2 vector, float factor)
+    private static float Attenuate(float value, float factor)
     {
-        float At(float v)
-        {
-            return v > 0
-                ? v - factor
-                : v < 0
-                    ? v - factor
-                    : 0;
-        }
+        if (factor > value) factor = 0;
+        value += Math.Sign(value) * -1 * factor;
+        return value;
+    }
 
-        return new Vector2(At(vector.X), At(vector.Y));
+    private static Vector2 Attenuate(Vector2 vector, float factor)
+    {
+        return new Vector2(Attenuate(vector.X, factor), Attenuate(vector.Y, factor));
     }
 
     private void ApplyConstants(RigidBody? body, float dt)
     {
         if (body == null) return;
-        if (body.Locked) return;
 
         AddGravity(body, dt);
         AddFriction(body, dt);
@@ -253,13 +259,10 @@ public class PhysicsEngine
         if (body.HasGravity) body.Velocity += GetGravityVector(body) * dt;
     }
 
-    private void AddFriction(RigidBody body, float delta)
+    private static void AddFriction(RigidBody body, float delta)
     {
-        body.Velocity = Attenuate(body.Velocity, body.Friction * delta);
-        if (body.Velocity.Length() < MinimalVelocity)
-        {
-            body.Velocity = Vector2.Zero;
-        }
+        body.Velocity = Attenuate(body.Velocity,
+            body.Friction * delta * body.Velocity.LengthSquared() * 0.01f);
     }
 
     private Vector2 CalculatePointGravity(RigidBody? body)
