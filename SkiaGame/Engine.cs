@@ -32,18 +32,16 @@ public abstract class Engine
     private DateTime _lastTime = DateTime.Now;
     private bool _startExecuted;
 
-    public JsonSerializerSettings JsonSerializerSettings = new()
-    {
-        Error = JsonError
-    };
-
     protected Engine()
     {
+        JsonSerializerSettings.Error = JsonError;
         TouchKeys = new TouchKeys();
         PhysicsEngine = new PhysicsEngine(this);
         PhysicsEngine.BeforePhysicsUpdate += BeforePhysicsUpdate;
         PhysicsEngine.AfterPhysicsUpdate += AfterPhysicsUpdate;
     }
+
+    private JsonSerializerSettings JsonSerializerSettings { get; } = new();
 
     /// <summary>
     ///     Menu Principal do jogo
@@ -53,7 +51,7 @@ public abstract class Engine
     /// <summary>
     ///     Título do jogo, utilizado também como nome das pastas do jogo
     /// </summary>
-    public string Title { get; set; } = "SkiaGame";
+    public string Title { get; init; } = "SkiaGame";
 
     /// <summary>
     ///     Informações sobre a plataforma
@@ -214,16 +212,28 @@ public abstract class Engine
         OnStart();
     }
 
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="mouseBase"></param>
     public void InternalSetMouseState(MouseBase mouseBase)
     {
         Mouse[mouseBase.Button] = mouseBase;
     }
 
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="args"></param>
     public void InternalTouchPress(SkTouchEventArgs args)
     {
         VerifyTouchClick(args, true, TouchKeyEventType.Press);
     }
 
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="args"></param>
     public void InternalTouchRelease(SkTouchEventArgs args)
     {
         VerifyTouchClick(args, false, TouchKeyEventType.Release);
@@ -240,25 +250,40 @@ public abstract class Engine
         MainMenu.VerifyClick(args.Position.ToSkPoint(), isPress);
     }
 
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="args"></param>
     public void InternalKeyPress(SkKeyPressEventArgs args)
     {
         if (args.KeyCode == KeyCode.None) return;
         Keyboard[args.KeyCode] = new KeyBase(true);
     }
 
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="args"></param>
     public void InternalKeyRelease(SkKeyPressEventArgs args)
     {
         if (args.KeyCode == KeyCode.None) return;
         Keyboard[args.KeyCode] = new KeyBase(false);
     }
 
-    //todo:O Tratamento de input deve ser unificado
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="position"></param>
     public void InternalUpdateMouseDesktop(Vector2 position)
     {
         Mouse.UpdatePosition(position);
         MainMenu.VerifyClick(position.ToSkPoint(), false);
     }
 
+    /// <summary>
+    ///     Para uso interno da plataforma
+    /// </summary>
+    /// <param name="gameFolder"></param>
     public void InternalSetGameFolder(string gameFolder)
     {
         if (!Directory.Exists(gameFolder))
@@ -270,10 +295,10 @@ public abstract class Engine
     }
 
     /// <summary>
-    ///     Este é o evento onde os objetos são desenhados na tela.
+    ///     Para uso interno da plataforma
     /// </summary>
     /// <param name="e"></param>
-    public void OnPaintSurface(PaintEventArgs e)
+    public void InternalPaintSurface(PaintEventArgs e)
     {
         UpdateScreenInfo(e);
 
@@ -321,11 +346,16 @@ public abstract class Engine
         }
     }
 
-    private static void JsonError(object? sender, ErrorEventArgs e)
+    /// <summary>
+    ///     Esta função pode ser sobrecarregada para lidar com erros de serialização de arquivos.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
+    protected virtual void JsonError(object? sender, ErrorEventArgs e)
     {
         Debug.WriteLine($"Erro de Serialização com o objeto {e.CurrentObject}");
     }
-
 
     /// <summary>
     ///     Esta função é chamada sempre que o jogo é iniciado.
@@ -351,6 +381,7 @@ public abstract class Engine
     ///     Esta função é chamada depois da física
     /// </summary>
     /// <param name="timeStep">Tempo entre as chamadas</param>
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual void AfterPhysicsUpdate(float timeStep)
     {
     }

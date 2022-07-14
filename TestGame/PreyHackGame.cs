@@ -53,23 +53,23 @@ public class PreyHackGame : Engine
     protected override void BeforePhysicsUpdate(float timeStep)
     {
         base.BeforePhysicsUpdate(timeStep);
-        HandleKeyboardAndTouchKeys(timeStep);
+        HandleKeyboardAndTouchKeys();
     }
 
-    private void HandleKeyboardAndTouchKeys(float timeStep)
+    private void HandleKeyboardAndTouchKeys()
     {
         if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
             Keyboard[KeyCode.W].IsPressed || Keyboard[KeyCode.Up].IsPressed)
-            _char.RigidBody.AddForce(-Vector2.UnitY, BaseCharForce, timeStep);
+            PhysicsEngine.AddForce(_char, -Vector2.UnitY, BaseCharForce);
         if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
             Keyboard[KeyCode.S].IsPressed || Keyboard[KeyCode.Down].IsPressed)
-            _char.RigidBody.AddForce(Vector2.UnitY, BaseCharForce, timeStep);
+            PhysicsEngine.AddForce(_char, Vector2.UnitY, BaseCharForce);
         if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
             Keyboard[KeyCode.D].IsPressed || Keyboard[KeyCode.Right].IsPressed)
-            _char.RigidBody.AddForce(Vector2.UnitX, BaseCharForce, timeStep);
+            PhysicsEngine.AddForce(_char, Vector2.UnitX, BaseCharForce);
         if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
             Keyboard[KeyCode.A].IsPressed || Keyboard[KeyCode.Left].IsPressed)
-            _char.RigidBody.AddForce(-Vector2.UnitX, BaseCharForce, timeStep);
+            PhysicsEngine.AddForce(_char, -Vector2.UnitX, BaseCharForce);
     }
 
     private void AddRects(SKRect charRect)

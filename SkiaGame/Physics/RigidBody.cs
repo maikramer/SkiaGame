@@ -19,6 +19,9 @@ public class RigidBody
 
     private float _forcedMass;
 
+    /// <summary>
+    ///     Flag que Identifica se o corpo será retornado com um Raycast.
+    /// </summary>
     public bool CanBeRayCasted { get; set; } = true;
 
     /// <summary>
@@ -117,21 +120,10 @@ public class RigidBody
     public Manifold LastCollision { get; internal set; } = new();
 
     /// <summary>
-    ///     Adiciona uma força para agir no objeto. Deve ser chamado de dentro de OnPhysicsUpdate
-    /// </summary>
-    /// <param name="direction">Direção da força</param>
-    /// <param name="strength">Intensidade</param>
-    /// <param name="timeStep">TimeStep, somente repasse</param>
-    public void AddForce(Vector2 direction, float strength, float timeStep)
-    {
-        Velocity += direction * strength * timeStep;
-    }
-
-    /// <summary>
     ///     Verifica se o ponto está dentro deste corpo
     /// </summary>
-    /// <param name="p"></param>
-    /// <returns></returns>
+    /// <param name="p">Ponto a ser verificado</param>
+    /// <returns>True se o ponto está dentro do corpo, False se não</returns>
     public bool Contains(Vector2 p)
     {
         if (Aabb.Max.X > p.X && p.X > Aabb.Min.X)
@@ -204,5 +196,72 @@ public class RigidBody
         aabb.Max.X = aabb.Min.X + size.Width;
         aabb.Max.Y = aabb.Min.Y + size.Height;
         Aabb = aabb;
+    }
+
+    /// <summary>
+    ///     Verifica se o Corpo colide com outro corpo
+    /// </summary>
+    /// <param name="body">Corpo para se verificar a colisão</param>
+    /// <returns>Retorna True se colide e False se não colide</returns>
+    public bool CollidesWith(RigidBody body)
+    {
+        var man = new Manifold();
+        return CollidesWith(body, ref man);
+    }
+
+    /// <summary>
+    ///     Verifica se o Corpo colide com outro corpo
+    /// </summary>
+    /// <param name="body">Corpo para se verificar a colisão</param>
+    /// <param name="manifold">Dados em que a colisão ocorreu</param>
+    /// <returns>Retorna True se colide e False se não colide</returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public bool CollidesWith(RigidBody body, ref Manifold manifold)
+    {
+        switch (ShapeType)
+        {
+            case Type.Box:
+                switch (body.ShapeType)
+                {
+                    case Type.Box:
+                        manifold = new Manifold
+                        {
+                            A = this,
+                            B = body
+                        };
+                        return Collision.AabbVsAabb(ref manifold);
+                    case Type.Circle:
+                        manifold = new Manifold
+                        {
+                            A = this,
+                            B = body
+                        };
+                        return Collision.AabBvsCircle(ref manifold);
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            case Type.Circle:
+                switch (body.ShapeType)
+                {
+                    case Type.Box:
+                        manifold = new Manifold
+                        {
+                            A = body,
+                            B = this
+                        };
+                        return Collision.AabBvsCircle(ref manifold);
+                    case Type.Circle:
+                        manifold = new Manifold
+                        {
+                            A = this,
+                            B = body
+                        };
+                        return Collision.CircleVsCircle(ref manifold);
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

@@ -10,10 +10,8 @@ internal static class Collision
     {
         // Exit with no intersection if found separated along an axis
         if (a.Max.X < b.Min.X || a.Min.X > b.Max.X) return false;
-        if (a.Max.Y < b.Min.Y || a.Min.Y > b.Max.Y) return false;
-
+        return !(a.Max.Y < b.Min.Y) && !(a.Min.Y > b.Max.Y);
         // No separating axis found, therefor there is at least one overlapping axis
-        return true;
     }
 
     public static bool AabbVsAabb(ref Manifold m)

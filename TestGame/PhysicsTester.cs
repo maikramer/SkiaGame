@@ -13,14 +13,14 @@ namespace TestGame;
 public class PhysicsStatus : FlipSetting
 {
     public const string Running = "Rodando";
-    public const string NotRunning = "Não Rodando";
+    private const string NotRunning = "Não Rodando";
     protected override string Positive => Running;
     protected override string Negative => NotRunning;
 }
 
 public struct Settings
 {
-    public PhysicsStatus PhysicsStatus;
+    public readonly PhysicsStatus PhysicsStatus;
     public int CharSize = 20;
 
     public Settings()
@@ -107,12 +107,13 @@ public class PhysicsTester : Engine
         PhysicsEngine.CreateBoundingBox(ScreenInfo.Size);
         Mouse[MouseButton.Left].Pressed += () =>
         {
-            Console.WriteLine("Botao Esquerdo Pressionado");
+            Console.WriteLine("Botao Esquerdo do Mouse Pressionado");
         };
         Mouse[MouseButton.RightButton].Released += () =>
         {
-            Console.WriteLine("Botao Direito Soltado");
+            Console.WriteLine("Botao Direito do Mouse Soltado");
         };
+        Keyboard[KeyCode.Escape].Released += () => { MainMenu.Enabled = !MainMenu.Enabled; };
         ScreenSizeChanged += OnScreenSizeChanged;
         ScreenOrientationChanged += (_, args) =>
         {
@@ -185,7 +186,7 @@ public class PhysicsTester : Engine
     protected override void BeforePhysicsUpdate(float timeStep)
     {
         HandleMouseAndTouchOnBody();
-        HandleKeyboardAndTouchKeys(timeStep);
+        HandleKeyboardAndTouchKeys();
     }
 
     private void HandleMouseAndTouchOnBody()
@@ -217,19 +218,19 @@ public class PhysicsTester : Engine
         }
     }
 
-    private void HandleKeyboardAndTouchKeys(float timeStep)
+    private void HandleKeyboardAndTouchKeys()
     {
         if (TouchKeys.Up.IsPressed || Keyboard[KeyCode.w].IsPressed ||
             Keyboard[KeyCode.W].IsPressed || Keyboard[KeyCode.Up].IsPressed)
-            _char.RigidBody.AddForce(-Vector2.UnitY, 1000, timeStep);
-        else if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
-                 Keyboard[KeyCode.S].IsPressed || Keyboard[KeyCode.Down].IsPressed)
-            _char.RigidBody.AddForce(Vector2.UnitY, 1000, timeStep);
-        else if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
-                 Keyboard[KeyCode.D].IsPressed || Keyboard[KeyCode.Right].IsPressed)
-            _char.RigidBody.AddForce(Vector2.UnitX, 1000, timeStep);
-        else if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
-                 Keyboard[KeyCode.A].IsPressed || Keyboard[KeyCode.Left].IsPressed)
-            _char.RigidBody.AddForce(-Vector2.UnitX, 1000, timeStep);
+            PhysicsEngine.AddForce(_char, -Vector2.UnitY, 2000);
+        if (TouchKeys.Down.IsPressed || Keyboard[KeyCode.s].IsPressed ||
+            Keyboard[KeyCode.S].IsPressed || Keyboard[KeyCode.Down].IsPressed)
+            PhysicsEngine.AddForce(_char, Vector2.UnitY, 2000);
+        if (TouchKeys.Right.IsPressed || Keyboard[KeyCode.d].IsPressed ||
+            Keyboard[KeyCode.D].IsPressed || Keyboard[KeyCode.Right].IsPressed)
+            PhysicsEngine.AddForce(_char, Vector2.UnitX, 2000);
+        if (TouchKeys.Left.IsPressed || Keyboard[KeyCode.a].IsPressed ||
+            Keyboard[KeyCode.A].IsPressed || Keyboard[KeyCode.Left].IsPressed)
+            PhysicsEngine.AddForce(_char, -Vector2.UnitX, 2000);
     }
 }

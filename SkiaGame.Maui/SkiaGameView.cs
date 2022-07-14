@@ -101,7 +101,7 @@ public class SkiaGameView : SKCanvasView
         base.OnPaintSurface(e);
         UpdateScreenInfo(e.Info.Size);
         var eventArgs = new PaintEventArgs(e.Info, e.Surface);
-        Engine?.OnPaintSurface(eventArgs);
+        Engine?.InternalPaintSurface(eventArgs);
     }
 
     protected override void OnTouch(SKTouchEventArgs e)

@@ -120,5 +120,6 @@ public enum KeyCode
     Up = 70,
     Down = 71,
     Left = 72,
-    Right = 73
+    Right = 73,
+    Escape = 74
 }

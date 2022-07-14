@@ -23,8 +23,8 @@ public class MenuItem
     public SKSize ItemSize => Text.Size + BoxMargin;
     public float CornerRadius { get; set; } = 8;
 
-    public SKColor NormalColor { get; set; } = SKColor.Parse("#CC8A2BE2");
-    public SKColor HoverColor { get; set; } = SKColor.Parse("#CC9400D3");
+    public SKColor NormalColor { get; set; } = SKColor.Parse("#AA8A2BE2");
+    public SKColor HoverColor { get; set; } = SKColor.Parse("#AA9400D3");
 
     public event Action? Press;
 

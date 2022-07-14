@@ -8,24 +8,41 @@ using SkiaSharp;
 
 namespace SkiaGame.Physics;
 
+public struct Force
+{
+    public RigidBody Body;
+    public Vector2 Direction;
+    public float Strength;
+
+
+    public Force(RigidBody body, Vector2 direction, float strength)
+    {
+        Body = body;
+        Direction = direction;
+        Strength = strength;
+    }
+}
+
 public class PhysicsEngine
 {
     private const int OutOfBoundsValue = 5000;
-    private const float FrictionCompensation = 0.002f;
+    private const float FrictionCompensation = 0.001f;
     public static readonly Queue<RigidBody?> RemovalQueue = new();
 
     private readonly BoundingBox _boundingBox = new();
 
     private readonly Engine _engine;
 
+    private readonly Queue<Force> _forcesQueue = new();
+
     //Lista de pares de possíveis colisões
     private readonly List<CollisionPair> _listCollisionPairs = new();
 
     //Lista de objetos que atuam na gravidade
-    private readonly List<RigidBody?> _listGravityObjects = new();
+    private readonly List<RigidBody> _listGravityObjects = new();
 
     //Lista de objetos dentro da fisica
-    private readonly List<RigidBody?> _listStaticObjects = new();
+    private readonly List<RigidBody> _listStaticObjects = new();
 
     private float _lastTimeScale;
 
@@ -39,14 +56,19 @@ public class PhysicsEngine
     }
 
     /// <summary>
+    ///     Aborta adição do corpo se detectada colisão na adição
+    /// </summary>
+    public bool DontAddIfCollisionDetected { get; set; } = false;
+
+    /// <summary>
     ///     Gravidade mínima entre 2 objetos
     /// </summary>
-    public float MinimalGravityVelocity { get; set; } = 3.0f;
+    public float MinimalGravityVelocity { get; set; } = 1.0f;
 
     /// <summary>
     ///     Velocidade mínima de um objeto
     /// </summary>
-    public float MinimalVelocity { get; set; } = 1.0f;
+    public float MinimalVelocity { get; set; } = 0.2f;
 
     /// <summary>
     ///     Escala de tempo em que a física ocorre, em que Zero significa o jogo em pausa
@@ -98,12 +120,12 @@ public class PhysicsEngine
     /// <summary>
     ///     Tempo entre frames de física dado em ms
     /// </summary>
-    public int PhysicsTimeStep { get; set; } = 15;
+    public int PhysicsTimeStep { get; set; } = 10;
 
     /// <summary>
     ///     Aceleração da gravidade dada em pixels/s²
     /// </summary>
-    public Vector2 Gravity { get; set; } = Vector2.UnitY * 150f;
+    public Vector2 Gravity { get; set; } = Vector2.UnitY * 200f;
 
 
     //Tempo entre frames dado em segundos
@@ -168,8 +190,20 @@ public class PhysicsEngine
         return _boundingBox.Contains(rect);
     }
 
-    public void AddBody(RigidBody rigidBody)
+    public bool AddBody(RigidBody rigidBody)
     {
+        var isValid = false;
+        lock (_listStaticObjects)
+        {
+            foreach (var body in _listStaticObjects)
+            {
+                if (!rigidBody.CollidesWith(body)) continue;
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid && DontAddIfCollisionDetected) return false;
         lock (_listStaticObjects)
         {
             _listStaticObjects.Add(rigidBody);
@@ -179,6 +213,8 @@ public class PhysicsEngine
         {
             _listGravityObjects.Add(rigidBody);
         }
+
+        return isValid;
     }
 
     private async Task PhysicsTask()
@@ -208,7 +244,6 @@ public class PhysicsEngine
             for (var i = _listStaticObjects.Count - 1; i >= 0; i--)
             {
                 var obj = _listStaticObjects[i];
-                if (obj == null) continue;
                 if (!obj.Locked && obj.Mass < 1000000) yield return obj;
             }
         }
@@ -220,7 +255,6 @@ public class PhysicsEngine
         {
             foreach (var rigidBody in _listStaticObjects)
             {
-                if (rigidBody == null) continue;
                 lock (rigidBody)
                 {
                     rigidBody.Velocity = new Vector2
@@ -263,9 +297,8 @@ public class PhysicsEngine
         return new Vector2(Attenuate(vector.X, factor), Attenuate(vector.Y, factor));
     }
 
-    private void ApplyConstants(RigidBody? body, float dt)
+    private void ApplyConstants(RigidBody body, float dt)
     {
-        if (body == null) return;
         if (body.Locked) return;
         AddGravity(body, dt);
         AddFriction(body, dt);
@@ -326,6 +359,27 @@ public class PhysicsEngine
         }
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="gameObject"></param>
+    /// <param name="direction">Direção em que a força será aplicada</param>
+    /// <param name="strength">Força em KN</param>
+    public void AddForce(GameObject gameObject, Vector2 direction, float strength)
+    {
+        AddForce(gameObject.RigidBody, direction, strength);
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="body"></param>
+    /// <param name="direction"></param>
+    /// <param name="strength">Força em KN</param>
+    public void AddForce(RigidBody body, Vector2 direction, float strength)
+    {
+        var force = new Force(body, direction, strength * 1000);
+        _forcesQueue.Enqueue(force);
+    }
+
     private Vector2 GetGravityVector(RigidBody? obj)
     {
         return CalculatePointGravity(obj) * BodiesGravityScale + Gravity * GravityScale;
@@ -333,18 +387,16 @@ public class PhysicsEngine
 
     private void ProcessRemovalQueue()
     {
-        if (RemovalQueue.Count > 0)
+        if (RemovalQueue.Count <= 0) return;
+        var obj = RemovalQueue.Dequeue();
+        lock (_listStaticObjects)
         {
-            var obj = RemovalQueue.Dequeue();
-            lock (_listStaticObjects)
-            {
-                _listStaticObjects.Remove(obj);
-            }
+            if (obj != null) _listStaticObjects.Remove(obj);
+        }
 
-            lock (_listGravityObjects)
-            {
-                _listGravityObjects.Remove(obj);
-            }
+        lock (_listGravityObjects)
+        {
+            if (obj != null) _listGravityObjects.Remove(obj);
         }
     }
 
@@ -356,41 +408,7 @@ public class PhysicsEngine
             var objB = pair.B;
 
             var m = new Manifold();
-            var collision = false;
-
-            if (objA.ShapeType == RigidBody.Type.Circle && objB.ShapeType == RigidBody.Type.Box)
-            {
-                m.A = objB;
-                m.B = objA;
-            }
-            else
-            {
-                m.A = objA;
-                m.B = objB;
-            }
-
-            //Box vs anything
-            if (m.A.ShapeType == RigidBody.Type.Box)
-            {
-                if (m.B.ShapeType == RigidBody.Type.Box)
-                    //continue;
-                    if (Collision.AabbVsAabb(ref m))
-                        collision = true;
-
-                if (m.B == null) continue;
-                if (m.B.ShapeType == RigidBody.Type.Circle)
-                    if (Collision.AabBvsCircle(ref m))
-                        collision = true;
-            }
-
-            //Circle Circle
-            else
-            {
-                if (m.B.ShapeType == RigidBody.Type.Circle)
-                    if (Collision.CircleVsCircle(ref m))
-                        collision = true;
-            }
-
+            var collision = objA.CollidesWith(objB, ref m);
             //Resolve Collision
             if (collision)
             {
@@ -401,11 +419,17 @@ public class PhysicsEngine
             }
         }
 
+        while (_forcesQueue.Count > 0)
+        {
+            var force = _forcesQueue.Dequeue();
+            var body = force.Body;
+            body.Velocity += force.Direction * force.Strength * body.MassInverse * deltaTime;
+        }
+
         lock (_listStaticObjects)
         {
             foreach (var body in _listStaticObjects)
             {
-                if (body == null) continue;
                 lock (body)
                 {
                     ApplyConstants(body, deltaTime);
@@ -436,7 +460,6 @@ public class PhysicsEngine
 
                 var a = _listStaticObjects[i];
                 var b = _listStaticObjects[j];
-                if (a == null || b == null) continue;
 
                 var aBb = a.Aabb;
                 var aabb = b.Aabb;

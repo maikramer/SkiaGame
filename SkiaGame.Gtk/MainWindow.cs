@@ -116,7 +116,7 @@ public class MainWindow : Window
     private void SkiaViewOnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var eventArgs = new PaintEventArgs(e.Info, e.Surface);
-        _engine.OnPaintSurface(eventArgs);
+        _engine.InternalPaintSurface(eventArgs);
     }
 
     private void OnWindowDeleteEvent(object sender, DeleteEventArgs a)
