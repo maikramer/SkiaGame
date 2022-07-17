@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Timers;
+using Microsoft.Maui.Controls;
 using SkiaGame.Events;
 using SkiaGame.Info;
 using SkiaGame.Input;
@@ -20,10 +21,6 @@ public class SkiaGameView : SKCanvasView
     private readonly Timer _timer = new();
     private bool _initialized;
     private ScreenInfo _screenInfo = ScreenInfo.Zero;
-
-    public SkiaGameView()
-    {
-    }
 
     // ReSharper disable once UnusedMember.Global
     public SkiaGameView(Engine engine)

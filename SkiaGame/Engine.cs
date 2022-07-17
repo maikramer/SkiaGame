@@ -20,6 +20,8 @@ namespace SkiaGame;
 
 public abstract class Engine
 {
+    
+
     //Lista de corpos para desenho
     private readonly List<GameObject> _drawQueue = new();
     private readonly DateTime _startTime = DateTime.Now;
@@ -44,6 +46,10 @@ public abstract class Engine
     private JsonSerializerSettings JsonSerializerSettings { get; } = new();
 
     /// <summary>
+    /// Distancia, em % de largura e altura, em que as teclas touch ficam dos cantos
+    /// </summary>
+    public float TouchKeyDistanceFromCorner { get; set; } = 0.035f;
+    /// <summary>
     ///     Menu Principal do jogo
     /// </summary>
     public Menu MainMenu { get; set; } = new();
@@ -62,11 +68,6 @@ public abstract class Engine
     ///     Teclado TouchScreen
     /// </summary>
     public TouchKeys TouchKeys { get; }
-
-    /// <summary>
-    ///     Desenha ou não o teclado Touch na tela
-    /// </summary>
-    public bool DrawTouchKeys { get; set; } = true;
 
     /// <summary>
     ///     Tempo desde que o programa foi iniciado
@@ -310,11 +311,11 @@ public abstract class Engine
             foreach (var gameObject in _drawQueue) gameObject.Draw(e.Surface.Canvas);
         }
 
-        if (DrawTouchKeys)
+        if (TouchKeys.Enabled)
         {
-            var size = TouchKeys.ControlSize;
-            TouchKeys.DrawFromCenter(e.Surface.Canvas,
-                new Vector2(0.75f * size, e.Info.Height - 0.75f * size));
+            var height = e.Info.Height;
+            TouchKeys.DrawLeftBottom(e.Surface.Canvas,
+                new Vector2(TouchKeyDistanceFromCorner * e.Info.Width, height - TouchKeyDistanceFromCorner * height));
         }
 
         if (MainMenu.Enabled)

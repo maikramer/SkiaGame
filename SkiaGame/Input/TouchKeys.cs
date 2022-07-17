@@ -19,6 +19,11 @@ public class TouchKeys
     };
 
     /// <summary>
+    ///     Flag que habilita ou não as teclas Touch
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
     ///     Informações sobre a tecla virtual baixo
     /// </summary>
     public TouchKey Down { get; private set; } = new();
@@ -126,7 +131,14 @@ public class TouchKeys
         });
     }
 
-    //Desenha a partir de um ponto central
+    public void DrawLeftBottom(SKCanvas canvas, Vector2 leftBottom)
+    {
+        Draw(canvas, leftBottom with
+        {
+            Y = leftBottom.Y - ControlSize
+        });
+    }
+
     public void DrawFromCenter(SKCanvas canvas, Vector2 center)
     {
         Draw(canvas, new Vector2(center.X - ControlSize / 2, center.Y - ControlSize / 2));
