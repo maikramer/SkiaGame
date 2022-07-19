@@ -75,7 +75,7 @@ public partial class MainWindow : Form
     {
         var position = new Vector2(point.X, point.Y);
         var eventArgs = new SkTouchEventArgs(position);
-        var mouseInfo = new MouseInfo(button, position, state);
+        var mouseInfo = new MouseBase(button, position, state);
         _engine.InternalSetMouseState(mouseInfo);
         return eventArgs;
     }
@@ -85,6 +85,6 @@ public partial class MainWindow : Form
     private void SkiaControlOnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var eventArgs = new PaintEventArgs(e.Info, e.Surface);
-        _engine.OnPaintSurface(eventArgs);
+        _engine.InternalPaintSurface(eventArgs);
     }
 }

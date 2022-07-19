@@ -168,7 +168,7 @@ namespace SkiaGame.Wpf
         private SkTouchEventArgs SetMouseState(MouseButton button, Vector2 position, bool state)
         {
             var eventArgs = new SkTouchEventArgs(position);
-            var mouseInfo = new MouseInfo(button, position, state);
+            var mouseInfo = new MouseBase(button, position, state);
             Engine.InternalSetMouseState(mouseInfo);
             return eventArgs;
         }
@@ -177,7 +177,7 @@ namespace SkiaGame.Wpf
         {
             base.OnPaintSurface(e);
             var eventArgs = new PaintEventArgs(e.Info, e.Surface);
-            Engine.OnPaintSurface(eventArgs);
+            Engine.InternalPaintSurface(eventArgs);
         }
     }
 }
